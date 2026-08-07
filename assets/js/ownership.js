@@ -144,12 +144,6 @@ function selectMonth(m) {
 
   const { shareA, shareB } = shareAtCumPrincipal(row.cumPrincipal);
 
-  // Reste à partager = même base que le calcul des parts : apport total + capital cumulé remboursé (les deux ensemble).
-  // On ne mélange pas avec la valeur du bien appréciée, sinon le total ne correspond plus aux pourcentages affichés.
-  const equityA = APPORT_A + splitBen * row.cumPrincipal;
-  const equityB = APPORT_B + splitMarie * row.cumPrincipal;
-  const totalEquity = APPORT_A + APPORT_B + row.cumPrincipal;
-
   // Total cumulé réellement payé par chacun à cette date : son apport + sa fraction de toutes les mensualités versées jusqu'ici (capital et intérêts inclus, puisqu'il les paie tous les deux).
   const totalMensualitesPayeesACeMois = lastLoanData.mensualite * m;
   const totalPaidA = APPORT_A + totalMensualitesPayeesACeMois * splitBen;
@@ -176,8 +170,6 @@ function selectMonth(m) {
   document.getElementById('detail-total-b-interet').textContent = fmt(Math.round(interetPaidB));
   document.getElementById('detail-part-a').textContent = fmtPct(shareA);
   document.getElementById('detail-part-b').textContent = fmtPct(shareB);
-  document.getElementById('detail-vente').innerHTML =
-    'Si vous vendez le <b>' + formatDateDansNMois(m) + '</b> (dans ' + m + ' mois), sur la base de l’apport total (' + fmt(APPORT_A + APPORT_B) + ') + capital cumulé remboursé à deux (' + fmt(Math.round(row.cumPrincipal)) + '), il y a ' + fmt(Math.round(totalEquity)) + ' à partager : <span class="you">' + fmt(Math.round(equityA)) + ' iront à Benjamin</span> et <span class="partner">' + fmt(Math.round(equityB)) + ' iront à Marie</span>.';
 
   // Scénario au prix de marché estimé : prix d'achat initial (onglet Simulation taux) + appréciation composée à 3%/an, moins le solde restant dû, réparti selon les mêmes parts.
   const marketValueNow = prixAppart * Math.pow(1 + APPART_GROWTH / 100, m / 12);
