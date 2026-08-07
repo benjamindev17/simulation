@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Simulation patrimoine — ETF & Appartement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f7f5ef;
+    --paper-raised: #ffffff;
+    --line: #ddd7c4;
+    --line-soft: #e9e4d5;
+    --ink: #1b1e1a;
+    --ink-muted: #6f6b5c;
+    --ink-faint: #a19c8a;
+    --moss: #3c5b43;
+    --moss-soft: #e7ede4;
+    --moss-line: #b9cdb9;
+    --brick: #a8433b;
+    --brick-soft: #f5e2df;
+    --amber: #a97a2c;
+    --amber-soft: #f3ead4;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html {
+    touch-action: pan-y;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--paper);
+    color: var(--ink);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 0 4rem;
+    touch-action: pan-y;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* Empêche le double-tap zoom sur les éléments interactifs sans bloquer le scroll vertical */
+  button, input, .calc-field, .stat-card, .tabs {
+    touch-action: manipulation;
+  }
+
+  .page-header {
+    padding: 1.75rem 1.5rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper-raised);
+  }
+  .page-header .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--moss);
+    margin: 0 0 6px;
+  }
+  .page-header h1.page-title {
+    font-size: 21px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .content { padding: 0 1.5rem; }
+
+  h1 { font-size: 18px; font-weight: 600; margin: 1.75rem 0 1.1rem; letter-spacing: -0.01em; }
+  h2 { font-size: 15px; font-weight: 600; margin: 0 0 1rem; }
+
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin: 0 -1.5rem 1.75rem;
+    padding: 0 1.5rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--paper-raised);
+    overflow-x: auto;
+  }
+  .tabs button {
+    background: transparent;
+    border: none;
+    padding: 13px 4px;
+    margin-right: 22px;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--ink-muted);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.15s ease;
+  }
+  .tabs button.active {
+    color: var(--ink);
+    border-bottom: 2px solid var(--moss);
+  }
+  .tabs button:hover { color: var(--ink); }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .controls-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .controls-row label {
+    font-size: 13.5px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+    min-width: 150px;
+  }
+  input[type="range"] {
+    flex: 1;
+    accent-color: var(--moss);
+  }
+  .rate-out {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 44px;
+    text-align: right;
+  }
+
+  .duration-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+  .duration-toggle button {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--ink);
+  }
+  .duration-toggle button.active {
+    background: var(--moss);
+    border-color: var(--moss);
+    color: white;
+  }
+
+  .stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 1.75rem;
+  }
+  .stat-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    padding: 0.95rem 1rem;
+    flex: 1;
+    min-width: 145px;
+  }
+  .stat-card p:first-child {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin: 0 0 6px;
+  }
+  .stat-card p:last-child {
+    font-family: var(--font-mono);
+    font-size: 19px;
+    font-weight: 500;
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .legend .swatch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 360px;
+    background: var(--paper-raised);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    padding: 1rem;
+  }
+
+  .note {
+    font-size: 12.5px;
+    color: var(--ink-muted);
+    margin-top: 1.5rem;
+    line-height: 1.65;
+  }
+
+  .assumptions {
+    background: var(--moss-soft);
+    border: 1px solid var(--moss-line);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    font-size: 13px;
+    color: var(--ink);
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+  }
+  .assumptions b { font-weight: 600; }
+
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+  }
+  .calc-field {
+    background: var(--paper-raised);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    padding: 0.9rem 1rem;
+  }
+  .calc-field label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--ink-muted);
+    margin-bottom: 7px;
+  }
+  .calc-field .value-input {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .calc-field input[type="number"] {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    border: none;
+    background: transparent;
+    padding: 0;
+    color: var(--ink);
+  }
+  .calc-field input[type="number"]:focus { outline: 1px solid var(--moss); border-radius: 4px; }
+  .calc-field .unit { font-family: var(--font-mono); font-size: 13px; color: var(--ink-faint); }
+  .calc-field.slider-field input[type="range"] { width: 100%; margin-top: 6px; }
+  .calc-field.readonly { background: var(--moss-soft); border-color: var(--moss-line); }
+  .calc-field.computed { background: var(--amber-soft); border-color: #e0cd9e; }
+
+  .warning-box {
+    background: var(--brick-soft);
+    color: var(--brick);
+    border: 1px solid #e3bcb6;
+    border-radius: var(--radius);
+    padding: 0.8rem 1rem;
+    font-size: 13px;
+    margin-bottom: 1rem;
+  }
+
+  .year-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 1.5rem;
+  }
+  .year-checks label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .year-checks input[type="checkbox"] { accent-color: var(--moss); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    margin-bottom: 1rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  th, td {
+    text-align: right;
+    padding: 5px 8px;
+    border-bottom: 1px solid var(--line-soft);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  th:first-child, td:first-child { text-align: left; }
+  th {
+    color: var(--ink-muted);
+    font-weight: 500;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--paper);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  #amort-tbody tr { cursor: pointer; }
+  #amort-tbody tr:hover td { background: var(--moss-soft); }
+  #amort-tbody tr.selected-row td { background: var(--moss-soft); font-weight: 600; }
+  #amort-tbody tr.plus-value-row td { background: var(--amber-soft); }
+  #amort-tbody tr.plus-value-row td:first-child { border-left: 3px solid var(--amber); font-weight: 600; }
+  #amort-tbody tr.plus-value-row.selected-row td { background: var(--moss-soft); }
+  #amort-tbody tr.plus-value-row.selected-row td:first-child { border-left: 3px solid var(--amber); }
+  .you { color: var(--moss); font-weight: 500; }
+  .partner { color: var(--amber); font-weight: 500; }
+
+  /* Colonnes redimensionnables façon Excel */
+  #amort-table { table-layout: fixed; }
+  #amort-table th { position: relative; user-select: none; }
+  .col-resizer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 6px;
+    cursor: col-resize;
+    z-index: 2;
+  }
+  .col-resizer:hover, .col-resizer.resizing { background: var(--moss-line); }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <p class="eyebrow">Projet appartement</p>
+  <h1 class="page-title">Simulation patrimoine</h1>
+</div>
+
+<div class="content">
+
+<div class="tabs">
+  <button id="tabBtnTaux" class="active">Simulation taux</button>
+  <button id="tabBtnAppart">Répartition appartement</button>
+</div>
+
+<!-- ===================== TAB 2 : APPARTEMENT ===================== -->
+<div id="tab-appart" class="panel">
+
+<h1>Répartition de l'appartenance de l'appartement</h1>
+
+<div class="assumptions">
+  <b>Données utilisées</b> — <span id="assumptions-apport">Apport toi : 70 000 € (70%) · Apport copine : 30 000 € (30%)</span> · Remboursement à parts égales (<span id="assumptions-mensualite">-</span>, pour info) · Montant emprunté, taux et mensualité repris en temps réel de l'onglet Simulation taux.<br>
+  <b>Méthode</b> : l'intérêt est un coût, pas de la propriété. Seul le <b>capital remboursé</b> construit de la part. Comme vous remboursez chacun la moitié de la mensualité, vous financez chacun la moitié du capital remboursé chaque mois. Ta part à l'instant t = (ton apport + 50% du capital cumulé remboursé) / (apport total + capital cumulé remboursé). Après le remboursement complet du prêt, la répartition se fige.
+  <br><br>
+  <b>Vérifie avant d'agir</b> : ce calcul suppose que le partage 50/50 des mensualités est explicitement traduit en clause de propriété proportionnelle dans l'acte notarié, sinon la loi par défaut (indivision à parts égales ou selon l'acte initial) peut ne pas suivre cette logique.
+</div>
+
+<p class="note" id="loan-derived-note"></p>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <p>Total versé (toi) — apport + remboursement</p>
+    <p id="total-verse-a" class="you">-</p>
+    <div style="margin-top:10px; padding-top:10px; border-top:1px solid var(--line-soft); font-family:var(--font-mono); font-size:12px; line-height:1.9;">
+      <div style="display:flex; justify-content:space-between;"><span style="color:var(--ink-muted); font-family:var(--font-sans);">dont capital</span><span id="capital-verse-a">-</span></div>
+      <div style="display:flex; justify-content:space-between;"><span style="color:var(--ink-muted); font-family:var(--font-sans);">dont intérêts</span><span id="interet-verse-a">-</span></div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <p>Total versé (copine) — apport + remboursement</p>
+    <p id="total-verse-b" class="partner">-</p>
+    <div style="margin-top:10px; padding-top:10px; border-top:1px solid var(--line-soft); font-family:var(--font-mono); font-size:12px; line-height:1.9;">
+      <div style="display:flex; justify-content:space-between;"><span style="color:var(--ink-muted); font-family:var(--font-sans);">dont capital</span><span id="capital-verse-b">-</span></div>
+      <div style="display:flex; justify-content:space-between;"><span style="color:var(--ink-muted); font-family:var(--font-sans);">dont intérêts</span><span id="interet-verse-b">-</span></div>
+    </div>
+  </div>
+</div>
+
+<h2 style="margin-top:2rem;">Tableau d'étalement complet, mois par mois</h2>
+<p class="note" style="margin-top:0;">
+  Échéancier détaillé du prêt, sur la base du montant à emprunter et du taux actuels (onglet Simulation taux), remboursé sur 20 ans.
+</p>
+<p class="note" style="margin-top:0; font-family:var(--font-mono); font-size:11.5px; background:var(--paper); border:1px dashed var(--line); border-radius:var(--radius-sm); padding:0.6rem 0.8rem;">
+  Formule — Ta part (%) = (Apport toi + 50% × capital cumulé remboursé) / (Apport total + capital cumulé remboursé) — même formule pour la part copine, avec son apport à elle.
+</p>
+
+<p class="note" style="margin-top:0;">Clique sur une ligne du tableau ci-dessous pour voir le détail de ce mois.</p>
+
+<div class="calc-grid" id="detail-panel">
+  <div class="calc-field">
+    <label>Mois sélectionné</label>
+    <div class="value-input"><span id="detail-mois" style="font-size:18px; font-weight:500;">-</span></div>
+  </div>
+  <div class="calc-field">
+    <label>Date estimée</label>
+    <div class="value-input"><span id="detail-date" style="font-size:18px; font-weight:500;">-</span></div>
+  </div>
+  <div class="calc-field" style="grid-column: 1 / -1;">
+    <label>Solde restant dû</label>
+    <div class="value-input"><span id="detail-solde" style="font-size:18px; font-weight:500;">-</span></div>
+  </div>
+
+  <div class="calc-field you" style="background:var(--moss-soft); border-color:var(--moss-line);">
+    <label style="color:var(--moss);">Ben aura payé au total, à cette date</label>
+    <div class="value-input"><span id="detail-total-a" style="font-size:19px; font-weight:600;">-</span></div>
+    <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--moss-line); font-family:var(--font-mono); font-size:12px; line-height:1.8;">
+      <div style="display:flex; justify-content:space-between;"><span style="font-family:var(--font-sans); font-weight:400;">apport</span><span id="detail-apport-a">-</span></div>
+      <div style="display:flex; justify-content:space-between;"><span style="font-family:var(--font-sans); font-weight:400;">dont capital</span><span id="detail-total-a-capital">-</span></div>
+      <div style="display:flex; justify-content:space-between;"><span style="font-family:var(--font-sans); font-weight:400;">dont intérêts</span><span id="detail-total-a-interet">-</span></div>
+    </div>
+  </div>
+  <div class="calc-field partner" style="background:var(--amber-soft); border-color:#e0cd9e;">
+    <label style="color:var(--amber);">Marie aura payé au total, à cette date</label>
+    <div class="value-input"><span id="detail-total-b" style="font-size:19px; font-weight:600;">-</span></div>
+    <div style="margin-top:8px; padding-top:8px; border-top:1px solid #e0cd9e; font-family:var(--font-mono); font-size:12px; line-height:1.8;">
+      <div style="display:flex; justify-content:space-between;"><span style="font-family:var(--font-sans); font-weight:400;">apport</span><span id="detail-apport-b">-</span></div>
+      <div style="display:flex; justify-content:space-between;"><span style="font-family:var(--font-sans); font-weight:400;">dont capital</span><span id="detail-total-b-capital">-</span></div>
+      <div style="display:flex; justify-content:space-between;"><span style="font-family:var(--font-sans); font-weight:400;">dont intérêts</span><span id="detail-total-b-interet">-</span></div>
+    </div>
+  </div>
+
+  <div class="calc-field">
+    <label>Ta part à ce moment</label>
+    <div class="value-input"><span id="detail-part-a" class="you" style="font-size:18px; font-weight:600;">-</span></div>
+  </div>
+  <div class="calc-field">
+    <label>Part copine à ce moment</label>
+    <div class="value-input"><span id="detail-part-b" class="partner" style="font-size:18px; font-weight:600;">-</span></div>
+  </div>
+  <div class="calc-field readonly" style="grid-column: 1 / -1;">
+    <label>Si vous vendez à ce moment (valeur investie)</label>
+    <div id="detail-vente" style="font-size:14px; line-height:1.7;">-</div>
+  </div>
+  <div class="calc-field computed" style="grid-column: 1 / -1;">
+    <label>Si vous vendez à ce prix de marché estimé (appréciation 3%/an)</label>
+    <div class="value-input" style="margin-bottom:6px;">
+      <span style="font-size:13px; color:var(--ink-muted); font-family:var(--font-sans);">Valeur de l'appartement à ce moment</span>
+      <span id="detail-valeur-appart" style="font-size:18px; font-weight:600; margin-left:auto;">-</span>
+    </div>
+    <div id="detail-vente-marche" style="font-size:14px; line-height:1.7;">-</div>
+  </div>
+</div>
+
+<div style="max-height:420px; overflow-y:auto; border:1px solid var(--line-soft); border-radius:var(--radius);">
+  <table id="amort-table" style="margin-bottom:0; border:none; border-radius:0;">
+    <colgroup>
+      <col id="col-0" style="width:56px;">
+      <col id="col-1" style="width:100px;">
+      <col id="col-2" style="width:90px;">
+      <col id="col-3" style="width:80px;">
+      <col id="col-4" style="width:90px;">
+      <col id="col-5" style="width:100px;">
+      <col id="col-6" style="width:70px;">
+      <col id="col-7" style="width:80px;">
+    </colgroup>
+    <thead style="position:sticky; top:0; z-index:1;">
+      <tr>
+        <th>Mois<span class="col-resizer" data-col="0"></span></th>
+        <th>Valeur appartement<span class="col-resizer" data-col="1"></span></th>
+        <th>Mensualité<span class="col-resizer" data-col="2"></span></th>
+        <th>Intérêts<span class="col-resizer" data-col="3"></span></th>
+        <th>Capital remboursé<span class="col-resizer" data-col="4"></span></th>
+        <th>Solde restant dû<span class="col-resizer" data-col="5"></span></th>
+        <th>Ta part<span class="col-resizer" data-col="6"></span></th>
+        <th>Part copine<span class="col-resizer" data-col="7"></span></th>
+      </tr>
+    </thead>
+    <tbody id="amort-tbody"></tbody>
+  </table>
+</div>
+
+<p class="note" id="plus-value-note" style="margin-top:0.75rem;">-</p>
+
+</div>
+
+<!-- ===================== TAB 3 : SIMULATION TAUX ===================== -->
+<div id="tab-taux" class="panel active">
+
+<h1>Simulation taux — apport, quotité, mensualité</h1>
+
+<p class="note" style="margin-top:0; margin-bottom:1rem;">
+  Tous les champs sont liés. Prix + frais déterminent le coût total. Apport, quotité et montant à emprunter se recalculent entre eux à coût total fixe. La durée est fixée par toi (curseur 15-20 ans) et ne bouge jamais automatiquement — c'est la mensualité qui se recalcule pour rester cohérente avec le montant emprunté, le taux et la durée choisie.
+</p>
+
+<div id="taux-warning" class="warning-box" style="display:none;"></div>
+
+<div class="calc-grid">
+  <div class="calc-field">
+    <label>Prix de l'appartement</label>
+    <div class="value-input">
+      <input type="number" id="in-prix" step="1000" />
+      <span class="unit">€</span>
+    </div>
+  </div>
+
+  <div class="calc-field">
+    <label>Frais (enregistrement + notaire)</label>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+      <span style="font-size:13px; color:#52514e;">Enregistrement (3% fixe)</span>
+      <span id="out-frais-enreg" style="font-size:14px; font-weight:500;">-</span>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px;">
+      <span style="font-size:13px; color:#52514e; white-space:nowrap;">Frais de notaire</span>
+      <div class="value-input" style="justify-content:flex-end;">
+        <input type="number" id="in-frais-notaire" step="10" style="text-align:right; font-size:14px; font-weight:500;" />
+        <span class="unit">€</span>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid #d8d6cc; padding-top:6px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <span style="font-size:13px; font-weight:500;">Total frais</span>
+      <span id="out-frais-total" style="font-size:15px; font-weight:600;">-</span>
+    </div>
+
+    <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12px; color:var(--ink); text-transform:none; letter-spacing:normal; font-weight:400; padding-top:8px; border-top:1px solid #d8d6cc;">
+      <input type="checkbox" id="chk-frais-hors-emprunt" checked style="accent-color:var(--moss);">
+      Frais hors emprunt (payés séparément, pas financés)
+    </label>
+  </div>
+
+  <div class="calc-field readonly" style="grid-column: 1 / -1;">
+    <label id="label-cout-total">Coût total du projet (prix + frais, calculé)</label>
+    <div class="value-input">
+      <span id="out-cout" style="font-size:18px; font-weight:500;">-</span>
+    </div>
+    <p class="note" id="note-frais-hors-emprunt" style="margin-top:8px; margin-bottom:0; display:none;"></p>
+  </div>
+
+  <div class="calc-field">
+    <label>Apport apporté</label>
+    <div class="value-input">
+      <input type="number" id="in-apport" step="1000" />
+      <span class="unit">€</span>
+    </div>
+    <div style="display:flex; gap:8px; margin-top:8px; padding-top:8px; border-top:1px solid var(--line-soft);">
+      <div style="flex:1;">
+        <label for="in-apport-ben" style="font-size:11px; color:var(--moss); margin-bottom:3px;">Apport Ben</label>
+        <div class="value-input">
+          <input type="number" id="in-apport-ben" step="500" style="font-size:14px; color:var(--moss);" />
+          <span class="unit" style="font-size:11px;">€</span>
+        </div>
+      </div>
+      <div style="flex:1;">
+        <label for="in-apport-marie" style="font-size:11px; color:var(--amber); margin-bottom:3px;">Apport Marie</label>
+        <div class="value-input">
+          <input type="number" id="in-apport-marie" step="500" style="font-size:14px; color:var(--amber);" />
+          <span class="unit" style="font-size:11px;">€</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="calc-field">
+    <label>Quotité empruntée</label>
+    <div class="value-input">
+      <input type="number" id="in-quotite" step="0.1" />
+      <span class="unit">%</span>
+    </div>
+  </div>
+
+  <div class="calc-field">
+    <label>Montant à emprunter</label>
+    <div class="value-input">
+      <input type="number" id="in-montant" step="1000" />
+      <span class="unit">€</span>
+    </div>
+  </div>
+
+  <div class="calc-field slider-field">
+    <label>Taux annuel</label>
+    <div class="value-input">
+      <input type="number" id="in-taux" step="0.05" />
+      <span class="unit">%</span>
+    </div>
+    <input type="range" id="slider-taux" min="3.2" max="3.7" step="0.05" />
+  </div>
+
+  <div class="calc-field" style="grid-column: 1 / -1;">
+    <label>Comparaison durée</label>
+    <div style="display:flex; gap:12px;">
+      <div id="col-duree-15" style="flex:1; border-radius:8px; padding:14px;">
+        <div style="font-size:13px; color:#52514e; margin-bottom:6px;">15 ans</div>
+        <div id="out-mensualite-15" style="font-size:20px; font-weight:600; color:#0b0b0b;">-</div>
+        <div id="out-endettement-15" style="font-size:13px; margin-top:6px; color:#0b0b0b;">-</div>
+      </div>
+      <div id="col-duree-20" style="flex:1; border-radius:8px; padding:14px;">
+        <div style="font-size:13px; color:#52514e; margin-bottom:6px;">20 ans</div>
+        <div id="out-mensualite-20" style="font-size:20px; font-weight:600; color:#0b0b0b;">-</div>
+        <div id="out-endettement-20" style="font-size:13px; margin-top:6px; color:#0b0b0b;">-</div>
+        <div style="display:flex; align-items:center; gap:6px; margin-top:10px; padding-top:10px; border-top:1px solid rgba(0,0,0,0.08);">
+          <label for="in-seuil-endettement" style="font-size:11px; color:#52514e; white-space:nowrap;">Objectif seuil</label>
+          <input type="number" id="in-seuil-endettement" step="1" min="1" max="100" style="width:48px; font-family:var(--font-mono); font-size:13px; font-weight:500; border:none; background:transparent; padding:0; color:#0b0b0b; border-bottom:1px solid rgba(0,0,0,0.2);" />
+          <span style="font-size:12px; color:#898781;">%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="note">
+  La durée est la seule variable que tu fixes directement dans ce groupe — elle ne change jamais toute seule, même quand tu ajustes le taux, l'apport ou le prix. C'est toujours la mensualité qui absorbe ces changements.
+</p>
+
+</div>
+
+</div>
+
+<script>
+/* ===================== UTILITAIRES PARTAGÉS ===================== */
+function fmt(n) {
+  return new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 0}).format(n) + ' €';
+}
+function fmtPct(n) {
+  return n.toFixed(2) + '%';
+}
+
+/* ===================== TAB SWITCHING ===================== */
+const tabButtons = {
+  appart: document.getElementById('tabBtnAppart'),
+  taux: document.getElementById('tabBtnTaux')
+};
+const tabPanels = {
+  appart: document.getElementById('tab-appart'),
+  taux: document.getElementById('tab-taux')
+};
+function switchTab(name) {
+  Object.keys(tabButtons).forEach(k => {
+    tabButtons[k].classList.toggle('active', k === name);
+    tabPanels[k].classList.toggle('active', k === name);
+  });
+}
+tabButtons.appart.addEventListener('click', () => switchTab('appart'));
+tabButtons.taux.addEventListener('click', () => switchTab('taux'));
+/* ===================== TAB 2 : APPARTEMENT OWNERSHIP LOGIC ===================== */
+// (le ratio Ben/Marie est piloté par la variable benRatio, définie et éditable dans l'onglet Simulation taux)
+let APPORT_A_RAW = 70000;   // recalculé en temps réel dans refreshTab2 = apport total × 70%
+let APPORT_B_RAW = 30000;   // recalculé en temps réel dans refreshTab2 = apport total × 30%
+let APPORT_A = APPORT_A_RAW;  // apport "effectif" utilisé pour les parts — ajusté si frais 50/50 coché
+let APPORT_B = APPORT_B_RAW;
+// (mensualité/2 par personne, calculée en temps réel — plus de valeur hardcodée ici)
+const DUREE_ANS_TAB2 = 20; // référence pour le tableau d'étalement complet
+const APPART_GROWTH = 3; // %/an — utilisé pour détecter le mois de plus-value dans le tableau
+
+// Construit l'échéancier complet à partir du montant à emprunter LIVE (case "Montant à emprunter" de l'onglet Simulation taux) et du taux LIVE.
+function buildLoanSchedule() {
+  const loanAmount = montantEmprunte(); // valeur en temps réel depuis l'onglet 3
+  const rMonthly = tauxPct / 100 / 12;  // taux en temps réel depuis l'onglet 3
+  const nTotal = DUREE_ANS_TAB2 * 12;
+  const annuityFactor = rMonthly === 0 ? nTotal : (1 - Math.pow(1 + rMonthly, -nTotal)) / rMonthly;
+  const mensualite = loanAmount > 0 ? loanAmount / annuityFactor : 0;
+
+  let balance = loanAmount;
+  let cumPrincipal = 0;
+  const schedule = [{month: 0, interest: 0, principal: 0, cumPrincipal: 0, balance: loanAmount}];
+  let breakEvenMonth = null;
+  for (let m = 1; m <= nTotal; m++) {
+    const interest = balance * rMonthly;
+    let principal = mensualite - interest;
+    if (principal > balance) principal = balance;
+    balance -= principal;
+    cumPrincipal += principal;
+    schedule.push({month: m, interest, principal, cumPrincipal, balance});
+
+    // Mois de plus-value nette : valeur de marché estimée (prix initial + appréciation) moins solde restant dû, comparée à tout l'argent réellement sorti de la poche des deux (apport + mensualités déjà payées, capital et intérêts inclus).
+    if (breakEvenMonth === null) {
+      const marketValue = prixAppart * Math.pow(1 + APPART_GROWTH / 100, m / 12);
+      const netProceeds = marketValue - balance;
+      const totalPaidSoFar = APPORT_A + APPORT_B + mensualite * m;
+      if (netProceeds > totalPaidSoFar) breakEvenMonth = m;
+    }
+  }
+  return {schedule, loanAmount, mensualite, nTotal, breakEvenMonth};
+}
+
+// Part de chacun (%) à un capital cumulé remboursé donné — l'intérêt ne compte pas, seul le capital construit de la propriété.
+function shareAtCumPrincipal(cumPrincipal) {
+  const equityA = APPORT_A + 0.5 * cumPrincipal;
+  const equityB = APPORT_B + 0.5 * cumPrincipal;
+  const totalEquity = APPORT_A + APPORT_B + cumPrincipal;
+  return {
+    shareA: (equityA / totalEquity) * 100,
+    shareB: (equityB / totalEquity) * 100
+  };
+}
+
+function renderAmortizationFull(scheduleData) {
+  const tbody = document.getElementById('amort-tbody');
+  tbody.innerHTML = '';
+  const { schedule, mensualite, breakEvenMonth } = scheduleData;
+  for (let m = 1; m < schedule.length; m++) {
+    const row = schedule[m];
+    const { shareA, shareB } = shareAtCumPrincipal(row.cumPrincipal);
+    const appartValue = prixAppart * Math.pow(1 + APPART_GROWTH / 100, m / 12);
+    const tr = document.createElement('tr');
+    tr.dataset.month = m;
+    if (m === breakEvenMonth) tr.classList.add('plus-value-row');
+    tr.innerHTML =
+      '<td>' + m + (m === breakEvenMonth ? ' ★' : '') + '</td>' +
+      '<td>' + fmt(Math.round(appartValue)) + '</td>' +
+      '<td>' + fmt(Math.round(mensualite)) + '</td>' +
+      '<td>' + fmt(Math.round(row.interest)) + '</td>' +
+      '<td>' + fmt(Math.round(row.principal)) + '</td>' +
+      '<td>' + fmt(Math.round(row.balance)) + '</td>' +
+      '<td class="you">' + fmtPct(shareA) + '</td>' +
+      '<td class="partner">' + fmtPct(shareB) + '</td>';
+    tbody.appendChild(tr);
+
+  }
+
+  const noteEl = document.getElementById('plus-value-note');
+  if (breakEvenMonth) {
+    noteEl.innerHTML = '<span style="color:var(--amber); font-weight:600;">★ Mois ' + breakEvenMonth + '</span> (' + formatDateDansNMois(breakEvenMonth) + ') — c’est le premier mois où la valeur de revente estimée (prix initial + appréciation ' + APPART_GROWTH + '%/an, moins le solde restant dû) dépasse tout l’argent réellement sorti de vos poches à deux (apport + mensualités payées, capital et intérêts inclus). Avant ce mois, vous seriez encore en perte nette si vous vendiez.';
+  } else {
+    noteEl.textContent = 'Avec les paramètres actuels, la plus-value nette n’est pas atteinte avant la fin du prêt (20 ans).';
+  }
+}
+
+// Recalcule et réaffiche tout l'onglet 2 (synthèse + échéancier complet) à partir de l'état courant — appelé au chargement et à chaque changement dans l'onglet Simulation taux.
+// Redimensionnement des colonnes façon Excel : glisser-déposer sur la poignée à droite de chaque en-tête.
+function initColumnResize() {
+  const resizers = document.querySelectorAll('#amort-table .col-resizer');
+  resizers.forEach(resizer => {
+    resizer.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      const colIndex = resizer.getAttribute('data-col');
+      const col = document.getElementById('col-' + colIndex);
+      const startX = e.pageX;
+      const startWidth = col.offsetWidth;
+      resizer.classList.add('resizing');
+
+      function onMouseMove(eMove) {
+        const delta = eMove.pageX - startX;
+        const newWidth = Math.max(40, startWidth + delta);
+        col.style.width = newWidth + 'px';
+      }
+      function onMouseUp() {
+        resizer.classList.remove('resizing');
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+  });
+}
+initColumnResize();
+
+let lastLoanData = null; // dernier échéancier calculé, utilisé par le clic sur une ligne
+let selectedMonth = 1;   // mois sélectionné par défaut à l'ouverture
+
+const MOIS_FR = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+
+function formatDateDansNMois(n) {
+  const d = new Date();
+  d.setMonth(d.getMonth() + n);
+  return d.getDate() + ' ' + MOIS_FR[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function selectMonth(m) {
+  if (!lastLoanData) return;
+  const row = lastLoanData.schedule[m];
+  if (!row) return;
+  selectedMonth = m;
+
+  const { shareA, shareB } = shareAtCumPrincipal(row.cumPrincipal);
+
+  // Reste à partager = même base que le calcul des parts : apport total + capital cumulé remboursé (les deux ensemble).
+  // On ne mélange pas avec la valeur du bien appréciée, sinon le total ne correspond plus aux pourcentages affichés.
+  const equityA = APPORT_A + 0.5 * row.cumPrincipal;
+  const equityB = APPORT_B + 0.5 * row.cumPrincipal;
+  const totalEquity = APPORT_A + APPORT_B + row.cumPrincipal;
+
+  // Total cumulé réellement payé par chacun à cette date : son apport + sa moitié de toutes les mensualités versées jusqu'ici (capital et intérêts inclus, puisqu'il les paie tous les deux).
+  const totalMensualitesPayeesACeMois = lastLoanData.mensualite * m;
+  const totalPaidA = APPORT_A + totalMensualitesPayeesACeMois / 2;
+  const totalPaidB = APPORT_B + totalMensualitesPayeesACeMois / 2;
+  const capitalRefundedA = row.cumPrincipal / 2; // capital remboursé seul, sans l'apport (qui a sa propre ligne)
+  const capitalRefundedB = row.cumPrincipal / 2;
+  const interetPaidA = totalPaidA - APPORT_A - capitalRefundedA;
+  const interetPaidB = totalPaidB - APPORT_B - capitalRefundedB;
+
+  document.getElementById('detail-mois').textContent = 'Mois ' + m + ' (' + (m/12).toFixed(1) + ' ans)';
+  document.getElementById('detail-date').textContent = formatDateDansNMois(m);
+  document.getElementById('detail-solde').textContent = fmt(Math.round(row.balance));
+  document.getElementById('detail-total-a').textContent = fmt(Math.round(totalPaidA));
+  document.getElementById('detail-apport-a').textContent = fmt(Math.round(APPORT_A));
+  document.getElementById('detail-total-a-capital').textContent = fmt(Math.round(capitalRefundedA));
+  document.getElementById('detail-total-a-interet').textContent = fmt(Math.round(interetPaidA));
+  document.getElementById('detail-total-b').textContent = fmt(Math.round(totalPaidB));
+  document.getElementById('detail-apport-b').textContent = fmt(Math.round(APPORT_B));
+  document.getElementById('detail-total-b-capital').textContent = fmt(Math.round(capitalRefundedB));
+  document.getElementById('detail-total-b-interet').textContent = fmt(Math.round(interetPaidB));
+  document.getElementById('detail-part-a').textContent = fmtPct(shareA);
+  document.getElementById('detail-part-b').textContent = fmtPct(shareB);
+  document.getElementById('detail-vente').innerHTML =
+    'Si vous vendez le <b>' + formatDateDansNMois(m) + '</b> (dans ' + m + ' mois), sur la base de l’apport total (' + fmt(APPORT_A + APPORT_B) + ') + capital cumulé remboursé à deux (' + fmt(Math.round(row.cumPrincipal)) + '), il y a ' + fmt(Math.round(totalEquity)) + ' à partager : <span class="you">' + fmt(Math.round(equityA)) + ' iront à Benjamin</span> et <span class="partner">' + fmt(Math.round(equityB)) + ' iront à Marie</span>.';
+
+  // Scénario au prix de marché estimé : prix d'achat initial (onglet Simulation taux) + appréciation composée à 3%/an, moins le solde restant dû, réparti selon les mêmes parts.
+  const marketValueNow = prixAppart * Math.pow(1 + APPART_GROWTH / 100, m / 12);
+  const netProceedsMarket = Math.max(0, marketValueNow - row.balance);
+  const saleMarketA = netProceedsMarket * (shareA / 100);
+  const saleMarketB = netProceedsMarket * (shareB / 100);
+  document.getElementById('detail-valeur-appart').textContent = fmt(Math.round(marketValueNow));
+
+  let venteMarcheHtml =
+    'Prix initial (' + fmt(Math.round(prixAppart)) + ') apprécié à ' + APPART_GROWTH + '%/an sur ' + (m/12).toFixed(1) + ' ans ≈ ' + fmt(Math.round(marketValueNow)) + '. Moins le solde restant dû (' + fmt(Math.round(row.balance)) + '), il resterait ' + fmt(Math.round(netProceedsMarket)) + ' à partager : <span class="you">' + fmt(Math.round(saleMarketA)) + ' iraient à Benjamin</span> et <span class="partner">' + fmt(Math.round(saleMarketB)) + ' iraient à Marie</span>.';
+
+  // Explication uniquement si l'un des deux récupérerait moins que son apport initial — sinon on n'encombre pas la carte.
+  const dessousA = saleMarketA < APPORT_A;
+  const dessousB = saleMarketB < APPORT_B;
+  if (dessousA || dessousB) {
+    let qui;
+    if (dessousA && dessousB) qui = 'Benjamin et Marie récupèrent tous les deux moins que leur apport initial';
+    else if (dessousA) qui = 'Benjamin récupère moins que son apport initial (' + fmt(APPORT_A) + ')';
+    else qui = 'Marie récupère moins que son apport initial (' + fmt(APPORT_B) + ')';
+    venteMarcheHtml += '<br><br><span style="color:var(--brick); font-weight:500;">⚠ ' + qui + '.</span> Ce n’est pas une perte de valeur du bien — c’est parce que les frais d’acquisition (enregistrement + notaire, payés une fois à l’achat) ne sont jamais récupérés à la revente. Tant que l’appréciation du bien et le capital déjà remboursé ne compensent pas ces frais, une revente rapide coûterait de l’argent même sans baisse de marché.';
+  }
+
+  document.getElementById('detail-vente-marche').innerHTML = venteMarcheHtml;
+
+  document.querySelectorAll('#amort-tbody tr').forEach(tr => {
+    tr.classList.toggle('selected-row', parseInt(tr.dataset.month) === m);
+  });
+}
+
+document.getElementById('amort-tbody').addEventListener('click', (e) => {
+  const tr = e.target.closest('tr');
+  if (!tr || !tr.dataset.month) return;
+  selectMonth(parseInt(tr.dataset.month));
+});
+
+function refreshTab2() {
+  // L'apport "brut" de chacun (70/30) est recalculé sur l'apport réellement en vigueur — pas figé à 100K.
+  // Les frais d'acquisition sont toujours payés à part (case "Frais hors emprunt" cochée par défaut dans l'onglet Simulation taux) :
+  // l'apport ci-dessous ne contient donc jamais de part de frais, l'apport effectif = apport brut, sans rééquilibrage à calculer.
+  APPORT_A_RAW = apport * benRatio;
+  APPORT_B_RAW = apport * (1 - benRatio);
+  APPORT_A = APPORT_A_RAW;
+  APPORT_B = APPORT_B_RAW;
+  document.getElementById('assumptions-apport').textContent =
+    'Apport Benjamin : ' + fmt(Math.round(APPORT_A_RAW)) + ' (' + (benRatio * 100).toFixed(0) + '%) · Apport Marie : ' + fmt(Math.round(APPORT_B_RAW)) + ' (' + ((1 - benRatio) * 100).toFixed(0) + '%)';
+
+  const freshLoanData = buildLoanSchedule();
+  document.getElementById('assumptions-mensualite').textContent = fmt(Math.round(freshLoanData.mensualite / 2)) + '/mois chacun';
+  document.getElementById('loan-derived-note').textContent =
+    'Emprunt = ' + fmt(Math.round(freshLoanData.loanAmount)) + ' (valeur reprise en temps réel de la case “Montant à emprunter” de l’onglet Simulation taux), au taux de ' + tauxPct.toFixed(2) + '% sur ' + DUREE_ANS_TAB2 + ' ans → mensualité ' + fmt(Math.round(freshLoanData.mensualite)) + '/mois. Si tu modifies l’apport, le prix ou le taux dans l’onglet Simulation taux, ce tableau se met à jour automatiquement.';
+
+  // Total versé par personne sur toute la durée = apport initial + sa moitié de l'ensemble des mensualités payées (capital + intérêts inclus, puisque c'est de l'argent réellement sorti de sa poche).
+  const totalMensualitesPayees = freshLoanData.mensualite * freshLoanData.nTotal;
+  const totalVerseA = APPORT_A + totalMensualitesPayees / 2;
+  const totalVerseB = APPORT_B + totalMensualitesPayees / 2;
+  document.getElementById('total-verse-a').textContent = fmt(Math.round(totalVerseA));
+  document.getElementById('total-verse-b').textContent = fmt(Math.round(totalVerseB));
+
+  // Détail capital (= équité, construit la propriété) vs intérêts (= coût pur, ne construit rien).
+  // Le capital total remboursé sur la durée = le montant emprunté lui-même (prêt intégralement amorti) ; les intérêts = le reste des mensualités payées.
+  const totalInteretPaye = totalMensualitesPayees - freshLoanData.loanAmount;
+  const capitalA = APPORT_A + freshLoanData.loanAmount / 2;
+  const capitalB = APPORT_B + freshLoanData.loanAmount / 2;
+  const interetA = totalInteretPaye / 2;
+  const interetB = totalInteretPaye / 2;
+  document.getElementById('capital-verse-a').textContent = fmt(Math.round(capitalA));
+  document.getElementById('interet-verse-a').textContent = fmt(Math.round(interetA));
+  document.getElementById('capital-verse-b').textContent = fmt(Math.round(capitalB));
+  document.getElementById('interet-verse-b').textContent = fmt(Math.round(interetB));
+
+  renderAmortizationFull(freshLoanData);
+
+  lastLoanData = freshLoanData;
+  const monthToSelect = Math.min(selectedMonth, freshLoanData.nTotal);
+  selectMonth(monthToSelect);
+}
+
+/* ===================== TAB 3 : SIMULATION TAUX LOGIC ===================== */
+let prixAppart = 340000;
+const TAUX_ENREGISTREMENT = 3; // % fixe
+let fraisNotaire = 4868.95;
+let apport = 85000;
+let benRatio = 0.7; // 70% Ben / 30% Marie par défaut — éditable via les champs Apport Ben / Apport Marie ci-dessous
+let tauxPct = 3.70;
+const SALAIRE_COMBINE = 4740;
+let SEUIL_ENDETTEMENT = 33;
+const elSeuilEndettement = document.getElementById('in-seuil-endettement');
+const elCol15 = document.getElementById('col-duree-15');
+const elCol20 = document.getElementById('col-duree-20');
+const elOutMensualite15 = document.getElementById('out-mensualite-15');
+const elOutMensualite20 = document.getElementById('out-mensualite-20');
+const elOutEndettement15 = document.getElementById('out-endettement-15');
+const elOutEndettement20 = document.getElementById('out-endettement-20');
+
+function couleurEndettement(pct) {
+  const EPSILON = 0.05; // tolérance pour les imprécisions flottantes : pile sur le seuil reste vert
+  if (pct > SEUIL_ENDETTEMENT + EPSILON) {
+    // zone rouge : de rouge clair juste au-dessus du seuil à rouge plus soutenu (+20 points au-delà)
+    const t = Math.min((pct - SEUIL_ENDETTEMENT) / 20, 1);
+    const lightness = 85 - t * 30;
+    return 'hsl(0, 70%, ' + lightness + '%)';
+  }
+  // zone verte : quasi blanc à 0%, vert plus soutenu en approchant le seuil (jusqu'au seuil inclus)
+  const t = Math.min(Math.max(pct, 0) / SEUIL_ENDETTEMENT, 1);
+  const lightness = 96 - t * 26;
+  return 'hsl(140, 55%, ' + lightness + '%)';
+}
+
+const elPrix = document.getElementById('in-prix');
+const elFraisEnreg = document.getElementById('out-frais-enreg');
+const elFraisNotaire = document.getElementById('in-frais-notaire');
+const elFraisTotal = document.getElementById('out-frais-total');
+const elOutCout = document.getElementById('out-cout');
+const elChkFraisHorsEmprunt = document.getElementById('chk-frais-hors-emprunt');
+const elNoteFraisHorsEmprunt = document.getElementById('note-frais-hors-emprunt');
+const elLabelCoutTotal = document.getElementById('label-cout-total');
+const elApport = document.getElementById('in-apport');
+const elApportBen = document.getElementById('in-apport-ben');
+const elApportMarie = document.getElementById('in-apport-marie');
+const elQuotite = document.getElementById('in-quotite');
+const elMontant = document.getElementById('in-montant');
+const elTaux = document.getElementById('in-taux');
+const elSliderTaux = document.getElementById('slider-taux');
+
+function fraisEnregCalc() {
+  return prixAppart * (TAUX_ENREGISTREMENT / 100);
+}
+function coutTotalCalc() {
+  if (elChkFraisHorsEmprunt && elChkFraisHorsEmprunt.checked) {
+    return prixAppart; // frais payés séparément, cash, hors financement : seul le prix du bien est à financer
+  }
+  return prixAppart + fraisEnregCalc() + fraisNotaire;
+}
+function montantEmprunte() {
+  return Math.max(0, coutTotalCalc() - apport);
+}
+
+// Mensualité pour une durée donnée (en années), à montant et taux fixés.
+function mensualitePour(years) {
+  const L = montantEmprunte();
+  const r = tauxPct / 100 / 12;
+  const n = years * 12;
+  if (L <= 0) return 0;
+  return r === 0 ? L / n : L * r / (1 - Math.pow(1 + r, -n));
+}
+
+function renderColonne(years, elCol, elMensualite, elEndettement) {
+  const m = mensualitePour(years);
+  const pct = (m / SALAIRE_COMBINE) * 100;
+  elMensualite.textContent = fmt(Math.round(m)) + '/mois';
+  elEndettement.textContent = pct.toFixed(1) + '% du salaire';
+  elCol.style.backgroundColor = couleurEndettement(pct);
+}
+
+// Rafraîchit TOUS les champs à partir de l'état — appelé après chaque changement, quelle que soit sa source.
+function renderCalc() {
+  const coutTotal = coutTotalCalc();
+  const fraisEnreg = fraisEnregCalc();
+
+  elPrix.value = Math.round(prixAppart);
+  elFraisEnreg.textContent = fmt(Math.round(fraisEnreg));
+  elFraisNotaire.value = fraisNotaire.toFixed(2);
+  elFraisTotal.textContent = fmt(Math.round(fraisEnreg + fraisNotaire));
+  elOutCout.textContent = fmt(Math.round(coutTotal));
+
+  if (elChkFraisHorsEmprunt && elChkFraisHorsEmprunt.checked) {
+    elLabelCoutTotal.textContent = 'Coût à financer (prix seul, frais exclus)';
+    elNoteFraisHorsEmprunt.style.display = 'block';
+    elNoteFraisHorsEmprunt.innerHTML = 'Frais (' + fmt(Math.round(fraisEnreg + fraisNotaire)) + ') payés séparément, cash, en plus de l’apport — non financés par l’emprunt. Coût réel total pour vous deux : ' + fmt(Math.round(prixAppart + fraisEnreg + fraisNotaire)) + ' (' + fmt(Math.round(coutTotal)) + ' financé + ' + fmt(Math.round(fraisEnreg + fraisNotaire)) + ' de frais à part).';
+  } else {
+    elLabelCoutTotal.textContent = 'Coût total du projet (prix + frais, calculé)';
+    elNoteFraisHorsEmprunt.style.display = 'none';
+  }
+
+  if (apport > coutTotal) apport = coutTotal;
+  elApport.value = Math.round(apport);
+  elApportBen.value = Math.round(apport * benRatio);
+  elApportMarie.value = Math.round(apport * (1 - benRatio));
+
+  const L = montantEmprunte();
+  const q = coutTotal > 0 ? (L / coutTotal) * 100 : 0;
+  elQuotite.value = q.toFixed(2);
+  elMontant.value = Math.round(L);
+
+  elTaux.value = tauxPct.toFixed(2);
+  elSliderTaux.value = tauxPct;
+
+  elSeuilEndettement.value = SEUIL_ENDETTEMENT;
+  renderColonne(15, elCol15, elOutMensualite15, elOutEndettement15);
+  renderColonne(20, elCol20, elOutMensualite20, elOutEndettement20);
+
+  refreshTab2(); // garde l'onglet "Répartition appartement" synchronisé avec le montant emprunté / taux courants
+}
+
+elChkFraisHorsEmprunt.addEventListener('change', () => {
+  apport = elChkFraisHorsEmprunt.checked ? 85000 : 100000;
+  renderCalc();
+});
+
+elPrix.addEventListener('change', () => {
+  prixAppart = Math.max(0, parseFloat(elPrix.value) || 0);
+  renderCalc();
+});
+
+elFraisNotaire.addEventListener('change', () => {
+  fraisNotaire = Math.max(0, parseFloat(elFraisNotaire.value) || 0);
+  renderCalc();
+});
+
+elApport.addEventListener('change', () => {
+  const value = Math.max(0, parseFloat(elApport.value) || 0);
+  apport = Math.min(value, coutTotalCalc());
+  renderCalc();
+});
+
+// Modifier l'un des deux montants ajuste benRatio, en gardant l'apport total inchangé.
+elApportBen.addEventListener('change', () => {
+  const val = Math.min(Math.max(0, parseFloat(elApportBen.value) || 0), apport);
+  benRatio = apport > 0 ? val / apport : 0.5;
+  renderCalc();
+});
+
+elApportMarie.addEventListener('change', () => {
+  const val = Math.min(Math.max(0, parseFloat(elApportMarie.value) || 0), apport);
+  benRatio = apport > 0 ? 1 - (val / apport) : 0.5;
+  renderCalc();
+});
+
+elSeuilEndettement.addEventListener('change', () => {
+  SEUIL_ENDETTEMENT = Math.min(Math.max(1, parseFloat(elSeuilEndettement.value) || 33), 100);
+
+  // Recalcule l'apport pour que la mensualité sur 20 ans corresponde exactement à ce nouveau seuil.
+  const coutTotal = coutTotalCalc();
+  const r = tauxPct / 100 / 12;
+  const n = 20 * 12;
+  const mensualiteCible = SALAIRE_COMBINE * (SEUIL_ENDETTEMENT / 100);
+  const annuityFactor = r === 0 ? n : (1 - Math.pow(1 + r, -n)) / r;
+  const loanNecessaire = mensualiteCible * annuityFactor;
+  apport = Math.min(Math.max(0, coutTotal - loanNecessaire), coutTotal);
+
+  renderCalc();
+});
+
+elQuotite.addEventListener('change', () => {
+  const q = Math.min(Math.max(0, parseFloat(elQuotite.value) || 0), 100);
+  apport = coutTotalCalc() * (1 - q / 100);
+  renderCalc();
+});
+
+elMontant.addEventListener('change', () => {
+  const coutTotal = coutTotalCalc();
+  const m = Math.min(Math.max(0, parseFloat(elMontant.value) || 0), coutTotal);
+  apport = coutTotal - m;
+  renderCalc();
+});
+
+function applyTaux(val) {
+  tauxPct = Math.min(Math.max(3.2, val), 3.7);
+  renderCalc();
+}
+elTaux.addEventListener('change', () => applyTaux(parseFloat(elTaux.value) || 3.7));
+elSliderTaux.addEventListener('input', () => applyTaux(parseFloat(elSliderTaux.value) || 3.7));
+
+renderCalc();
+</script>
+
+</body>
+</html>
