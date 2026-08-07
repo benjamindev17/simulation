@@ -13,7 +13,7 @@ let fraisBancaires = 0; // frais de crédit éventuellement imposés par la banq
 const APPORT_BUDGET = 100000; // enveloppe cash de départ ; l'apport "hors emprunt" en est déduit des frais payés à part
 const FRAIS_STANDARD_HORS_EMPRUNT = 15000; // enreg + notaire déjà retranchés du budget → apport de base 85 000 quand la case est cochée
 let apport = 85000;
-let benRatio = 0.7; // 70% Ben / 30% Marie par défaut — éditable via les champs Apport Ben / Apport Marie
+let benRatio = 0.75; // 75% Ben / 25% Marie par défaut — éditable via les champs Apport Ben/Marie ou le curseur
 let tauxPct = 3.70;
 const SALAIRE_COMBINE = 4740;
 let SEUIL_ENDETTEMENT = 33;
@@ -44,6 +44,9 @@ const elLabelCoutTotal = document.getElementById('label-cout-total');
 const elApport = document.getElementById('in-apport');
 const elApportBen = document.getElementById('in-apport-ben');
 const elApportMarie = document.getElementById('in-apport-marie');
+const elApportRatio = document.getElementById('in-apport-ratio');
+const elOutRatioBen = document.getElementById('out-ratio-ben');
+const elOutRatioMarie = document.getElementById('out-ratio-marie');
 const elQuotite = document.getElementById('in-quotite');
 const elMontant = document.getElementById('in-montant');
 const elTaux = document.getElementById('in-taux');
@@ -140,6 +143,12 @@ function renderCalc() {
   elApportBen.value = Math.round(apport * benRatio);
   elApportMarie.value = Math.round(apport * (1 - benRatio));
 
+  // Curseur de répartition : position = part de Marie (0 = 100% Ben à gauche, 100 = 100% Marie à droite).
+  const mariePct = Math.round((1 - benRatio) * 100);
+  elApportRatio.value = mariePct;
+  elOutRatioBen.textContent = (100 - mariePct) + '%';
+  elOutRatioMarie.textContent = mariePct + '%';
+
   const L = montantEmprunte();
   const q = coutTotal > 0 ? (L / coutTotal) * 100 : 0;
   elQuotite.value = q.toFixed(2);
@@ -198,6 +207,13 @@ elApportBen.addEventListener('change', () => {
 elApportMarie.addEventListener('change', () => {
   const val = Math.min(Math.max(0, parseFloat(elApportMarie.value) || 0), apport);
   benRatio = apport > 0 ? 1 - (val / apport) : 0.5;
+  renderCalc();
+});
+
+// Curseur : la valeur est la part de Marie (0→100). benRatio = complément.
+elApportRatio.addEventListener('input', () => {
+  const mariePct = Math.min(Math.max(0, parseFloat(elApportRatio.value) || 0), 100);
+  benRatio = 1 - mariePct / 100;
   renderCalc();
 });
 

@@ -470,6 +470,18 @@ input[type="range"] {
 .apport-split__col--ben input[type="number"] { color: var(--moss); }
 .apport-split__col--marie label { color: var(--amber); }
 .apport-split__col--marie input[type="number"] { color: var(--amber); }
+/* Curseur de répartition de l'apport Ben / Marie */
+.apport-slider { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line-soft); }
+.apport-slider input[type="range"] { width: 100%; accent-color: var(--moss); }
+.apport-slider__labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  margin-top: 3px;
+}
+.apport-slider__mid { color: var(--ink-faint); }
+.apport-slider__out { text-align: center; font-size: 12px; color: var(--ink-muted); margin-top: 6px; }
+.apport-slider__out span { font-weight: 600; font-family: var(--font-mono); }
 
 /* 4.8 Comparaison des durées */
 .duree-compare { display: flex; gap: 12px; }
