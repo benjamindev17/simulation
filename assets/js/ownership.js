@@ -44,7 +44,8 @@ function buildLoanSchedule() {
 
   let balance = loanAmount;
   let cumPrincipal = 0;
-  const schedule = [{ month: 0, interest: 0, principal: 0, cumPrincipal: 0, balance: loanAmount }];
+  let cumInterest = 0;
+  const schedule = [{ month: 0, interest: 0, principal: 0, cumPrincipal: 0, cumInterest: 0, balance: loanAmount }];
   let breakEvenMonth = null;
   for (let m = 1; m <= nTotal; m++) {
     const interest = balance * rMonthly;
@@ -52,7 +53,8 @@ function buildLoanSchedule() {
     if (principal > balance) principal = balance;
     balance -= principal;
     cumPrincipal += principal;
-    schedule.push({ month: m, interest, principal, cumPrincipal, balance });
+    cumInterest += interest;
+    schedule.push({ month: m, interest, principal, cumPrincipal, cumInterest, balance });
 
     // Mois de plus-value nette : valeur de marché estimée (prix initial + appréciation) moins solde restant dû, comparée à tout l'argent réellement sorti de la poche des deux (apport + mensualités déjà payées, capital et intérêts inclus).
     if (breakEvenMonth === null) {
@@ -160,6 +162,7 @@ function selectMonth(m) {
   document.getElementById('detail-mois').textContent = 'Mois ' + m + ' (' + (m / 12).toFixed(1) + ' ans)';
   document.getElementById('detail-date').textContent = formatDateDansNMois(m);
   document.getElementById('detail-solde').textContent = fmt(Math.round(row.balance));
+  document.getElementById('detail-interets-cumules').textContent = fmt(Math.round(row.cumInterest));
   document.getElementById('detail-total-a').textContent = fmt(Math.round(totalPaidA));
   document.getElementById('detail-apport-a').textContent = fmt(Math.round(APPORT_A));
   document.getElementById('detail-total-a-capital').textContent = fmt(Math.round(capitalRefundedA));

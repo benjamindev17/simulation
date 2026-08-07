@@ -359,6 +359,12 @@ input[type="range"] {
 .detail-breakdown .kv__k { font-weight: 400; }
 .detail-prose { font-size: 14px; line-height: 1.7; }
 
+/* Deux valeurs côte à côte dans un même champ (ex. solde restant dû + intérêts cumulés) */
+.split-two { display: flex; gap: 16px; align-items: flex-start; }
+.split-two > div { flex: 1; min-width: 0; }
+.split-two__right { text-align: right; }
+.split-two__right .value-input { justify-content: flex-end; }
+
 /* Remboursement mensuel par personne + bascule 50/50 */
 .pay-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; margin-bottom: 4px; }
 .pay-row__amount { font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
