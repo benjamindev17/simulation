@@ -17,6 +17,23 @@ const APPART_GROWTH = 3; // %/an — utilisé pour détecter le mois de plus-val
 let lastLoanData = null; // dernier échéancier calculé, utilisé par le clic sur une ligne
 let selectedMonth = 1;   // mois sélectionné par défaut à l'ouverture
 
+// Répartition du remboursement entre Ben et Marie.
+// Par défaut 50/50 (chacun paie la moitié de la mensualité). Si equalizeShares est
+// activé, on calcule les fractions pour qu'au terme du prêt chacun possède 50 %.
+let equalizeShares = false;
+let splitBen = 0.5;   // fraction de la mensualité (et donc du capital) financée par Ben
+let splitMarie = 0.5; // fraction financée par Marie
+
+// Fractions de remboursement pour atteindre, en fin de prêt, une propriété 50/50.
+// Équité finale de Ben = APPORT_A + splitBen × emprunt ; on veut = (apport total + emprunt) / 2.
+function computeSplit(loanAmount) {
+  if (!equalizeShares || loanAmount <= 0) return { splitBen: 0.5, splitMarie: 0.5 };
+  const cibleEquite = (APPORT_A + APPORT_B + loanAmount) / 2;
+  let fBen = (cibleEquite - APPORT_A) / loanAmount;
+  fBen = Math.min(Math.max(fBen, 0), 1); // borne : impossible de descendre sous 0 ou au-dessus de 100 %
+  return { splitBen: fBen, splitMarie: 1 - fBen };
+}
+
 // Construit l'échéancier complet à partir du montant à emprunter LIVE (case "Montant à emprunter" de l'onglet Simulation taux) et du taux LIVE.
 function buildLoanSchedule() {
   const loanAmount = montantEmprunte(); // valeur en temps réel depuis l'onglet 3
@@ -49,9 +66,10 @@ function buildLoanSchedule() {
 }
 
 // Part de chacun (%) à un capital cumulé remboursé donné — l'intérêt ne compte pas, seul le capital construit de la propriété.
+// Chacun finance sa fraction (splitBen / splitMarie) du capital remboursé.
 function shareAtCumPrincipal(cumPrincipal) {
-  const equityA = APPORT_A + 0.5 * cumPrincipal;
-  const equityB = APPORT_B + 0.5 * cumPrincipal;
+  const equityA = APPORT_A + splitBen * cumPrincipal;
+  const equityB = APPORT_B + splitMarie * cumPrincipal;
   const totalEquity = APPORT_A + APPORT_B + cumPrincipal;
   return {
     shareA: (equityA / totalEquity) * 100,
@@ -128,18 +146,22 @@ function selectMonth(m) {
 
   // Reste à partager = même base que le calcul des parts : apport total + capital cumulé remboursé (les deux ensemble).
   // On ne mélange pas avec la valeur du bien appréciée, sinon le total ne correspond plus aux pourcentages affichés.
-  const equityA = APPORT_A + 0.5 * row.cumPrincipal;
-  const equityB = APPORT_B + 0.5 * row.cumPrincipal;
+  const equityA = APPORT_A + splitBen * row.cumPrincipal;
+  const equityB = APPORT_B + splitMarie * row.cumPrincipal;
   const totalEquity = APPORT_A + APPORT_B + row.cumPrincipal;
 
-  // Total cumulé réellement payé par chacun à cette date : son apport + sa moitié de toutes les mensualités versées jusqu'ici (capital et intérêts inclus, puisqu'il les paie tous les deux).
+  // Total cumulé réellement payé par chacun à cette date : son apport + sa fraction de toutes les mensualités versées jusqu'ici (capital et intérêts inclus, puisqu'il les paie tous les deux).
   const totalMensualitesPayeesACeMois = lastLoanData.mensualite * m;
-  const totalPaidA = APPORT_A + totalMensualitesPayeesACeMois / 2;
-  const totalPaidB = APPORT_B + totalMensualitesPayeesACeMois / 2;
-  const capitalRefundedA = row.cumPrincipal / 2; // capital remboursé seul, sans l'apport (qui a sa propre ligne)
-  const capitalRefundedB = row.cumPrincipal / 2;
+  const totalPaidA = APPORT_A + totalMensualitesPayeesACeMois * splitBen;
+  const totalPaidB = APPORT_B + totalMensualitesPayeesACeMois * splitMarie;
+  const capitalRefundedA = row.cumPrincipal * splitBen; // capital remboursé seul, sans l'apport (qui a sa propre ligne)
+  const capitalRefundedB = row.cumPrincipal * splitMarie;
   const interetPaidA = totalPaidA - APPORT_A - capitalRefundedA;
   const interetPaidB = totalPaidB - APPORT_B - capitalRefundedB;
+
+  // Remboursement mensuel de chacun (constant sur toute la durée) = sa fraction de la mensualité.
+  document.getElementById('detail-mensualite-ben').textContent = fmt(Math.round(lastLoanData.mensualite * splitBen)) + '/mois';
+  document.getElementById('detail-mensualite-marie').textContent = fmt(Math.round(lastLoanData.mensualite * splitMarie)) + '/mois';
 
   document.getElementById('detail-mois').textContent = 'Mois ' + m + ' (' + (m / 12).toFixed(1) + ' ans)';
   document.getElementById('detail-date').textContent = formatDateDansNMois(m);
@@ -199,24 +221,33 @@ function refreshTab2() {
     'Apport Benjamin : ' + fmt(Math.round(APPORT_A_RAW)) + ' (' + (benRatio * 100).toFixed(0) + '%) · Apport Marie : ' + fmt(Math.round(APPORT_B_RAW)) + ' (' + ((1 - benRatio) * 100).toFixed(0) + '%)';
 
   const freshLoanData = buildLoanSchedule();
-  document.getElementById('assumptions-mensualite').textContent = fmt(Math.round(freshLoanData.mensualite / 2)) + '/mois chacun';
+
+  // Fractions de remboursement (50/50 par défaut, ou calculées pour finir à 50 % chacun si le mode équilibré est actif).
+  ({ splitBen, splitMarie } = computeSplit(freshLoanData.loanAmount));
+
+  if (equalizeShares) {
+    document.getElementById('assumptions-mensualite').textContent =
+      'Ben ' + fmt(Math.round(freshLoanData.mensualite * splitBen)) + '/mois · Marie ' + fmt(Math.round(freshLoanData.mensualite * splitMarie)) + '/mois';
+  } else {
+    document.getElementById('assumptions-mensualite').textContent = fmt(Math.round(freshLoanData.mensualite / 2)) + '/mois chacun';
+  }
   document.getElementById('loan-derived-note').textContent =
     'Emprunt = ' + fmt(Math.round(freshLoanData.loanAmount)) + ' (valeur reprise en temps réel de la case “Montant à emprunter” de l’onglet Simulation taux), au taux de ' + tauxPct.toFixed(2) + '% sur ' + DUREE_ANS_TAB2 + ' ans → mensualité ' + fmt(Math.round(freshLoanData.mensualite)) + '/mois. Si tu modifies l’apport, le prix ou le taux dans l’onglet Simulation taux, ce tableau se met à jour automatiquement.';
 
-  // Total versé par personne sur toute la durée = apport initial + sa moitié de l'ensemble des mensualités payées (capital + intérêts inclus, puisque c'est de l'argent réellement sorti de sa poche).
+  // Total versé par personne sur toute la durée = apport initial + sa fraction de l'ensemble des mensualités payées (capital + intérêts inclus, puisque c'est de l'argent réellement sorti de sa poche).
   const totalMensualitesPayees = freshLoanData.mensualite * freshLoanData.nTotal;
-  const totalVerseA = APPORT_A + totalMensualitesPayees / 2;
-  const totalVerseB = APPORT_B + totalMensualitesPayees / 2;
+  const totalVerseA = APPORT_A + totalMensualitesPayees * splitBen;
+  const totalVerseB = APPORT_B + totalMensualitesPayees * splitMarie;
   document.getElementById('total-verse-a').textContent = fmt(Math.round(totalVerseA));
   document.getElementById('total-verse-b').textContent = fmt(Math.round(totalVerseB));
 
   // Détail capital (= équité, construit la propriété) vs intérêts (= coût pur, ne construit rien).
   // Le capital total remboursé sur la durée = le montant emprunté lui-même (prêt intégralement amorti) ; les intérêts = le reste des mensualités payées.
   const totalInteretPaye = totalMensualitesPayees - freshLoanData.loanAmount;
-  const capitalA = APPORT_A + freshLoanData.loanAmount / 2;
-  const capitalB = APPORT_B + freshLoanData.loanAmount / 2;
-  const interetA = totalInteretPaye / 2;
-  const interetB = totalInteretPaye / 2;
+  const capitalA = APPORT_A + freshLoanData.loanAmount * splitBen;
+  const capitalB = APPORT_B + freshLoanData.loanAmount * splitMarie;
+  const interetA = totalInteretPaye * splitBen;
+  const interetB = totalInteretPaye * splitMarie;
   document.getElementById('capital-verse-a').textContent = fmt(Math.round(capitalA));
   document.getElementById('interet-verse-a').textContent = fmt(Math.round(interetA));
   document.getElementById('capital-verse-b').textContent = fmt(Math.round(capitalB));
@@ -234,6 +265,13 @@ document.getElementById('amort-tbody').addEventListener('click', (e) => {
   const tr = e.target.closest('tr');
   if (!tr || !tr.dataset.month) return;
   selectMonth(parseInt(tr.dataset.month));
+});
+
+// Bascule « propriété 50/50 au terme » : Marie paie davantage pour rattraper l'apport de Ben.
+// Recalcule tout l'onglet (tableau, totaux, revente) avec la nouvelle répartition.
+document.getElementById('chk-equalize-shares').addEventListener('change', (e) => {
+  equalizeShares = e.target.checked;
+  refreshTab2();
 });
 
 initColumnResize();

@@ -335,6 +335,27 @@ input[type="range"] {
 .detail-breakdown--amber { border-top-color: var(--amber-line); }
 .detail-breakdown .kv__k { font-weight: 400; }
 .detail-prose { font-size: 14px; line-height: 1.7; }
+
+/* Remboursement mensuel par personne + bascule 50/50 */
+.pay-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; margin-bottom: 4px; }
+.pay-row__amount { font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+/* selecteur assez spécifique pour battre `.calc-field label` (0,1,1) */
+.calc-field label.equalize-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: normal;
+  margin-top: 12px;
+  margin-bottom: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--moss-line);
+}
+.equalize-toggle input[type="checkbox"] { accent-color: var(--moss); flex-shrink: 0; }
 .detail-market-head { margin-bottom: 6px; }
 .detail-market-head__label { font-size: 13px; color: var(--ink-muted); font-family: var(--font-sans); }
 .detail-market-head__value { font-size: 18px; font-weight: 600; margin-left: auto; }
@@ -361,7 +382,8 @@ input[type="range"] {
 }
 .frais-total__label { font-size: 13px; font-weight: 500; }
 .frais-total__value { font-size: 15px; font-weight: 600; }
-.frais-checkbox {
+/* selecteur assez specifique pour battre `.calc-field label` (0,1,1) */
+.calc-field label.frais-checkbox {
   display: flex;
   align-items: center;
   gap: 8px;

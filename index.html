@@ -108,6 +108,23 @@
         <label>Part copine à ce moment</label>
         <div class="value-input"><span id="detail-part-b" class="partner detail-value--part">-</span></div>
       </div>
+
+      <div class="calc-field span-full">
+        <label>Remboursement mensuel par personne</label>
+        <div class="pay-row">
+          <span class="you">Ben paie</span>
+          <span id="detail-mensualite-ben" class="you pay-row__amount">-</span>
+        </div>
+        <div class="pay-row">
+          <span class="partner">Marie paie</span>
+          <span id="detail-mensualite-marie" class="partner pay-row__amount">-</span>
+        </div>
+        <label class="equalize-toggle">
+          <input type="checkbox" id="chk-equalize-shares">
+          Équilibrer les remboursements pour une propriété 50/50 au bout des 20 ans (Marie paie davantage)
+        </label>
+      </div>
+
       <div class="calc-field readonly span-full">
         <label>Si vous vendez à ce moment (valeur investie)</label>
         <div id="detail-vente" class="detail-prose">-</div>
