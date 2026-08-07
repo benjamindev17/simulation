@@ -174,7 +174,7 @@
       </div>
 
       <div class="calc-field">
-        <label>Frais (enregistrement + notaire)</label>
+        <label>Frais (enregistrement, notaire, banque)</label>
 
         <div class="frais-row">
           <span class="frais-row__label">Enregistrement (3% fixe)</span>
@@ -185,6 +185,14 @@
           <span class="frais-row__label">Frais de notaire</span>
           <div class="value-input">
             <input type="number" id="in-frais-notaire" step="10" />
+            <span class="unit">€</span>
+          </div>
+        </div>
+
+        <div class="frais-row">
+          <span class="frais-row__label">Frais bancaires (crédit)</span>
+          <div class="value-input">
+            <input type="number" id="in-frais-bancaires" step="10" min="0" />
             <span class="unit">€</span>
           </div>
         </div>

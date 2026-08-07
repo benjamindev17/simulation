@@ -9,6 +9,9 @@
 let prixAppart = 340000;
 const TAUX_ENREGISTREMENT = 3; // % fixe
 let fraisNotaire = 4868.95;
+let fraisBancaires = 0; // frais de crédit éventuellement imposés par la banque (saisis à la main)
+const APPORT_BUDGET = 100000; // enveloppe cash de départ ; l'apport "hors emprunt" en est déduit des frais payés à part
+const FRAIS_STANDARD_HORS_EMPRUNT = 15000; // enreg + notaire déjà retranchés du budget → apport de base 85 000 quand la case est cochée
 let apport = 85000;
 let benRatio = 0.7; // 70% Ben / 30% Marie par défaut — éditable via les champs Apport Ben / Apport Marie
 let tauxPct = 3.70;
@@ -26,6 +29,7 @@ const elOutEndettement20 = document.getElementById('out-endettement-20');
 const elPrix = document.getElementById('in-prix');
 const elFraisEnreg = document.getElementById('out-frais-enreg');
 const elFraisNotaire = document.getElementById('in-frais-notaire');
+const elFraisBancaires = document.getElementById('in-frais-bancaires');
 const elFraisTotal = document.getElementById('out-frais-total');
 const elOutCout = document.getElementById('out-cout');
 const elChkFraisHorsEmprunt = document.getElementById('chk-frais-hors-emprunt');
@@ -43,11 +47,20 @@ const elSliderTaux = document.getElementById('slider-taux');
 function fraisEnregCalc() {
   return prixAppart * (TAUX_ENREGISTREMENT / 100);
 }
+// Somme de tous les frais d'acquisition : enregistrement + notaire + frais bancaires éventuels.
+function fraisTotalCalc() {
+  return fraisEnregCalc() + fraisNotaire + fraisBancaires;
+}
 function coutTotalCalc() {
   if (elChkFraisHorsEmprunt && elChkFraisHorsEmprunt.checked) {
     return prixAppart; // frais payés séparément, cash, hors financement : seul le prix du bien est à financer
   }
-  return prixAppart + fraisEnregCalc() + fraisNotaire;
+  return prixAppart + fraisTotalCalc();
+}
+// Apport quand les frais sont payés à part : enveloppe de 100K moins les frais standards déjà retranchés,
+// moins les frais bancaires ajoutés à la main (eux aussi prélevés cash sur cette enveloppe).
+function apportHorsEmprunt() {
+  return Math.max(0, APPORT_BUDGET - FRAIS_STANDARD_HORS_EMPRUNT - fraisBancaires);
 }
 function montantEmprunte() {
   return Math.max(0, coutTotalCalc() - apport);
@@ -90,16 +103,19 @@ function renderCalc() {
   const coutTotal = coutTotalCalc();
   const fraisEnreg = fraisEnregCalc();
 
+  const fraisTotal = fraisTotalCalc();
+
   elPrix.value = Math.round(prixAppart);
   elFraisEnreg.textContent = fmt(Math.round(fraisEnreg));
   elFraisNotaire.value = fraisNotaire.toFixed(2);
-  elFraisTotal.textContent = fmt(Math.round(fraisEnreg + fraisNotaire));
+  elFraisBancaires.value = Math.round(fraisBancaires);
+  elFraisTotal.textContent = fmt(Math.round(fraisTotal));
   elOutCout.textContent = fmt(Math.round(coutTotal));
 
   if (elChkFraisHorsEmprunt && elChkFraisHorsEmprunt.checked) {
     elLabelCoutTotal.textContent = 'Coût à financer (prix seul, frais exclus)';
     elNoteFraisHorsEmprunt.style.display = 'block';
-    elNoteFraisHorsEmprunt.innerHTML = 'Frais (' + fmt(Math.round(fraisEnreg + fraisNotaire)) + ') payés séparément, cash, en plus de l’apport — non financés par l’emprunt. Coût réel total pour vous deux : ' + fmt(Math.round(prixAppart + fraisEnreg + fraisNotaire)) + ' (' + fmt(Math.round(coutTotal)) + ' financé + ' + fmt(Math.round(fraisEnreg + fraisNotaire)) + ' de frais à part).';
+    elNoteFraisHorsEmprunt.innerHTML = 'Frais (' + fmt(Math.round(fraisTotal)) + ') payés séparément, cash, en plus de l’apport — non financés par l’emprunt. Coût réel total pour vous deux : ' + fmt(Math.round(prixAppart + fraisTotal)) + ' (' + fmt(Math.round(coutTotal)) + ' financé + ' + fmt(Math.round(fraisTotal)) + ' de frais à part).';
   } else {
     elLabelCoutTotal.textContent = 'Coût total du projet (prix + frais, calculé)';
     elNoteFraisHorsEmprunt.style.display = 'none';
@@ -127,7 +143,7 @@ function renderCalc() {
 
 /* --- Interactions -------------------------------------------------------- */
 elChkFraisHorsEmprunt.addEventListener('change', () => {
-  apport = elChkFraisHorsEmprunt.checked ? 85000 : 100000;
+  apport = elChkFraisHorsEmprunt.checked ? apportHorsEmprunt() : APPORT_BUDGET;
   renderCalc();
 });
 
@@ -138,6 +154,16 @@ elPrix.addEventListener('change', () => {
 
 elFraisNotaire.addEventListener('change', () => {
   fraisNotaire = Math.max(0, parseFloat(elFraisNotaire.value) || 0);
+  renderCalc();
+});
+
+elFraisBancaires.addEventListener('change', () => {
+  fraisBancaires = Math.max(0, parseFloat(elFraisBancaires.value) || 0);
+  // Frais payés à part (case cochée) → prélevés cash sur l'enveloppe de 100K, donc déduits de l'apport
+  // (l'apport baisse, l'emprunt augmente d'autant). Sinon ils sont financés via le coût total.
+  if (elChkFraisHorsEmprunt.checked) {
+    apport = apportHorsEmprunt();
+  }
   renderCalc();
 });
 
