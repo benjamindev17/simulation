@@ -96,6 +96,9 @@ function renderAmortizationFull(scheduleData) {
     const row = schedule[m];
     const { shareA, shareB } = shareAtRow(row);
     const appartValue = prixAppart * Math.pow(1 + APPART_GROWTH / 100, m / 12);
+    // Capital remboursé ce mois-ci par chacun = son remboursement du mois − sa moitié des intérêts du mois.
+    const capMarie = payMarie - 0.5 * row.interest;
+    const capBen = payBen - 0.5 * row.interest;
     const tr = document.createElement('tr');
     tr.dataset.month = m;
     if (m === breakEvenMonth) tr.classList.add('plus-value-row');
@@ -105,6 +108,8 @@ function renderAmortizationFull(scheduleData) {
       '<td>' + fmt(Math.round(mensualite)) + '</td>' +
       '<td>' + fmt(Math.round(row.interest)) + '</td>' +
       '<td>' + fmt(Math.round(row.principal)) + '</td>' +
+      '<td class="partner">' + fmt(Math.round(capMarie)) + '</td>' +
+      '<td class="you">' + fmt(Math.round(capBen)) + '</td>' +
       '<td>' + fmt(Math.round(row.balance)) + '</td>' +
       '<td class="you">' + fmtPct(shareA) + '</td>' +
       '<td class="partner">' + fmtPct(shareB) + '</td>';
@@ -238,6 +243,12 @@ function refreshTab2() {
   } else {
     document.getElementById('assumptions-mensualite').textContent = fmt(Math.round(payBen)) + '/mois chacun';
   }
+
+  // Note explicative sous la bascule : visible seulement quand le modèle 50/50 est actif.
+  const equalizeNote = document.getElementById('equalize-note');
+  equalizeNote.style.display = equalizeShares ? 'block' : 'none';
+  document.getElementById('equalize-note-int').textContent =
+    fmt(Math.round(0.5 * freshLoanData.schedule[freshLoanData.nTotal].cumInterest));
   document.getElementById('loan-derived-note').textContent =
     'Emprunt = ' + fmt(Math.round(freshLoanData.loanAmount)) + ' (valeur reprise en temps réel de la case “Montant à emprunter” de l’onglet Simulation taux), au taux de ' + tauxPct.toFixed(2) + '% sur ' + DUREE_ANS_TAB2 + ' ans → mensualité ' + fmt(Math.round(freshLoanData.mensualite)) + '/mois. Si tu modifies l’apport, le prix ou le taux dans l’onglet Simulation taux, ce tableau se met à jour automatiquement.';
 

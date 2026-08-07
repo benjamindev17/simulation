@@ -401,6 +401,17 @@ input[type="range"] {
   border-top: 1px solid var(--moss-line);
 }
 .equalize-toggle input[type="checkbox"] { accent-color: var(--moss); flex-shrink: 0; }
+.equalize-note {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  background: var(--moss-soft);
+  border: 1px solid var(--moss-line);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.equalize-note b { font-weight: 600; }
 .detail-market-head { margin-bottom: 6px; }
 .detail-market-head__label { font-size: 13px; color: var(--ink-muted); font-family: var(--font-sans); }
 .detail-market-head__value { font-size: 18px; font-weight: 600; margin-left: auto; }
@@ -539,7 +550,7 @@ tbody tr:last-child td { border-bottom: none; }
 /* Enveloppe scrollable + en-tête figé du tableau d'amortissement */
 .table-scroll {
   max-height: 420px;
-  overflow-y: auto;
+  overflow: auto;
   border: 1px solid var(--line-soft);
   border-radius: var(--radius);
 }
