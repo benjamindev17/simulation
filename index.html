@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=3">
+<link rel="stylesheet" href="assets/css/styles.css?v=4">
 </head>
 <body>
 
@@ -121,15 +121,6 @@
       </div>
 
       <div class="calc-field">
-        <label>Part Ben à ce moment</label>
-        <div class="value-input"><span id="detail-part-a" class="you detail-value--part">-</span></div>
-      </div>
-      <div class="calc-field">
-        <label>Part Marie à ce moment</label>
-        <div class="value-input"><span id="detail-part-b" class="partner detail-value--part">-</span></div>
-      </div>
-
-      <div class="calc-field span-full">
         <label>Remboursement mensuel par personne</label>
         <div class="pay-row">
           <span class="you">Ben paie</span>
@@ -143,6 +134,12 @@
           <input type="checkbox" id="chk-equalize-shares">
           Équilibrer les remboursements pour une propriété 50/50 au bout des 20 ans (Marie paie davantage)
         </label>
+      </div>
+
+      <div class="calc-field part-box">
+        <label>Répartition à ce moment</label>
+        <div class="part-row"><span class="you">Ben</span><span id="detail-part-a" class="you part-row__pct">-</span></div>
+        <div class="part-row"><span class="partner">Marie</span><span id="detail-part-b" class="partner part-row__pct">-</span></div>
       </div>
 
       <div class="calc-field computed span-full">
@@ -342,10 +339,10 @@
 
 </main>
 
-<script src="assets/js/utils.js?v=3" defer></script>
-<script src="assets/js/ownership.js?v=3" defer></script>
-<script src="assets/js/rate-simulation.js?v=3" defer></script>
-<script src="assets/js/app.js?v=3" defer></script>
+<script src="assets/js/utils.js?v=4" defer></script>
+<script src="assets/js/ownership.js?v=4" defer></script>
+<script src="assets/js/rate-simulation.js?v=4" defer></script>
+<script src="assets/js/app.js?v=4" defer></script>
 
 </body>
 </html>

@@ -374,8 +374,15 @@ input[type="range"] {
 .detail-interets-rows .kv__k { font-size: 12px; color: var(--ink-muted); align-self: center; }
 
 /* Remboursement mensuel par personne + bascule 50/50 */
-.pay-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; margin-bottom: 4px; }
+.pay-row { display: flex; justify-content: flex-start; align-items: baseline; gap: 12px; font-size: 15px; margin-bottom: 4px; }
+.pay-row > span:first-child { min-width: 78px; }
 .pay-row__amount { font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Boîte « Répartition à ce moment » : Ben / Marie empilés, compacte */
+.part-box { align-self: start; }
+.part-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font-size: 14px; margin-bottom: 6px; }
+.part-row:last-child { margin-bottom: 0; }
+.part-row__pct { font-family: var(--font-mono); font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
 /* selecteur assez spécifique pour battre `.calc-field label` (0,1,1) */
 .calc-field label.equalize-toggle {
   display: flex;
