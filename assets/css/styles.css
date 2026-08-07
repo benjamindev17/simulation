@@ -48,7 +48,7 @@ body {
   font-family: var(--font-sans);
   background: var(--paper);
   color: var(--ink);
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 0 0 4rem;
   touch-action: pan-y;
@@ -550,10 +550,12 @@ tbody tr:last-child td { border-bottom: none; }
 /* Enveloppe scrollable + en-tête figé du tableau d'amortissement */
 .table-scroll {
   max-height: 420px;
-  overflow: auto;
+  overflow-y: auto;
   border: 1px solid var(--line-soft);
   border-radius: var(--radius);
 }
+/* En-têtes du tableau d'étalement : passage sur deux lignes plutôt que troncature, pour tout afficher sans défilement horizontal */
+#amort-table thead th { white-space: normal; vertical-align: bottom; }
 .table-scroll table { margin-bottom: 0; border: none; border-radius: 0; }
 #amort-table thead { position: sticky; top: 0; z-index: 1; }
 
