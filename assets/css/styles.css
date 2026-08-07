@@ -450,6 +450,22 @@ input[type="range"] {
 .duree-col__label { font-size: 13px; color: var(--ink-slate); margin-bottom: 6px; }
 .duree-col__value { font-size: 20px; font-weight: 600; color: var(--ink-black); }
 .duree-col__sub { font-size: 13px; margin-top: 6px; color: var(--ink-black); }
+.duree-col__interet {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+.duree-col__interet-label { font-size: 11px; color: var(--ink-slate); }
+.duree-col__interet-value {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-black);
+  font-variant-numeric: tabular-nums;
+}
 .seuil-row {
   display: flex;
   align-items: center;

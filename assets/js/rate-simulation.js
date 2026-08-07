@@ -22,10 +22,16 @@ let SEUIL_ENDETTEMENT = 33;
 const elSeuilEndettement = document.getElementById('in-seuil-endettement');
 const elCol15 = document.getElementById('col-duree-15');
 const elCol20 = document.getElementById('col-duree-20');
+const elCol25 = document.getElementById('col-duree-25');
 const elOutMensualite15 = document.getElementById('out-mensualite-15');
 const elOutMensualite20 = document.getElementById('out-mensualite-20');
+const elOutMensualite25 = document.getElementById('out-mensualite-25');
 const elOutEndettement15 = document.getElementById('out-endettement-15');
 const elOutEndettement20 = document.getElementById('out-endettement-20');
+const elOutEndettement25 = document.getElementById('out-endettement-25');
+const elOutInteret15 = document.getElementById('out-interet-15');
+const elOutInteret20 = document.getElementById('out-interet-20');
+const elOutInteret25 = document.getElementById('out-interet-25');
 const elPrix = document.getElementById('in-prix');
 const elFraisEnreg = document.getElementById('out-frais-enreg');
 const elFraisNotaire = document.getElementById('in-frais-notaire');
@@ -89,11 +95,19 @@ function couleurEndettement(pct) {
   return 'hsl(140, 55%, ' + lightness + '%)';
 }
 
-function renderColonne(years, elCol, elMensualite, elEndettement) {
+// Intérêts totaux payés sur toute la durée = somme des mensualités − montant emprunté.
+function interetTotalPour(years) {
+  const L = montantEmprunte();
+  if (L <= 0) return 0;
+  return mensualitePour(years) * years * 12 - L;
+}
+
+function renderColonne(years, elCol, elMensualite, elEndettement, elInteret) {
   const m = mensualitePour(years);
   const pct = (m / SALAIRE_COMBINE) * 100;
   elMensualite.textContent = fmt(Math.round(m)) + '/mois';
   elEndettement.textContent = pct.toFixed(1) + '% du salaire';
+  elInteret.textContent = fmt(Math.round(interetTotalPour(years)));
   elCol.style.backgroundColor = couleurEndettement(pct);
 }
 
@@ -135,8 +149,9 @@ function renderCalc() {
   elSliderTaux.value = tauxPct;
 
   elSeuilEndettement.value = SEUIL_ENDETTEMENT;
-  renderColonne(15, elCol15, elOutMensualite15, elOutEndettement15);
-  renderColonne(20, elCol20, elOutMensualite20, elOutEndettement20);
+  renderColonne(15, elCol15, elOutMensualite15, elOutEndettement15, elOutInteret15);
+  renderColonne(20, elCol20, elOutMensualite20, elOutEndettement20, elOutInteret20);
+  renderColonne(25, elCol25, elOutMensualite25, elOutEndettement25, elOutInteret25);
 
   refreshTab2(); // garde l'onglet "Répartition appartement" synchronisé avec le montant emprunté / taux courants
 }
