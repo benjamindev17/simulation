@@ -3,9 +3,9 @@
    Chargés en premier : formatage et helpers réutilisés par les deux onglets.
    ========================================================================== */
 
-/** Formate un nombre en euros (fr-FR, sans décimales). */
+/** Formate un nombre en euros (fr-FR, sans décimales). Espace insécable avant € pour éviter que « € » passe à la ligne. */
 function fmt(n) {
-  return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(n) + ' €';
+  return new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(n) + ' €';
 }
 
 /** Formate un pourcentage avec deux décimales. */

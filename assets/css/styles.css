@@ -227,8 +227,8 @@ input[type="range"] {
   line-height: 1.9;
 }
 
-/* Paire clé / valeur alignée (breakdown des cartes et du panneau de détail) */
-.kv { display: flex; justify-content: space-between; }
+/* Paire clé / valeur : valeur rapprochée du libellé (même esprit que « Remboursement mensuel par personne ») */
+.kv { display: flex; justify-content: flex-start; align-items: baseline; gap: 12px; }
 .kv__k { font-family: var(--font-sans); }
 .stat-breakdown .kv__k { color: var(--ink-muted); }
 
@@ -356,7 +356,7 @@ input[type="range"] {
   line-height: 1.8;
 }
 .detail-breakdown--amber { border-top-color: var(--amber-line); }
-.detail-breakdown .kv__k { font-weight: 400; }
+.detail-breakdown .kv__k { font-weight: 400; min-width: 84px; }
 .detail-prose { font-size: 14px; line-height: 1.7; }
 
 /* Deux valeurs côte à côte dans un même champ (ex. solde restant dû + intérêts cumulés) */
@@ -369,7 +369,7 @@ input[type="range"] {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
-.detail-interets-rows .kv { font-size: 15px; margin-bottom: 3px; gap: 16px; }
+.detail-interets-rows .kv { justify-content: flex-end; font-size: 15px; margin-bottom: 3px; gap: 12px; }
 .detail-interets-rows .kv:last-child { margin-bottom: 0; }
 .detail-interets-rows .kv__k { font-size: 12px; color: var(--ink-muted); align-self: center; }
 
@@ -380,7 +380,8 @@ input[type="range"] {
 
 /* Boîte « Répartition à ce moment » : Ben / Marie empilés, compacte */
 .part-box { align-self: start; }
-.part-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; font-size: 14px; margin-bottom: 6px; }
+.part-row { display: flex; justify-content: flex-start; align-items: baseline; gap: 12px; font-size: 14px; margin-bottom: 6px; }
+.part-row > span:first-child { min-width: 52px; }
 .part-row:last-child { margin-bottom: 0; }
 .part-row__pct { font-family: var(--font-mono); font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; }
 /* selecteur assez spécifique pour battre `.calc-field label` (0,1,1) */
