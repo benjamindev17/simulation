@@ -1,0 +1,492 @@
+/* ==========================================================================
+   Simulation patrimoine — feuille de styles
+   Organisation :
+     1. Tokens (variables de thème)
+     2. Base & reset
+     3. Mise en page (header, contenu, onglets)
+     4. Composants (cartes, tableaux, formulaires…)
+     5. Utilitaires
+   ========================================================================== */
+
+/* 1. Tokens ---------------------------------------------------------------- */
+:root {
+  --paper: #f7f5ef;
+  --paper-raised: #ffffff;
+  --line: #ddd7c4;
+  --line-soft: #e9e4d5;
+  --line-strong: #d8d6cc;
+  --ink: #1b1e1a;
+  --ink-muted: #6f6b5c;
+  --ink-faint: #a19c8a;
+  --ink-slate: #52514e;
+  --ink-black: #0b0b0b;
+  --moss: #3c5b43;
+  --moss-soft: #e7ede4;
+  --moss-line: #b9cdb9;
+  --brick: #a8433b;
+  --brick-soft: #f5e2df;
+  --brick-line: #e3bcb6;
+  --amber: #a97a2c;
+  --amber-soft: #f3ead4;
+  --amber-line: #e0cd9e;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* 2. Base & reset ---------------------------------------------------------- */
+* { box-sizing: border-box; }
+
+html {
+  touch-action: pan-y;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--paper);
+  color: var(--ink);
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 0 4rem;
+  touch-action: pan-y;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* Empêche le double-tap zoom sur les éléments interactifs sans bloquer le scroll vertical */
+button, input, .calc-field, .stat-card, .tabs {
+  touch-action: manipulation;
+}
+
+h1 { font-size: 18px; font-weight: 600; margin: 1.75rem 0 1.1rem; letter-spacing: -0.01em; }
+h2 { font-size: 15px; font-weight: 600; margin: 0 0 1rem; }
+
+/* 3. Mise en page ---------------------------------------------------------- */
+.page-header {
+  padding: 1.75rem 1.5rem 1.25rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-raised);
+}
+.page-header .eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--moss);
+  margin: 0 0 6px;
+}
+.page-header h1.page-title {
+  font-size: 21px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.content { padding: 0 1.5rem; }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin: 0 -1.5rem 1.75rem;
+  padding: 0 1.5rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-raised);
+  overflow-x: auto;
+}
+.tabs button {
+  background: transparent;
+  border: none;
+  padding: 13px 4px;
+  margin-right: 22px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--ink-muted);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+.tabs button.active {
+  color: var(--ink);
+  border-bottom: 2px solid var(--moss);
+}
+.tabs button:hover { color: var(--ink); }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* 4. Composants ------------------------------------------------------------ */
+
+/* 4.1 Contrôles (curseurs, bascule durée) */
+.controls-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+.controls-row label {
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  white-space: nowrap;
+  min-width: 150px;
+}
+input[type="range"] {
+  flex: 1;
+  accent-color: var(--moss);
+}
+.rate-out {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 44px;
+  text-align: right;
+}
+
+.duration-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+}
+.duration-toggle button {
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--ink);
+}
+.duration-toggle button.active {
+  background: var(--moss);
+  border-color: var(--moss);
+  color: white;
+}
+
+/* 4.2 Cartes statistiques */
+.stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1.75rem;
+}
+.stat-card {
+  background: var(--paper-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 0.95rem 1rem;
+  flex: 1;
+  min-width: 145px;
+}
+.stat-card p:first-child {
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin: 0 0 6px;
+}
+.stat-card p:last-child {
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 500;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.stat-breakdown {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-soft);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+/* Paire clé / valeur alignée (breakdown des cartes et du panneau de détail) */
+.kv { display: flex; justify-content: space-between; }
+.kv__k { font-family: var(--font-sans); }
+.stat-breakdown .kv__k { color: var(--ink-muted); }
+
+/* 4.3 Légende & graphique */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: var(--ink-muted);
+}
+.legend span { display: flex; align-items: center; gap: 6px; }
+.legend .swatch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 360px;
+  background: var(--paper-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+/* 4.4 Notes & encarts */
+.note {
+  font-size: 12.5px;
+  color: var(--ink-muted);
+  margin-top: 1.5rem;
+  line-height: 1.65;
+}
+.note--flush { margin-top: 0; }
+.note--formula {
+  margin-top: 0;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  background: var(--paper);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+}
+
+.assumptions {
+  background: var(--moss-soft);
+  border: 1px solid var(--moss-line);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+.assumptions b { font-weight: 600; }
+
+.warning-box {
+  background: var(--brick-soft);
+  color: var(--brick);
+  border: 1px solid var(--brick-line);
+  border-radius: var(--radius);
+  padding: 0.8rem 1rem;
+  font-size: 13px;
+  margin-bottom: 1rem;
+}
+
+/* 4.5 Grille de calcul / champs */
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+.calc-field {
+  background: var(--paper-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+}
+.calc-field label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--ink-muted);
+  margin-bottom: 7px;
+}
+.calc-field .value-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.calc-field input[type="number"] {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--ink);
+}
+.calc-field input[type="number"]:focus { outline: 1px solid var(--moss); border-radius: 4px; }
+.calc-field .unit { font-family: var(--font-mono); font-size: 13px; color: var(--ink-faint); }
+.calc-field.slider-field input[type="range"] { width: 100%; margin-top: 6px; }
+.calc-field.readonly { background: var(--moss-soft); border-color: var(--moss-line); }
+.calc-field.computed { background: var(--amber-soft); border-color: var(--amber-line); }
+
+/* Variantes colorées du champ (détail par personne) */
+.calc-field--moss { background: var(--moss-soft); border-color: var(--moss-line); }
+.calc-field--moss > label { color: var(--moss); }
+.calc-field--amber { background: var(--amber-soft); border-color: var(--amber-line); }
+.calc-field--amber > label { color: var(--amber); }
+
+/* Valeurs et sous-détails du panneau de détail */
+.detail-value { font-size: 18px; font-weight: 500; }
+.detail-value--lg { font-size: 19px; font-weight: 600; }
+.detail-value--part { font-size: 18px; font-weight: 600; }
+.detail-breakdown {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--moss-line);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.8;
+}
+.detail-breakdown--amber { border-top-color: var(--amber-line); }
+.detail-breakdown .kv__k { font-weight: 400; }
+.detail-prose { font-size: 14px; line-height: 1.7; }
+.detail-market-head { margin-bottom: 6px; }
+.detail-market-head__label { font-size: 13px; color: var(--ink-muted); font-family: var(--font-sans); }
+.detail-market-head__value { font-size: 18px; font-weight: 600; margin-left: auto; }
+
+/* 4.6 Bloc « frais » (onglet Simulation taux) */
+.frais-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.frais-row__label { font-size: 13px; color: var(--ink-slate); white-space: nowrap; }
+.frais-row__value { font-size: 14px; font-weight: 500; }
+.frais-row .value-input { justify-content: flex-end; }
+.frais-row input[type="number"] { text-align: right; font-size: 14px; font-weight: 500; }
+.frais-total {
+  border-top: 1px solid var(--line-strong);
+  padding-top: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.frais-total__label { font-size: 13px; font-weight: 500; }
+.frais-total__value { font-size: 15px; font-weight: 600; }
+.frais-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+  padding-top: 8px;
+  border-top: 1px solid var(--line-strong);
+}
+.frais-checkbox input[type="checkbox"] { accent-color: var(--moss); }
+
+/* 4.7 Répartition de l'apport (Ben / Marie) */
+.apport-split {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line-soft);
+}
+.apport-split__col { flex: 1; }
+.apport-split__col label { font-size: 11px; margin-bottom: 3px; }
+.apport-split__col .unit { font-size: 11px; }
+.apport-split__col input[type="number"] { font-size: 14px; }
+.apport-split__col--ben label { color: var(--moss); }
+.apport-split__col--ben input[type="number"] { color: var(--moss); }
+.apport-split__col--marie label { color: var(--amber); }
+.apport-split__col--marie input[type="number"] { color: var(--amber); }
+
+/* 4.8 Comparaison des durées */
+.duree-compare { display: flex; gap: 12px; }
+.duree-col { flex: 1; border-radius: 8px; padding: 14px; }
+.duree-col__label { font-size: 13px; color: var(--ink-slate); margin-bottom: 6px; }
+.duree-col__value { font-size: 20px; font-weight: 600; color: var(--ink-black); }
+.duree-col__sub { font-size: 13px; margin-top: 6px; color: var(--ink-black); }
+.seuil-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+.seuil-row label { font-size: 11px; color: var(--ink-slate); white-space: nowrap; }
+.seuil-row input[type="number"] {
+  width: 48px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--ink-black);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+.seuil-row .unit { font-size: 12px; color: #898781; }
+
+/* 4.9 Tableaux */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  margin-bottom: 1rem;
+  background: var(--paper-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+th, td {
+  text-align: right;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--line-soft);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+th:first-child, td:first-child { text-align: left; }
+th {
+  color: var(--ink-muted);
+  font-weight: 500;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--paper);
+}
+tbody tr:last-child td { border-bottom: none; }
+
+/* Enveloppe scrollable + en-tête figé du tableau d'amortissement */
+.table-scroll {
+  max-height: 420px;
+  overflow-y: auto;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+}
+.table-scroll table { margin-bottom: 0; border: none; border-radius: 0; }
+#amort-table thead { position: sticky; top: 0; z-index: 1; }
+
+#amort-tbody tr { cursor: pointer; }
+#amort-tbody tr:hover td { background: var(--moss-soft); }
+#amort-tbody tr.selected-row td { background: var(--moss-soft); font-weight: 600; }
+#amort-tbody tr.plus-value-row td { background: var(--amber-soft); }
+#amort-tbody tr.plus-value-row td:first-child { border-left: 3px solid var(--amber); font-weight: 600; }
+#amort-tbody tr.plus-value-row.selected-row td { background: var(--moss-soft); }
+#amort-tbody tr.plus-value-row.selected-row td:first-child { border-left: 3px solid var(--amber); }
+.you { color: var(--moss); font-weight: 500; }
+.partner { color: var(--amber); font-weight: 500; }
+
+/* Colonnes redimensionnables façon Excel */
+#amort-table { table-layout: fixed; }
+#amort-table th { position: relative; user-select: none; }
+.col-resizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 6px;
+  cursor: col-resize;
+  z-index: 2;
+}
+.col-resizer:hover, .col-resizer.resizing { background: var(--moss-line); }
+
+/* 5. Utilitaires ----------------------------------------------------------- */
+.span-full { grid-column: 1 / -1; }
+.mt-2 { margin-top: 2rem; }
