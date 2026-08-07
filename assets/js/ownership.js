@@ -163,6 +163,9 @@ function selectMonth(m) {
   document.getElementById('detail-date').textContent = formatDateDansNMois(m);
   document.getElementById('detail-solde').textContent = fmt(Math.round(row.balance));
   document.getElementById('detail-interets-cumules').textContent = fmt(Math.round(row.cumInterest));
+  // Intérêts totaux du crédit sur toute la durée = intérêts cumulés du dernier mois de l'échéancier.
+  const interetsTotal = lastLoanData.schedule[lastLoanData.nTotal].cumInterest;
+  document.getElementById('detail-interets-total').textContent = fmt(Math.round(interetsTotal));
   document.getElementById('detail-total-a').textContent = fmt(Math.round(totalPaidA));
   document.getElementById('detail-apport-a').textContent = fmt(Math.round(APPORT_A));
   document.getElementById('detail-total-a-capital').textContent = fmt(Math.round(capitalRefundedA));

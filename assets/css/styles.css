@@ -364,6 +364,14 @@ input[type="range"] {
 .split-two > div { flex: 1; min-width: 0; }
 .split-two__right { text-align: right; }
 .split-two__right .value-input { justify-content: flex-end; }
+.detail-interets-rows {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.detail-interets-rows .kv { font-size: 15px; margin-bottom: 3px; gap: 16px; }
+.detail-interets-rows .kv:last-child { margin-bottom: 0; }
+.detail-interets-rows .kv__k { font-size: 12px; color: var(--ink-muted); align-self: center; }
 
 /* Remboursement mensuel par personne + bascule 50/50 */
 .pay-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; margin-bottom: 4px; }

@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=2">
+<link rel="stylesheet" href="assets/css/styles.css?v=3">
 </head>
 <body>
 
@@ -92,8 +92,11 @@
             <div class="value-input"><span id="detail-solde" class="detail-value">-</span></div>
           </div>
           <div class="split-two__right">
-            <label>Intérêts cumulés payés à cette date</label>
-            <div class="value-input"><span id="detail-interets-cumules" class="detail-value">-</span></div>
+            <label>Intérêts du crédit — sur 20 ans</label>
+            <div class="detail-interets-rows">
+              <div class="kv"><span class="kv__k">payés à cette date</span><span id="detail-interets-cumules">-</span></div>
+              <div class="kv"><span class="kv__k">total du crédit</span><span id="detail-interets-total">-</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -339,10 +342,10 @@
 
 </main>
 
-<script src="assets/js/utils.js?v=2" defer></script>
-<script src="assets/js/ownership.js?v=2" defer></script>
-<script src="assets/js/rate-simulation.js?v=2" defer></script>
-<script src="assets/js/app.js?v=2" defer></script>
+<script src="assets/js/utils.js?v=3" defer></script>
+<script src="assets/js/ownership.js?v=3" defer></script>
+<script src="assets/js/rate-simulation.js?v=3" defer></script>
+<script src="assets/js/app.js?v=3" defer></script>
 
 </body>
 </html>
