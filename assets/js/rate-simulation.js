@@ -162,10 +162,24 @@ function renderCalc() {
   renderColonne(20, elCol20, elOutMensualite20, elOutEndettement20, elOutInteret20);
   renderColonne(25, elCol25, elOutMensualite25, elOutEndettement25, elOutInteret25);
 
+  // Met en évidence la durée cochée (celle qui pilote l'onglet Répartition).
+  [15, 20, 25].forEach(y => {
+    document.getElementById('col-duree-' + y).classList.toggle('selected', y === dureeChoisie);
+  });
+
   refreshTab2(); // garde l'onglet "Répartition appartement" synchronisé avec le montant emprunté / taux courants
 }
 
 /* --- Interactions -------------------------------------------------------- */
+// Choix de la durée (radios 15/20/25) : pilote l'échéancier de l'onglet Répartition.
+document.querySelectorAll('input[name="duree-choisie"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    if (!radio.checked) return;
+    dureeChoisie = parseInt(radio.value, 10);
+    renderCalc();
+  });
+});
+
 elChkFraisHorsEmprunt.addEventListener('change', () => {
   apport = elChkFraisHorsEmprunt.checked ? apportHorsEmprunt() : APPORT_BUDGET;
   renderCalc();

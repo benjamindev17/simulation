@@ -11,7 +11,7 @@ let APPORT_B_RAW = 30000;   // recalculé en temps réel dans refreshTab2 = appo
 let APPORT_A = APPORT_A_RAW;  // apport "effectif" utilisé pour les parts — ajusté si frais 50/50 coché
 let APPORT_B = APPORT_B_RAW;
 // (mensualité/2 par personne, calculée en temps réel — plus de valeur hardcodée ici)
-const DUREE_ANS_TAB2 = 20; // référence pour le tableau d'étalement complet
+let dureeChoisie = 20; // durée cochée (15/20/25) dans Simulation taux — pilote tout l'onglet Répartition
 const APPART_GROWTH = 3; // %/an — utilisé pour détecter le mois de plus-value dans le tableau
 
 let lastLoanData = null; // dernier échéancier calculé, utilisé par le clic sur une ligne
@@ -46,7 +46,7 @@ function computePayments(loanData) {
 function buildLoanSchedule() {
   const loanAmount = montantEmprunte(); // valeur en temps réel depuis l'onglet 3
   const rMonthly = tauxPct / 100 / 12;  // taux en temps réel depuis l'onglet 3
-  const nTotal = DUREE_ANS_TAB2 * 12;
+  const nTotal = dureeChoisie * 12;
   const annuityFactor = rMonthly === 0 ? nTotal : (1 - Math.pow(1 + rMonthly, -nTotal)) / rMonthly;
   const mensualite = loanAmount > 0 ? loanAmount / annuityFactor : 0;
 
@@ -120,7 +120,7 @@ function renderAmortizationFull(scheduleData) {
   if (breakEvenMonth) {
     noteEl.innerHTML = '<span style="color:var(--amber); font-weight:600;">★ Mois ' + breakEvenMonth + '</span> (' + formatDateDansNMois(breakEvenMonth) + ') — c’est le premier mois où la valeur de revente estimée (prix initial + appréciation ' + APPART_GROWTH + '%/an, moins le solde restant dû) dépasse tout l’argent réellement sorti de vos poches à deux (apport + mensualités payées, capital et intérêts inclus). Avant ce mois, vous seriez encore en perte nette si vous vendiez.';
   } else {
-    noteEl.textContent = 'Avec les paramètres actuels, la plus-value nette n’est pas atteinte avant la fin du prêt (20 ans).';
+    noteEl.textContent = 'Avec les paramètres actuels, la plus-value nette n’est pas atteinte avant la fin du prêt (' + dureeChoisie + ' ans).';
   }
 }
 
@@ -232,6 +232,9 @@ function refreshTab2() {
   document.getElementById('assumptions-apport').textContent =
     'Apport Benjamin : ' + fmt(Math.round(APPORT_A_RAW)) + ' (' + (benRatio * 100).toFixed(0) + '%) · Apport Marie : ' + fmt(Math.round(APPORT_B_RAW)) + ' (' + ((1 - benRatio) * 100).toFixed(0) + '%)';
 
+  // Reflète la durée choisie dans tous les libellés « … sur N ans » de l'onglet.
+  document.querySelectorAll('.duree-ans').forEach(el => { el.textContent = dureeChoisie; });
+
   const freshLoanData = buildLoanSchedule();
 
   // Remboursements mensuels fixes (moitié-moitié par défaut, ou calculés pour finir à 50 % chacun si le mode équilibré est actif).
@@ -250,7 +253,7 @@ function refreshTab2() {
   document.getElementById('equalize-note-int').textContent =
     fmt(Math.round(0.5 * freshLoanData.schedule[freshLoanData.nTotal].cumInterest));
   document.getElementById('loan-derived-note').textContent =
-    'Emprunt = ' + fmt(Math.round(freshLoanData.loanAmount)) + ' (valeur reprise en temps réel de la case “Montant à emprunter” de l’onglet Simulation taux), au taux de ' + tauxPct.toFixed(2) + '% sur ' + DUREE_ANS_TAB2 + ' ans → mensualité ' + fmt(Math.round(freshLoanData.mensualite)) + '/mois. Si tu modifies l’apport, le prix ou le taux dans l’onglet Simulation taux, ce tableau se met à jour automatiquement.';
+    'Emprunt = ' + fmt(Math.round(freshLoanData.loanAmount)) + ' (valeur reprise en temps réel de la case “Montant à emprunter” de l’onglet Simulation taux), au taux de ' + tauxPct.toFixed(2) + '% sur ' + dureeChoisie + ' ans → mensualité ' + fmt(Math.round(freshLoanData.mensualite)) + '/mois. Si tu modifies l’apport, le prix ou le taux dans l’onglet Simulation taux, ce tableau se met à jour automatiquement.';
 
   // Total versé par personne sur toute la durée = apport initial + l'ensemble de ses remboursements mensuels.
   const totalInteretPaye = freshLoanData.schedule[freshLoanData.nTotal].cumInterest;

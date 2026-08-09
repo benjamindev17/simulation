@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=9">
+<link rel="stylesheet" href="assets/css/styles.css?v=10">
 </head>
 <body>
 
@@ -68,7 +68,7 @@
 
     <h2 class="mt-2">Tableau d'étalement complet, mois par mois</h2>
     <p class="note note--flush">
-      Échéancier détaillé du prêt, sur la base du montant à emprunter et du taux actuels (onglet Simulation taux), remboursé sur 20 ans.
+      Échéancier détaillé du prêt, sur la base du montant à emprunter et du taux actuels (onglet Simulation taux), remboursé sur <span class="duree-ans">20</span> ans.
     </p>
     <p class="note note--formula">
       Formule — Ta part (%) = (Apport toi + 50% × capital cumulé remboursé) / (Apport total + capital cumulé remboursé) — même formule pour la part copine, avec son apport à elle.
@@ -92,7 +92,7 @@
             <div class="value-input"><span id="detail-solde" class="detail-value">-</span></div>
           </div>
           <div class="split-two__right">
-            <label>Intérêts du crédit — sur 20 ans</label>
+            <label>Intérêts du crédit — sur <span class="duree-ans">20</span> ans</label>
             <div class="detail-interets-rows">
               <div class="kv"><span class="kv__k">payés à cette date</span><span id="detail-interets-cumules">-</span></div>
               <div class="kv"><span class="kv__k">total du crédit</span><span id="detail-interets-total">-</span></div>
@@ -132,7 +132,7 @@
         </div>
         <label class="equalize-toggle">
           <input type="checkbox" id="chk-equalize-shares">
-          Équilibrer les remboursements pour une propriété 50/50 au bout des 20 ans (Marie paie davantage)
+          Équilibrer les remboursements pour une propriété 50/50 au bout des <span class="duree-ans">20</span> ans (Marie paie davantage)
         </label>
         <p class="equalize-note" id="equalize-note" style="display:none;">
           <b>Modèle 50/50 activé</b> : les <b>intérêts sont partagés moitié-moitié</b> (coût commun du crédit, <span id="equalize-note-int">-</span> chacun) ; seul le <b>capital</b> est réparti différemment pour aboutir à une <b>propriété 50/50</b> au terme. Résultat : même total déboursé par chacun.
@@ -314,7 +314,7 @@
         <label>Comparaison durée</label>
         <div class="duree-compare">
           <div id="col-duree-15" class="duree-col">
-            <div class="duree-col__label">15 ans</div>
+            <label class="duree-col__pick"><input type="radio" name="duree-choisie" value="15">15 ans</label>
             <div id="out-mensualite-15" class="duree-col__value">-</div>
             <div id="out-endettement-15" class="duree-col__sub">-</div>
             <div class="duree-col__interet">
@@ -323,7 +323,7 @@
             </div>
           </div>
           <div id="col-duree-20" class="duree-col">
-            <div class="duree-col__label">20 ans</div>
+            <label class="duree-col__pick"><input type="radio" name="duree-choisie" value="20" checked>20 ans</label>
             <div id="out-mensualite-20" class="duree-col__value">-</div>
             <div id="out-endettement-20" class="duree-col__sub">-</div>
             <div class="duree-col__interet">
@@ -337,7 +337,7 @@
             </div>
           </div>
           <div id="col-duree-25" class="duree-col">
-            <div class="duree-col__label">25 ans</div>
+            <label class="duree-col__pick"><input type="radio" name="duree-choisie" value="25">25 ans</label>
             <div id="out-mensualite-25" class="duree-col__value">-</div>
             <div id="out-endettement-25" class="duree-col__sub">-</div>
             <div class="duree-col__interet">
@@ -350,17 +350,17 @@
     </div>
 
     <p class="note">
-      La durée est la seule variable que tu fixes directement dans ce groupe — elle ne change jamais toute seule, même quand tu ajustes le taux, l'apport ou le prix. C'est toujours la mensualité qui absorbe ces changements.
+      La durée que tu <b>coches</b> (15, 20 ou 25 ans) pilote tout l'onglet <b>Répartition appartement</b> (échéancier, parts, revente). Elle ne change jamais toute seule : c'est toujours la mensualité qui absorbe les variations de taux, d'apport ou de prix.
     </p>
 
   </section>
 
 </main>
 
-<script src="assets/js/utils.js?v=9" defer></script>
-<script src="assets/js/ownership.js?v=9" defer></script>
-<script src="assets/js/rate-simulation.js?v=9" defer></script>
-<script src="assets/js/app.js?v=9" defer></script>
+<script src="assets/js/utils.js?v=10" defer></script>
+<script src="assets/js/ownership.js?v=10" defer></script>
+<script src="assets/js/rate-simulation.js?v=10" defer></script>
+<script src="assets/js/app.js?v=10" defer></script>
 
 </body>
 </html>

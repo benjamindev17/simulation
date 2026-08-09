@@ -485,8 +485,20 @@ input[type="range"] {
 
 /* 4.8 Comparaison des durées */
 .duree-compare { display: flex; gap: 12px; }
-.duree-col { flex: 1; border-radius: 8px; padding: 14px; }
+.duree-col { flex: 1; border-radius: 8px; padding: 14px; box-shadow: inset 0 0 0 1px transparent; transition: box-shadow 0.15s ease; }
+.duree-col.selected { box-shadow: inset 0 0 0 2px var(--moss); }
 .duree-col__label { font-size: 13px; color: var(--ink-slate); margin-bottom: 6px; }
+.duree-col__pick {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-black);
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+.duree-col__pick input[type="radio"] { accent-color: var(--moss); cursor: pointer; }
 .duree-col__value { font-size: 20px; font-weight: 600; color: var(--ink-black); }
 .duree-col__sub { font-size: 13px; margin-top: 6px; color: var(--ink-black); }
 .duree-col__interet {
