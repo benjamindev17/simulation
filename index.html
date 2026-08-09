@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=11">
+<link rel="stylesheet" href="assets/css/styles.css?v=12">
 </head>
 <body>
 
@@ -28,10 +28,13 @@
 
 <main class="content">
 
-  <nav class="tabs">
-    <button id="tabBtnTaux" class="active">Simulation taux</button>
-    <button id="tabBtnAppart">Répartition appartement</button>
-  </nav>
+  <div class="tabs-row">
+    <nav class="tabs">
+      <button id="tabBtnTaux" class="active">Simulation taux</button>
+      <button id="tabBtnAppart">Répartition appartement</button>
+    </nav>
+    <button type="button" id="btn-generate-contract" title="Projet de convention pré-rempli avec ta simulation — à faire valider par le notaire">📄 Créer le contrat PDF</button>
+  </div>
 
   <!-- ===================== TAB : APPARTEMENT ===================== -->
   <section id="tab-appart" class="panel">
@@ -46,11 +49,6 @@
     </div>
 
     <p class="note" id="loan-derived-note"></p>
-
-    <div class="contract-cta">
-      <button type="button" id="btn-generate-contract">📄 Créer le contrat PDF</button>
-      <span>Projet de convention pré-rempli avec ta simulation — à faire valider par le notaire.</span>
-    </div>
 
     <div class="stats-row">
       <div class="stat-card">
@@ -371,11 +369,11 @@
   <div id="contract-doc" class="contract"></div>
 </div>
 
-<script src="assets/js/utils.js?v=11" defer></script>
-<script src="assets/js/ownership.js?v=11" defer></script>
-<script src="assets/js/rate-simulation.js?v=11" defer></script>
-<script src="assets/js/app.js?v=11" defer></script>
-<script src="assets/js/contract.js?v=11" defer></script>
+<script src="assets/js/utils.js?v=12" defer></script>
+<script src="assets/js/ownership.js?v=12" defer></script>
+<script src="assets/js/rate-simulation.js?v=12" defer></script>
+<script src="assets/js/app.js?v=12" defer></script>
+<script src="assets/js/contract.js?v=12" defer></script>
 
 </body>
 </html>
