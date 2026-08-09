@@ -713,3 +713,56 @@ body.contract-open { overflow: hidden; }
   .contract h2 { break-after: avoid; }
   .contract table, .contract .c-sign { break-inside: avoid; }
 }
+
+/* ==========================================================================
+   7. Responsive — mobile (≤ 640px). N'affecte que l'affichage écran étroit.
+   ========================================================================== */
+@media screen and (max-width: 640px) {
+  .content { padding: 0 0.9rem 3rem; }
+
+  /* En-tête plus compact */
+  .page-header { padding: 1.2rem 0.9rem; gap: 12px; }
+  .page-header h1.page-title { font-size: 19px; }
+  .page-header__icon { width: 40px; height: 40px; }
+  .page-header__icon svg { width: 23px; height: 23px; }
+
+  /* Barre d'onglets : onglets pleine largeur, bouton contrat dessous */
+  .tabs-row { gap: 8px; }
+  .tabs { width: 100%; overflow-x: auto; }
+  .tabs button { flex: 1 0 auto; text-align: center; padding: 10px 10px; }
+  #btn-generate-contract { width: 100%; }
+
+  h1 { font-size: 17px; margin: 1.4rem 0 0.9rem; }
+  h2 { font-size: 14.5px; }
+
+  /* Toutes les grilles passent en une seule colonne */
+  .calc-grid { grid-template-columns: 1fr; gap: 10px; }
+  .stats-row { flex-direction: column; gap: 10px; }
+  .stat-card { min-width: 0; }
+
+  /* Solde / intérêts empilés */
+  .split-two { flex-direction: column; gap: 12px; }
+  .split-two__right { text-align: left; }
+  .split-two__right .value-input { justify-content: flex-start; }
+  .detail-interets-rows .kv { justify-content: space-between; }
+  .detail-interets-rows { margin-top: 6px; }
+
+  /* Comparaison durée : les trois durées empilées */
+  .duree-compare { flex-direction: column; }
+
+  /* Apport Ben / Marie : reste en 2, mais resserré */
+  .apport-split { gap: 6px; }
+
+  /* Tableau d'étalement : trop large pour le mobile → défilement horizontal */
+  .table-scroll { overflow: auto; -webkit-overflow-scrolling: touch; }
+  #amort-table { min-width: 780px; }
+  #amort-table thead th { white-space: nowrap; }
+
+  /* Contrat / convention : marges réduites, tableau annexe scrollable */
+  .contract-overlay { padding: 8px; }
+  .contract-toolbar { max-width: none; }
+  .contract { padding: 22px 16px; font-size: 12.5px; }
+  .contract h1 { font-size: 17px; }
+  .contract .c-sign { flex-direction: column; gap: 24px; }
+  .contract .c-table--data { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+}
