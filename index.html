@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=14">
+<link rel="stylesheet" href="assets/css/styles.css?v=15">
 </head>
 <body>
 
@@ -32,6 +32,7 @@
     <nav class="tabs">
       <button id="tabBtnTaux" class="active">Simulation taux</button>
       <button id="tabBtnAppart">Répartition appartement</button>
+      <button id="tabBtnEtf">Placement ETF</button>
     </nav>
     <!-- Fonctionnalité conservée mais masquée à la demande — retirer l'attribut "hidden" pour la réactiver -->
     <button type="button" id="btn-generate-contract" hidden title="Projet de convention pré-rempli avec ta simulation — à faire valider par le notaire">📄 Créer le contrat PDF</button>
@@ -359,6 +360,76 @@
 
   </section>
 
+  <!-- ===================== TAB : PLACEMENT ETF ===================== -->
+  <section id="tab-etf" class="panel">
+
+    <h1>Placement ETF — projection</h1>
+    <p class="note note--flush">
+      Projection d'un investissement en ETF sur la <b>même durée que le crédit</b> (<span class="duree-ans">20</span> ans), pour comparer avec le scénario immobilier. Le rendement est une <b>hypothèse, non garantie</b> — les marchés fluctuent.
+    </p>
+
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Montant investi au départ</label>
+        <div class="value-input">
+          <input type="number" id="in-etf-montant" step="1000" />
+          <span class="unit">€</span>
+        </div>
+      </div>
+
+      <div class="calc-field">
+        <label>Versement mensuel (optionnel)</label>
+        <div class="value-input">
+          <input type="number" id="in-etf-versement" step="50" />
+          <span class="unit">€</span>
+        </div>
+      </div>
+
+      <div class="calc-field slider-field">
+        <label>Rendement annuel moyen</label>
+        <div class="value-input">
+          <input type="number" id="in-etf-rendement" step="0.5" />
+          <span class="unit">%</span>
+        </div>
+        <input type="range" id="slider-etf-rendement" min="0" max="12" step="0.5" />
+      </div>
+
+      <div class="calc-field readonly">
+        <label>Durée (reprise de l'onglet Simulation taux)</label>
+        <div class="value-input"><span id="etf-duree" class="detail-value">-</span></div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <p>Valeur projetée au terme</p>
+        <p id="etf-valeur" class="you">-</p>
+      </div>
+      <div class="stat-card">
+        <p>Total investi</p>
+        <p id="etf-investi">-</p>
+      </div>
+      <div class="stat-card">
+        <p>Plus-value estimée</p>
+        <p id="etf-plusvalue" class="partner">-</p>
+      </div>
+    </div>
+
+    <h2 class="mt-2">Évolution année par année</h2>
+    <div class="table-scroll">
+      <table id="etf-table">
+        <thead>
+          <tr><th>Année</th><th>Total investi</th><th>Valeur du portefeuille</th><th>Plus-value</th></tr>
+        </thead>
+        <tbody id="etf-tbody"></tbody>
+      </table>
+    </div>
+    <p class="note">
+      Rendement composé mensuellement, <b>hors fiscalité et frais de courtage</b>. Chiffres indicatifs destinés à comparer « investir » et « acheter » sur le même horizon.
+    </p>
+
+  </section>
+
 </main>
 
 <!-- Aperçu du contrat (rempli par contract.js, imprimable en PDF) -->
@@ -370,11 +441,12 @@
   <div id="contract-doc" class="contract"></div>
 </div>
 
-<script src="assets/js/utils.js?v=14" defer></script>
-<script src="assets/js/ownership.js?v=14" defer></script>
-<script src="assets/js/rate-simulation.js?v=14" defer></script>
-<script src="assets/js/app.js?v=14" defer></script>
-<script src="assets/js/contract.js?v=14" defer></script>
+<script src="assets/js/utils.js?v=15" defer></script>
+<script src="assets/js/ownership.js?v=15" defer></script>
+<script src="assets/js/rate-simulation.js?v=15" defer></script>
+<script src="assets/js/app.js?v=15" defer></script>
+<script src="assets/js/contract.js?v=15" defer></script>
+<script src="assets/js/etf.js?v=15" defer></script>
 
 </body>
 </html>

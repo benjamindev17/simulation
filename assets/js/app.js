@@ -4,11 +4,13 @@
 
 const tabButtons = {
   appart: document.getElementById('tabBtnAppart'),
-  taux: document.getElementById('tabBtnTaux')
+  taux: document.getElementById('tabBtnTaux'),
+  etf: document.getElementById('tabBtnEtf')
 };
 const tabPanels = {
   appart: document.getElementById('tab-appart'),
-  taux: document.getElementById('tab-taux')
+  taux: document.getElementById('tab-taux'),
+  etf: document.getElementById('tab-etf')
 };
 
 function switchTab(name) {
@@ -18,5 +20,6 @@ function switchTab(name) {
   });
 }
 
-tabButtons.appart.addEventListener('click', () => switchTab('appart'));
-tabButtons.taux.addEventListener('click', () => switchTab('taux'));
+Object.keys(tabButtons).forEach(name => {
+  tabButtons[name].addEventListener('click', () => switchTab(name));
+});
