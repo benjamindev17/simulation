@@ -17,6 +17,7 @@
   const tbody = document.getElementById('etf-tbody');
   if (!elMontant) return;
 
+  const ETF_YEARS = 25;   // horizon de placement fixé à 25 ans
   let etfMontant = 50000; // 50 000 € investis par défaut
   let etfVersement = 0;   // versement mensuel optionnel
   let etfRendement = 7;   // rendement annuel moyen (%) — hypothèse
@@ -32,7 +33,7 @@
   // Exposée en global pour être rappelée par renderCalc quand la durée change.
   window.refreshEtf = function refreshEtf() {
     const rMonthly = etfRendement / 100 / 12;
-    const years = (typeof dureeChoisie !== 'undefined') ? dureeChoisie : 20;
+    const years = ETF_YEARS;
     const n = years * 12;
 
     elMontant.value = Math.round(etfMontant);
