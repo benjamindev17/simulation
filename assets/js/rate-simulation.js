@@ -133,11 +133,11 @@ function renderCalc() {
   elFraisTotal.textContent = fmt(Math.round(fraisTotal));
   elOutCout.textContent = fmt(Math.round(coutTotal));
 
-  const suffixeTravaux = travaux > 0 ? ' + travaux' : '';
+  const suffixeTravaux = travaux > 0 ? ' + aménagement' : '';
   if (elChkFraisHorsEmprunt && elChkFraisHorsEmprunt.checked) {
     elLabelCoutTotal.textContent = 'Coût à financer (prix' + suffixeTravaux + ', frais exclus)';
     elNoteFraisHorsEmprunt.style.display = 'block';
-    elNoteFraisHorsEmprunt.innerHTML = 'Frais (' + fmt(Math.round(fraisTotal)) + ') payés séparément, cash, en plus de l’apport — non financés par l’emprunt. Les travaux, eux, sont financés mais non soumis aux droits d’enregistrement ni au notaire. Coût réel total pour vous deux : ' + fmt(Math.round(prixAppart + travaux + fraisTotal)) + ' (' + fmt(Math.round(coutTotal)) + ' financé + ' + fmt(Math.round(fraisTotal)) + ' de frais à part).';
+    elNoteFraisHorsEmprunt.innerHTML = 'Frais (' + fmt(Math.round(fraisTotal)) + ') payés séparément, cash, en plus de l’apport — non financés par l’emprunt. L’aménagement, lui, est financé mais non soumis aux droits d’enregistrement ni au notaire. Coût réel total pour vous deux : ' + fmt(Math.round(prixAppart + travaux + fraisTotal)) + ' (' + fmt(Math.round(coutTotal)) + ' financé + ' + fmt(Math.round(fraisTotal)) + ' de frais à part).';
   } else {
     elLabelCoutTotal.textContent = 'Coût total du projet (prix' + suffixeTravaux + ' + frais, calculé)';
     elNoteFraisHorsEmprunt.style.display = 'none';

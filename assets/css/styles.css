@@ -813,3 +813,7 @@ body.contract-open { overflow: hidden; }
   .duree-float { margin-top: 4px; gap: 8px; }
   .duree-float__btns button { padding: 6px 14px; }
 }
+
+/* Sous-champ « Aménagement » dans la carte Prix de l'appartement */
+.price-extra { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line-soft); }
+.price-extra input[type="number"] { font-size: 16px; }
