@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=24">
+<link rel="stylesheet" href="assets/css/styles.css?v=25">
 </head>
 <body>
 
@@ -218,6 +218,14 @@
         <label>Prix de l'appartement</label>
         <div class="value-input">
           <input type="number" id="in-prix" step="1000" />
+          <span class="unit">€</span>
+        </div>
+      </div>
+
+      <div class="calc-field">
+        <label>Enveloppe travaux (financée, hors frais)</label>
+        <div class="value-input">
+          <input type="number" id="in-travaux" step="1000" min="0" />
           <span class="unit">€</span>
         </div>
       </div>
@@ -525,13 +533,13 @@
   <div id="contract-doc" class="contract"></div>
 </div>
 
-<script src="assets/js/utils.js?v=24" defer></script>
-<script src="assets/js/ownership.js?v=24" defer></script>
-<script src="assets/js/rate-simulation.js?v=24" defer></script>
-<script src="assets/js/app.js?v=24" defer></script>
-<script src="assets/js/contract.js?v=24" defer></script>
-<script src="assets/js/etf.js?v=24" defer></script>
-<script src="assets/js/cost.js?v=24" defer></script>
+<script src="assets/js/utils.js?v=25" defer></script>
+<script src="assets/js/ownership.js?v=25" defer></script>
+<script src="assets/js/rate-simulation.js?v=25" defer></script>
+<script src="assets/js/app.js?v=25" defer></script>
+<script src="assets/js/contract.js?v=25" defer></script>
+<script src="assets/js/etf.js?v=25" defer></script>
+<script src="assets/js/cost.js?v=25" defer></script>
 
 </body>
 </html>

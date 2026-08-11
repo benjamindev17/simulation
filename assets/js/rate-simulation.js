@@ -7,6 +7,7 @@
 
 /* --- État ---------------------------------------------------------------- */
 let prixAppart = 340000;
+let travaux = 0; // enveloppe travaux — financée, mais non soumise aux droits d'enregistrement ni au notaire
 const TAUX_ENREGISTREMENT = 3; // % fixe
 let fraisNotaire = 4868.95;
 let fraisBancaires = 0; // frais de crédit éventuellement imposés par la banque (saisis à la main)
@@ -38,6 +39,7 @@ const elFraisNotaire = document.getElementById('in-frais-notaire');
 const elFraisBancaires = document.getElementById('in-frais-bancaires');
 const elFraisTotal = document.getElementById('out-frais-total');
 const elOutCout = document.getElementById('out-cout');
+const elTravaux = document.getElementById('in-travaux');
 const elChkFraisHorsEmprunt = document.getElementById('chk-frais-hors-emprunt');
 const elNoteFraisHorsEmprunt = document.getElementById('note-frais-hors-emprunt');
 const elLabelCoutTotal = document.getElementById('label-cout-total');
@@ -61,10 +63,11 @@ function fraisTotalCalc() {
   return fraisEnregCalc() + fraisNotaire + fraisBancaires;
 }
 function coutTotalCalc() {
+  // Les travaux sont financés dans les deux cas, sans droits d'enregistrement ni notaire (calculés sur le prix seul).
   if (elChkFraisHorsEmprunt && elChkFraisHorsEmprunt.checked) {
-    return prixAppart; // frais payés séparément, cash, hors financement : seul le prix du bien est à financer
+    return prixAppart + travaux; // frais payés séparément, cash : prix + travaux à financer
   }
-  return prixAppart + fraisTotalCalc();
+  return prixAppart + travaux + fraisTotalCalc();
 }
 // Apport quand les frais sont payés à part : enveloppe de 100K moins les frais standards déjà retranchés,
 // moins les frais bancaires ajoutés à la main (eux aussi prélevés cash sur cette enveloppe).
@@ -123,18 +126,20 @@ function renderCalc() {
   const fraisTotal = fraisTotalCalc();
 
   elPrix.value = Math.round(prixAppart);
+  if (elTravaux) elTravaux.value = Math.round(travaux);
   elFraisEnreg.textContent = fmt(Math.round(fraisEnreg));
   elFraisNotaire.value = fraisNotaire.toFixed(2);
   elFraisBancaires.value = Math.round(fraisBancaires);
   elFraisTotal.textContent = fmt(Math.round(fraisTotal));
   elOutCout.textContent = fmt(Math.round(coutTotal));
 
+  const suffixeTravaux = travaux > 0 ? ' + travaux' : '';
   if (elChkFraisHorsEmprunt && elChkFraisHorsEmprunt.checked) {
-    elLabelCoutTotal.textContent = 'Coût à financer (prix seul, frais exclus)';
+    elLabelCoutTotal.textContent = 'Coût à financer (prix' + suffixeTravaux + ', frais exclus)';
     elNoteFraisHorsEmprunt.style.display = 'block';
-    elNoteFraisHorsEmprunt.innerHTML = 'Frais (' + fmt(Math.round(fraisTotal)) + ') payés séparément, cash, en plus de l’apport — non financés par l’emprunt. Coût réel total pour vous deux : ' + fmt(Math.round(prixAppart + fraisTotal)) + ' (' + fmt(Math.round(coutTotal)) + ' financé + ' + fmt(Math.round(fraisTotal)) + ' de frais à part).';
+    elNoteFraisHorsEmprunt.innerHTML = 'Frais (' + fmt(Math.round(fraisTotal)) + ') payés séparément, cash, en plus de l’apport — non financés par l’emprunt. Les travaux, eux, sont financés mais non soumis aux droits d’enregistrement ni au notaire. Coût réel total pour vous deux : ' + fmt(Math.round(prixAppart + travaux + fraisTotal)) + ' (' + fmt(Math.round(coutTotal)) + ' financé + ' + fmt(Math.round(fraisTotal)) + ' de frais à part).';
   } else {
-    elLabelCoutTotal.textContent = 'Coût total du projet (prix + frais, calculé)';
+    elLabelCoutTotal.textContent = 'Coût total du projet (prix' + suffixeTravaux + ' + frais, calculé)';
     elNoteFraisHorsEmprunt.style.display = 'none';
   }
 
@@ -198,6 +203,11 @@ elChkFraisHorsEmprunt.addEventListener('change', () => {
 
 elPrix.addEventListener('change', () => {
   prixAppart = Math.max(0, parseFloat(elPrix.value) || 0);
+  renderCalc();
+});
+
+elTravaux.addEventListener('change', () => {
+  travaux = Math.max(0, parseFloat(elTravaux.value) || 0);
   renderCalc();
 });
 
