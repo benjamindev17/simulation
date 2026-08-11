@@ -169,6 +169,7 @@ function renderCalc() {
 
   refreshTab2(); // garde l'onglet "Répartition appartement" synchronisé avec le montant emprunté / taux courants
   if (typeof refreshEtf === 'function') refreshEtf(); // resynchronise la projection ETF sur la durée cochée
+  if (typeof refreshCout === 'function') refreshCout(); // resynchronise le coût annuel (mensualité)
 }
 
 /* --- Interactions -------------------------------------------------------- */

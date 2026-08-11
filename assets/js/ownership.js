@@ -12,7 +12,7 @@ let APPORT_A = APPORT_A_RAW;  // apport "effectif" utilisé pour les parts — a
 let APPORT_B = APPORT_B_RAW;
 // (mensualité/2 par personne, calculée en temps réel — plus de valeur hardcodée ici)
 let dureeChoisie = 20; // durée cochée (15/20/25) dans Simulation taux — pilote tout l'onglet Répartition
-const APPART_GROWTH = 3; // %/an — utilisé pour détecter le mois de plus-value dans le tableau
+const APPART_GROWTH = 1; // %/an d'appréciation du bien — utilisé pour la valeur estimée et le mois de plus-value
 
 let lastLoanData = null; // dernier échéancier calculé, utilisé par le clic sur une ligne
 let selectedMonth = 1;   // mois sélectionné par défaut à l'ouverture
@@ -232,8 +232,9 @@ function refreshTab2() {
   document.getElementById('assumptions-apport').textContent =
     'Apport Benjamin : ' + fmt(Math.round(APPORT_A_RAW)) + ' (' + (benRatio * 100).toFixed(0) + '%) · Apport Marie : ' + fmt(Math.round(APPORT_B_RAW)) + ' (' + ((1 - benRatio) * 100).toFixed(0) + '%)';
 
-  // Reflète la durée choisie dans tous les libellés « … sur N ans » de l'onglet.
+  // Reflète la durée choisie et l'appréciation dans les libellés de l'onglet.
   document.querySelectorAll('.duree-ans').forEach(el => { el.textContent = dureeChoisie; });
+  document.querySelectorAll('.growth-pct').forEach(el => { el.textContent = APPART_GROWTH; });
 
   const freshLoanData = buildLoanSchedule();
 

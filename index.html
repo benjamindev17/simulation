@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=18">
+<link rel="stylesheet" href="assets/css/styles.css?v=19">
 </head>
 <body>
 
@@ -32,6 +32,7 @@
     <nav class="tabs">
       <button id="tabBtnTaux" class="active">Simulation taux</button>
       <button id="tabBtnAppart">Répartition appartement</button>
+      <button id="tabBtnCout">Coût total annuel</button>
       <button id="tabBtnEtf">Placement ETF</button>
     </nav>
     <!-- Fonctionnalité conservée mais masquée à la demande — retirer l'attribut "hidden" pour la réactiver -->
@@ -151,7 +152,7 @@
       </div>
 
       <div class="calc-field computed span-full">
-        <label>Si vous vendez à ce prix de marché estimé (appréciation 3%/an)</label>
+        <label>Si vous vendez à ce prix de marché estimé (appréciation <span class="growth-pct">1</span>%/an)</label>
         <div class="value-input detail-market-head">
           <span class="detail-market-head__label">Valeur de l'appartement à ce moment</span>
           <span id="detail-valeur-appart" class="detail-market-head__value">-</span>
@@ -360,6 +361,83 @@
 
   </section>
 
+  <!-- ===================== TAB : COÛT TOTAL ANNUEL ===================== -->
+  <section id="tab-cout" class="panel">
+
+    <h1>Coût total annuel de l'appartement</h1>
+    <p class="note note--flush">
+      Ce que l'appartement vous coûte chaque année : <b>mensualités + toutes les charges récurrentes</b>, réparti <b>50/50</b> entre Ben et Marie. Le <b>coût réel</b> retire le capital remboursé (c'est de l'épargne, pas une perte).
+    </p>
+
+    <div class="calc-grid">
+      <div class="calc-field readonly">
+        <label>Mensualité du prêt (reprise de la simu)</label>
+        <div class="value-input"><span id="cout-mensualite" class="detail-value">-</span><span class="unit">€/mois</span></div>
+      </div>
+      <div class="calc-field">
+        <label>Assurance solde restant dû (ADI)</label>
+        <div class="value-input"><input type="number" id="in-cout-asrd" step="10" /><span class="unit">€/an</span></div>
+      </div>
+      <div class="calc-field">
+        <label>Assurance habitation (incendie + RC)</label>
+        <div class="value-input"><input type="number" id="in-cout-incendie" step="10" /><span class="unit">€/an</span></div>
+      </div>
+      <div class="calc-field">
+        <label>Charges de copropriété</label>
+        <div class="value-input"><input type="number" id="in-cout-copro" step="5" /><span class="unit">€/mois</span></div>
+      </div>
+      <div class="calc-field">
+        <label>Fonds de réserve (gros travaux) — 50 €/pers</label>
+        <div class="value-input"><input type="number" id="in-cout-reserve" step="10" /><span class="unit">€/mois</span></div>
+      </div>
+      <div class="calc-field">
+        <label>Précompte immobilier (cadastre)</label>
+        <div class="value-input"><input type="number" id="in-cout-precompte" step="10" /><span class="unit">€/an</span></div>
+      </div>
+      <div class="calc-field">
+        <label>Taxe déchets (communale)</label>
+        <div class="value-input"><input type="number" id="in-cout-dechets" step="10" /><span class="unit">€/an</span></div>
+      </div>
+      <div class="calc-field">
+        <label>Charges appartement (entretien privatif)</label>
+        <div class="value-input"><input type="number" id="in-cout-charges" step="5" /><span class="unit">€/mois</span></div>
+      </div>
+      <div class="calc-field">
+        <label>Énergie &amp; eau (optionnel)</label>
+        <div class="value-input"><input type="number" id="in-cout-energie" step="10" /><span class="unit">€/mois</span></div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <p>Coût annuel total (tout compris)</p>
+        <p id="cout-total-an" class="you">-</p>
+      </div>
+      <div class="stat-card">
+        <p>Équivalent mensuel</p>
+        <p id="cout-mensuel">-</p>
+      </div>
+      <div class="stat-card">
+        <p>Par personne (50/50)</p>
+        <p id="cout-pp" class="partner">-</p>
+      </div>
+    </div>
+
+    <h2 class="mt-2">Détail des postes</h2>
+    <div class="table-scroll">
+      <table id="cout-table">
+        <thead>
+          <tr><th>Poste</th><th>Par an</th><th>Par mois</th></tr>
+        </thead>
+        <tbody id="cout-tbody"></tbody>
+      </table>
+    </div>
+    <p class="note">
+      <b>Coût réel hors capital</b> (intérêts + charges, en retirant le capital remboursé qui reste votre propriété) : <b><span id="cout-reel">-</span>/an</b> · <span id="cout-reel-mois">-</span>/mois. Capital compté en moyenne sur la durée du prêt.
+    </p>
+
+  </section>
+
   <!-- ===================== TAB : PLACEMENT ETF ===================== -->
   <section id="tab-etf" class="panel">
 
@@ -441,12 +519,13 @@
   <div id="contract-doc" class="contract"></div>
 </div>
 
-<script src="assets/js/utils.js?v=18" defer></script>
-<script src="assets/js/ownership.js?v=18" defer></script>
-<script src="assets/js/rate-simulation.js?v=18" defer></script>
-<script src="assets/js/app.js?v=18" defer></script>
-<script src="assets/js/contract.js?v=18" defer></script>
-<script src="assets/js/etf.js?v=18" defer></script>
+<script src="assets/js/utils.js?v=19" defer></script>
+<script src="assets/js/ownership.js?v=19" defer></script>
+<script src="assets/js/rate-simulation.js?v=19" defer></script>
+<script src="assets/js/app.js?v=19" defer></script>
+<script src="assets/js/contract.js?v=19" defer></script>
+<script src="assets/js/etf.js?v=19" defer></script>
+<script src="assets/js/cost.js?v=19" defer></script>
 
 </body>
 </html>

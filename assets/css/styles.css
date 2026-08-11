@@ -766,3 +766,6 @@ body.contract-open { overflow: hidden; }
   .contract .c-sign { flex-direction: column; gap: 24px; }
   .contract .c-table--data { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
 }
+
+/* Onglet Coût total annuel — ligne de total du tableau */
+#cout-table .cout-total-row td { font-weight: 700; border-top: 2px solid var(--line); background: var(--paper); }

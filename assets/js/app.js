@@ -5,11 +5,13 @@
 const tabButtons = {
   appart: document.getElementById('tabBtnAppart'),
   taux: document.getElementById('tabBtnTaux'),
+  cout: document.getElementById('tabBtnCout'),
   etf: document.getElementById('tabBtnEtf')
 };
 const tabPanels = {
   appart: document.getElementById('tab-appart'),
   taux: document.getElementById('tab-taux'),
+  cout: document.getElementById('tab-cout'),
   etf: document.getElementById('tab-etf')
 };
 
