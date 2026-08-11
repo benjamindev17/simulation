@@ -18,14 +18,14 @@
   if (!elAsrd) return;
 
   // Valeurs par défaut (Wallonie) fournies par l'utilisateur.
-  let asrd = 220;        // €/an
+  let asrd = 440;        // €/an
   let incendie = 300;    // €/an
   let copro = 125;       // €/mois
   let reserve = 100;     // €/mois total (50 € par personne)
   let precompte = 1250;  // €/an
   let dechets = 100;     // €/an
   let charges = 50;      // €/mois (entretien privatif)
-  let energie = 0;       // €/mois (optionnel)
+  let energie = 80;      // €/mois (énergie & eau)
 
   const row = (poste, an, cls) =>
     '<tr><td>' + poste + '</td><td' + (cls ? ' class="' + cls + '"' : '') + '>' + fmt(Math.round(an)) +
@@ -55,12 +55,15 @@
     const anEnergie = energie * 12;
 
     const totalAn = anMensualite + asrd + incendie + anCopro + anReserve + precompte + dechets + anCharges + anEnergie;
+    const chargesAn = totalAn - anMensualite;        // toutes les charges (hors mensualité du prêt)
+    const chargesMois = chargesAn / 12;              // charges mensualisées
+    const totalMois = mensualite + chargesMois;      // mensualité du prêt + charges mensualisées
     const capitalMoyenAn = years > 0 ? loanAmount / years : 0; // capital remboursé moyen par an (= épargne)
     const coutReelAn = totalAn - capitalMoyenAn;
 
-    el('cout-total-an').textContent = fmt(Math.round(totalAn));
-    el('cout-mensuel').textContent = fmt(Math.round(totalAn / 12));
-    el('cout-pp').textContent = fmt(Math.round(totalAn / 2));
+    el('cout-charges-mois').textContent = fmt(Math.round(chargesMois));
+    el('cout-total-mois').textContent = fmt(Math.round(totalMois));
+    el('cout-pp-mois').textContent = fmt(Math.round(totalMois / 2));
     el('cout-reel').textContent = fmt(Math.round(coutReelAn));
     el('cout-reel-mois').textContent = fmt(Math.round(coutReelAn / 12));
 
