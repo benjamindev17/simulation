@@ -12,7 +12,8 @@ let APPORT_A = APPORT_A_RAW;  // apport "effectif" utilisé pour les parts — a
 let APPORT_B = APPORT_B_RAW;
 // (mensualité/2 par personne, calculée en temps réel — plus de valeur hardcodée ici)
 let dureeChoisie = 20; // durée cochée (15/20/25) dans Simulation taux — pilote tout l'onglet Répartition
-const APPART_GROWTH = 1; // %/an d'appréciation du bien — utilisé pour la valeur estimée et le mois de plus-value
+const APPART_GROWTH = 2; // %/an d'appréciation du bien — utilisé pour la valeur estimée et le mois de plus-value
+const AGENCY_FEE_PCT = 3; // % de frais d'agence déduits du prix de vente
 
 let lastLoanData = null; // dernier échéancier calculé, utilisé par le clic sur une ligne
 let selectedMonth = 1;   // mois sélectionné par défaut à l'ouverture
@@ -67,7 +68,7 @@ function buildLoanSchedule() {
     // Mois de plus-value nette : valeur de marché estimée (prix initial + appréciation) moins solde restant dû, comparée à tout l'argent réellement sorti de la poche des deux (apport + mensualités déjà payées, capital et intérêts inclus).
     if (breakEvenMonth === null) {
       const marketValue = prixAppart * Math.pow(1 + APPART_GROWTH / 100, m / 12);
-      const netProceeds = marketValue - balance;
+      const netProceeds = marketValue - marketValue * (AGENCY_FEE_PCT / 100) - balance; // net après frais d'agence
       const totalPaidSoFar = APPORT_A + APPORT_B + mensualite * m;
       if (netProceeds > totalPaidSoFar) breakEvenMonth = m;
     }
@@ -118,7 +119,7 @@ function renderAmortizationFull(scheduleData) {
 
   const noteEl = document.getElementById('plus-value-note');
   if (breakEvenMonth) {
-    noteEl.innerHTML = '<span style="color:var(--amber); font-weight:600;">★ Mois ' + breakEvenMonth + '</span> (' + formatDateDansNMois(breakEvenMonth) + ') — c’est le premier mois où la valeur de revente estimée (prix initial + appréciation ' + APPART_GROWTH + '%/an, moins le solde restant dû) dépasse tout l’argent réellement sorti de vos poches à deux (apport + mensualités payées, capital et intérêts inclus). Avant ce mois, vous seriez encore en perte nette si vous vendiez.';
+    noteEl.innerHTML = '<span style="color:var(--amber); font-weight:600;">★ Mois ' + breakEvenMonth + '</span> (' + formatDateDansNMois(breakEvenMonth) + ') — c’est le premier mois où la valeur de revente estimée (prix initial + appréciation ' + APPART_GROWTH + '%/an, moins les frais d’agence ' + AGENCY_FEE_PCT + '% et le solde restant dû) dépasse tout l’argent réellement sorti de vos poches à deux (apport + mensualités payées, capital et intérêts inclus). Avant ce mois, vous seriez encore en perte nette si vous vendiez.';
   } else {
     noteEl.textContent = 'Avec les paramètres actuels, la plus-value nette n’est pas atteinte avant la fin du prêt (' + dureeChoisie + ' ans).';
   }
@@ -191,15 +192,16 @@ function selectMonth(m) {
   document.getElementById('detail-part-a').textContent = fmtPct(shareA);
   document.getElementById('detail-part-b').textContent = fmtPct(shareB);
 
-  // Scénario au prix de marché estimé : prix d'achat initial (onglet Simulation taux) + appréciation composée à 3%/an, moins le solde restant dû, réparti selon les mêmes parts.
+  // Scénario au prix de marché estimé : prix d'achat initial (onglet Simulation taux) + appréciation composée, moins les frais d'agence (3%) et le solde restant dû, réparti selon les mêmes parts.
   const marketValueNow = prixAppart * Math.pow(1 + APPART_GROWTH / 100, m / 12);
-  const netProceedsMarket = Math.max(0, marketValueNow - row.balance);
+  const fraisAgence = marketValueNow * (AGENCY_FEE_PCT / 100);
+  const netProceedsMarket = Math.max(0, marketValueNow - fraisAgence - row.balance);
   const saleMarketA = netProceedsMarket * (shareA / 100);
   const saleMarketB = netProceedsMarket * (shareB / 100);
   document.getElementById('detail-valeur-appart').textContent = fmt(Math.round(marketValueNow));
 
   let venteMarcheHtml =
-    'Prix initial (' + fmt(Math.round(prixAppart)) + ') apprécié à ' + APPART_GROWTH + '%/an sur ' + (m / 12).toFixed(1) + ' ans ≈ ' + fmt(Math.round(marketValueNow)) + '. Moins le solde restant dû (' + fmt(Math.round(row.balance)) + '), il resterait ' + fmt(Math.round(netProceedsMarket)) + ' à partager : <span class="you">' + fmt(Math.round(saleMarketA)) + ' iraient à Benjamin</span> et <span class="partner">' + fmt(Math.round(saleMarketB)) + ' iraient à Marie</span>.';
+    'Prix initial (' + fmt(Math.round(prixAppart)) + ') apprécié à ' + APPART_GROWTH + '%/an sur ' + (m / 12).toFixed(1) + ' ans ≈ ' + fmt(Math.round(marketValueNow)) + '. Moins les <b>frais d’agence (' + AGENCY_FEE_PCT + '% = ' + fmt(Math.round(fraisAgence)) + ')</b> et le solde restant dû (' + fmt(Math.round(row.balance)) + '), il resterait ' + fmt(Math.round(netProceedsMarket)) + ' à partager : <span class="you">' + fmt(Math.round(saleMarketA)) + ' iraient à Benjamin</span> et <span class="partner">' + fmt(Math.round(saleMarketB)) + ' iraient à Marie</span>.';
 
   // Explication uniquement si l'un des deux récupérerait moins que son apport initial — sinon on n'encombre pas la carte.
   const dessousA = saleMarketA < APPORT_A;

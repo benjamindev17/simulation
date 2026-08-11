@@ -162,9 +162,12 @@ function renderCalc() {
   renderColonne(20, elCol20, elOutMensualite20, elOutEndettement20, elOutInteret20);
   renderColonne(25, elCol25, elOutMensualite25, elOutEndettement25, elOutInteret25);
 
-  // Met en évidence la durée cochée (celle qui pilote l'onglet Répartition).
+  // Met en évidence la durée cochée (colonnes de comparaison + sélecteur flottant).
   [15, 20, 25].forEach(y => {
     document.getElementById('col-duree-' + y).classList.toggle('selected', y === dureeChoisie);
+  });
+  document.querySelectorAll('#duree-float button').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.years, 10) === dureeChoisie);
   });
 
   refreshTab2(); // garde l'onglet "Répartition appartement" synchronisé avec le montant emprunté / taux courants
@@ -173,13 +176,19 @@ function renderCalc() {
 }
 
 /* --- Interactions -------------------------------------------------------- */
-// Choix de la durée (radios 15/20/25) : pilote l'échéancier de l'onglet Répartition.
+// Sélection de la durée (15/20/25), depuis les radios OU le sélecteur flottant.
+// Met à jour l'état, coche le radio correspondant, et recalcule tout.
+function selectDuree(years) {
+  dureeChoisie = years;
+  const radio = document.querySelector('input[name="duree-choisie"][value="' + years + '"]');
+  if (radio) radio.checked = true;
+  renderCalc();
+}
 document.querySelectorAll('input[name="duree-choisie"]').forEach(radio => {
-  radio.addEventListener('change', () => {
-    if (!radio.checked) return;
-    dureeChoisie = parseInt(radio.value, 10);
-    renderCalc();
-  });
+  radio.addEventListener('change', () => { if (radio.checked) selectDuree(parseInt(radio.value, 10)); });
+});
+document.querySelectorAll('#duree-float button').forEach(btn => {
+  btn.addEventListener('click', () => selectDuree(parseInt(btn.dataset.years, 10)));
 });
 
 elChkFraisHorsEmprunt.addEventListener('change', () => {
