@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=23">
+<link rel="stylesheet" href="assets/css/styles.css?v=24">
 </head>
 <body>
 
@@ -24,15 +24,6 @@
     <p class="eyebrow">Projet appartement</p>
     <h1 class="page-title">Simulation patrimoine</h1>
   </div>
-  <div id="duree-float" class="duree-float" role="group" aria-label="Durée du crédit">
-    <span class="duree-float__label">Durée crédit</span>
-    <div class="duree-float__btns">
-      <button type="button" data-years="15">15</button>
-      <button type="button" data-years="20">20</button>
-      <button type="button" data-years="25">25</button>
-    </div>
-    <span class="duree-float__unit">ans</span>
-  </div>
 </header>
 
 <main class="content">
@@ -44,6 +35,15 @@
       <button id="tabBtnCout">Coût total annuel</button>
       <button id="tabBtnEtf">Placement ETF</button>
     </nav>
+    <div id="duree-float" class="duree-float" role="group" aria-label="Durée du crédit">
+      <span class="duree-float__label">Durée crédit</span>
+      <div class="duree-float__btns">
+        <button type="button" data-years="15">15</button>
+        <button type="button" data-years="20">20</button>
+        <button type="button" data-years="25">25</button>
+      </div>
+      <span class="duree-float__unit">ans</span>
+    </div>
     <!-- Fonctionnalité conservée mais masquée à la demande — retirer l'attribut "hidden" pour la réactiver -->
     <button type="button" id="btn-generate-contract" hidden title="Projet de convention pré-rempli avec ta simulation — à faire valider par le notaire">📄 Créer le contrat PDF</button>
   </div>
@@ -525,13 +525,13 @@
   <div id="contract-doc" class="contract"></div>
 </div>
 
-<script src="assets/js/utils.js?v=23" defer></script>
-<script src="assets/js/ownership.js?v=23" defer></script>
-<script src="assets/js/rate-simulation.js?v=23" defer></script>
-<script src="assets/js/app.js?v=23" defer></script>
-<script src="assets/js/contract.js?v=23" defer></script>
-<script src="assets/js/etf.js?v=23" defer></script>
-<script src="assets/js/cost.js?v=23" defer></script>
+<script src="assets/js/utils.js?v=24" defer></script>
+<script src="assets/js/ownership.js?v=24" defer></script>
+<script src="assets/js/rate-simulation.js?v=24" defer></script>
+<script src="assets/js/app.js?v=24" defer></script>
+<script src="assets/js/contract.js?v=24" defer></script>
+<script src="assets/js/etf.js?v=24" defer></script>
+<script src="assets/js/cost.js?v=24" defer></script>
 
 </body>
 </html>
