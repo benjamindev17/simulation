@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=27">
+<link rel="stylesheet" href="assets/css/styles.css?v=28">
 </head>
 <body>
 
@@ -532,6 +532,11 @@
       Le compte n'est pas encore relié. Cette fonctionnalité arrive bientôt — rien à faire de ton côté pour l'instant.
     </div>
 
+    <!-- État : le SDK Firebase n'a pas pu se charger (réseau, bloqueur de scripts…) -->
+    <div id="dash-load-error" class="warning-box" hidden>
+      Le service de connexion n'a pas pu se charger. Vérifie ta connexion internet (ou qu'aucun bloqueur de pub/traqueurs ne bloque gstatic.com), puis recharge la page.
+    </div>
+
     <!-- État : déconnecté -->
     <div id="dash-signed-out" class="dash-auth" hidden>
       <p class="note note--flush">Connecte-toi pour sauvegarder tes simulations et les retrouver plus tard, sur n'importe quel appareil.</p>
@@ -582,20 +587,20 @@
   <div id="contract-doc" class="contract"></div>
 </div>
 
-<script src="assets/js/utils.js?v=27" defer></script>
-<script src="assets/js/ownership.js?v=27" defer></script>
-<script src="assets/js/rate-simulation.js?v=27" defer></script>
-<script src="assets/js/app.js?v=27" defer></script>
-<script src="assets/js/contract.js?v=27" defer></script>
-<script src="assets/js/etf.js?v=27" defer></script>
-<script src="assets/js/cost.js?v=27" defer></script>
+<script src="assets/js/utils.js?v=28" defer></script>
+<script src="assets/js/ownership.js?v=28" defer></script>
+<script src="assets/js/rate-simulation.js?v=28" defer></script>
+<script src="assets/js/app.js?v=28" defer></script>
+<script src="assets/js/contract.js?v=28" defer></script>
+<script src="assets/js/etf.js?v=28" defer></script>
+<script src="assets/js/cost.js?v=28" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=27" defer></script>
-<script src="assets/js/dashboard.js?v=27" defer></script>
+<script src="assets/js/firebase-config.js?v=28" defer></script>
+<script src="assets/js/dashboard.js?v=28" defer></script>
 
 </body>
 </html>

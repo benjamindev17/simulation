@@ -5,6 +5,7 @@
    ========================================================================== */
 (function () {
   const elNotConfigured = document.getElementById('dash-not-configured');
+  const elLoadError = document.getElementById('dash-load-error');
   const elSignedOut = document.getElementById('dash-signed-out');
   const elSignedIn = document.getElementById('dash-signed-in');
   const elAvatar = document.getElementById('dash-avatar');
@@ -21,6 +22,13 @@
   // réseau/API key invalide dans la console).
   if (typeof FIREBASE_CONFIGURED === 'undefined' || !FIREBASE_CONFIGURED) {
     elNotConfigured.hidden = false;
+    return;
+  }
+
+  // Le SDK (chargé depuis gstatic.com) peut échouer à charger (réseau, bloqueur de scripts) :
+  // on l'affiche proprement au lieu de laisser planter le script.
+  if (typeof firebase === 'undefined') {
+    elLoadError.hidden = false;
     return;
   }
 

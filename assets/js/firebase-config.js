@@ -6,12 +6,13 @@
    à la place de celui-ci (avec les vraies valeurs, pas les "REMPLACE_MOI").
    ========================================================================== */
 const firebaseConfig = {
-  apiKey: "REMPLACE_MOI",
-  authDomain: "REMPLACE_MOI.firebaseapp.com",
-  projectId: "REMPLACE_MOI",
-  storageBucket: "REMPLACE_MOI.appspot.com",
-  messagingSenderId: "REMPLACE_MOI",
-  appId: "REMPLACE_MOI"
+  apiKey: "AIzaSyBR20qIBPdYjwvQyuyXDrF-0yTbpYqFak8",
+  authDomain: "simulation-3c0c3.firebaseapp.com",
+  projectId: "simulation-3c0c3",
+  storageBucket: "simulation-3c0c3.firebasestorage.app",
+  messagingSenderId: "945779456372",
+  appId: "1:945779456372:web:7ea8264a8396da27371421",
+  measurementId: "G-1EP0N0N4FZ"
 };
 
 // Devient false automatiquement dès que tu as remplacé les valeurs ci-dessus.
