@@ -1001,6 +1001,7 @@ body.recap-open { overflow: hidden; }
 .dash-account__info { flex: 1; min-width: 0; }
 .dash-account__name { font-size: 14.5px; font-weight: 600; margin: 0; }
 .dash-account__email { font-size: 12.5px; color: var(--ink-muted); margin: 2px 0 0; }
+.dash-account__signout { margin-top: 10px; }
 
 .dash-list-head {
   display: flex;

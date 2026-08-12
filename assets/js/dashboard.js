@@ -161,7 +161,14 @@
     });
   });
 
-  btnSignOut.addEventListener('click', () => {
+  btnSignOut.addEventListener('click', async () => {
+    const ok = await showConfirm({
+      title: 'Se déconnecter ?',
+      message: 'Tu devras te reconnecter avec ton compte Google pour retrouver tes simulations enregistrées.',
+      confirmText: 'Se déconnecter',
+      danger: true
+    });
+    if (!ok) return;
     auth.signOut();
   });
 
