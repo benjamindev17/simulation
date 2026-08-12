@@ -901,3 +901,61 @@ body.contract-open { overflow: hidden; }
 }
 
 .dash-sim-list { display: flex; flex-direction: column; gap: 10px; }
+
+/* Barre « simulation chargée » dans tabs-row (visible sur tous les onglets) */
+.current-sim-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--amber-soft);
+  border: 1px solid var(--amber-line);
+  border-radius: 999px;
+  padding: 7px 8px 7px 14px;
+  font-size: 13px;
+}
+.current-sim-bar b { font-weight: 700; }
+.current-sim-bar button {
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+#btn-save-current { background: var(--amber); color: #fff; padding: 7px 14px; font-size: 12.5px; }
+#btn-save-current:hover { background: #8f6725; }
+#btn-unload-current { background: transparent; color: var(--amber); padding: 6px 8px; font-size: 14px; line-height: 1; }
+#btn-unload-current:hover { background: rgba(169, 122, 44, 0.12); }
+
+/* Lignes de la liste des simulations enregistrées */
+.dash-sim-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--paper-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+}
+.dash-sim-row__name { font-size: 14.5px; font-weight: 600; margin: 0; }
+.dash-sim-row__date { font-size: 12px; color: var(--ink-muted); margin: 2px 0 0; }
+.dash-sim-row__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn-danger {
+  background: var(--brick-soft);
+  color: var(--brick);
+  border: 1px solid var(--brick-line);
+  border-radius: 999px;
+  padding: 9px 16px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-danger:hover { background: #efd0cb; }
+
+@media screen and (max-width: 640px) {
+  .current-sim-bar { width: 100%; margin-top: 4px; }
+  .dash-sim-row { flex-direction: column; align-items: stretch; }
+}
