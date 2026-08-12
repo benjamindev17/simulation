@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=26">
+<link rel="stylesheet" href="assets/css/styles.css?v=27">
 </head>
 <body>
 
@@ -34,6 +34,7 @@
       <button id="tabBtnAppart">Répartition appartement</button>
       <button id="tabBtnCout">Coût total annuel</button>
       <button id="tabBtnEtf">Placement ETF</button>
+      <button id="tabBtnDashboard">Mes simulations</button>
     </nav>
     <div id="duree-float" class="duree-float" role="group" aria-label="Durée du crédit">
       <span class="duree-float__label">Durée crédit</span>
@@ -521,6 +522,55 @@
 
   </section>
 
+  <!-- ===================== TAB : MES SIMULATIONS (tableau de bord) ===================== -->
+  <section id="tab-dashboard" class="panel">
+
+    <h1>Mes simulations</h1>
+
+    <!-- État : Firebase non configuré (aucun firebase-config.js valide trouvé) -->
+    <div id="dash-not-configured" class="warning-box" hidden>
+      Le compte n'est pas encore relié. Cette fonctionnalité arrive bientôt — rien à faire de ton côté pour l'instant.
+    </div>
+
+    <!-- État : déconnecté -->
+    <div id="dash-signed-out" class="dash-auth" hidden>
+      <p class="note note--flush">Connecte-toi pour sauvegarder tes simulations et les retrouver plus tard, sur n'importe quel appareil.</p>
+      <button type="button" id="btn-google-signin" class="btn-google">
+        <svg viewBox="0 0 18 18" width="18" height="18" aria-hidden="true">
+          <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/>
+          <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.85.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/>
+          <path fill="#FBBC05" d="M3.97 10.72A5.41 5.41 0 0 1 3.68 9c0-.6.1-1.18.29-1.72V4.95H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.05l3.01-2.33z"/>
+          <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/>
+        </svg>
+        Continuer avec Google
+      </button>
+    </div>
+
+    <!-- État : connecté -->
+    <div id="dash-signed-in" class="dash-account" hidden>
+      <div class="dash-account__row">
+        <img id="dash-avatar" class="dash-avatar" alt="" width="36" height="36">
+        <div class="dash-account__info">
+          <p id="dash-name" class="dash-account__name">-</p>
+          <p id="dash-email" class="dash-account__email">-</p>
+        </div>
+        <button type="button" id="btn-signout" class="btn-secondary">Se déconnecter</button>
+      </div>
+
+      <div class="dash-list-head">
+        <h2 class="dash-list-head__title">Simulations enregistrées</h2>
+        <button type="button" id="btn-new-simulation" class="btn-moss">+ Nouvelle simulation</button>
+      </div>
+
+      <div id="dash-empty" class="dash-empty" hidden>
+        Aucune simulation enregistrée pour l'instant. La sauvegarde arrive dans une prochaine étape — pour l'instant, cet écran confirme juste que ta connexion fonctionne.
+      </div>
+
+      <div id="dash-sim-list" class="dash-sim-list"></div>
+    </div>
+
+  </section>
+
 </main>
 
 <!-- Aperçu du contrat (rempli par contract.js, imprimable en PDF) -->
@@ -532,13 +582,20 @@
   <div id="contract-doc" class="contract"></div>
 </div>
 
-<script src="assets/js/utils.js?v=26" defer></script>
-<script src="assets/js/ownership.js?v=26" defer></script>
-<script src="assets/js/rate-simulation.js?v=26" defer></script>
-<script src="assets/js/app.js?v=26" defer></script>
-<script src="assets/js/contract.js?v=26" defer></script>
-<script src="assets/js/etf.js?v=26" defer></script>
-<script src="assets/js/cost.js?v=26" defer></script>
+<script src="assets/js/utils.js?v=27" defer></script>
+<script src="assets/js/ownership.js?v=27" defer></script>
+<script src="assets/js/rate-simulation.js?v=27" defer></script>
+<script src="assets/js/app.js?v=27" defer></script>
+<script src="assets/js/contract.js?v=27" defer></script>
+<script src="assets/js/etf.js?v=27" defer></script>
+<script src="assets/js/cost.js?v=27" defer></script>
+
+<!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
+<script src="assets/js/firebase-config.js?v=27" defer></script>
+<script src="assets/js/dashboard.js?v=27" defer></script>
 
 </body>
 </html>
