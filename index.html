@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=32">
+<link rel="stylesheet" href="assets/css/styles.css?v=33">
 </head>
 <body>
 
@@ -228,6 +228,11 @@
 
     <h1>Simulation taux — apport, quotité, mensualité</h1>
 
+    <div class="mode-toggle" role="group" aria-label="Emprunteur(s)">
+      <button type="button" data-mode="duo" class="active">À deux</button>
+      <button type="button" data-mode="solo">Seul(e)</button>
+    </div>
+
     <div id="taux-warning" class="warning-box" style="display:none;"></div>
 
     <div class="calc-grid">
@@ -295,31 +300,33 @@
           <input type="number" id="in-apport" step="1000" />
           <span class="unit">€</span>
         </div>
-        <div class="apport-split">
-          <div class="apport-split__col apport-split__col--ben">
-            <label for="in-apport-ben">Apport Ben</label>
-            <div class="value-input">
-              <input type="number" id="in-apport-ben" step="500" />
-              <span class="unit">€</span>
+        <div id="apport-split-duo">
+          <div class="apport-split">
+            <div class="apport-split__col apport-split__col--ben">
+              <label for="in-apport-ben">Apport Ben</label>
+              <div class="value-input">
+                <input type="number" id="in-apport-ben" step="500" />
+                <span class="unit">€</span>
+              </div>
+            </div>
+            <div class="apport-split__col apport-split__col--marie">
+              <label for="in-apport-marie">Apport Marie</label>
+              <div class="value-input">
+                <input type="number" id="in-apport-marie" step="500" />
+                <span class="unit">€</span>
+              </div>
             </div>
           </div>
-          <div class="apport-split__col apport-split__col--marie">
-            <label for="in-apport-marie">Apport Marie</label>
-            <div class="value-input">
-              <input type="number" id="in-apport-marie" step="500" />
-              <span class="unit">€</span>
+          <div class="apport-slider">
+            <input type="range" id="in-apport-ratio" min="0" max="100" step="5" />
+            <div class="apport-slider__labels">
+              <span class="you">100% Ben</span>
+              <span class="apport-slider__mid">50 / 50</span>
+              <span class="partner">100% Marie</span>
             </div>
-          </div>
-        </div>
-        <div class="apport-slider">
-          <input type="range" id="in-apport-ratio" min="0" max="100" step="5" />
-          <div class="apport-slider__labels">
-            <span class="you">100% Ben</span>
-            <span class="apport-slider__mid">50 / 50</span>
-            <span class="partner">100% Marie</span>
-          </div>
-          <div class="apport-slider__out">
-            Ben <span id="out-ratio-ben" class="you">-</span> · Marie <span id="out-ratio-marie" class="partner">-</span>
+            <div class="apport-slider__out">
+              Ben <span id="out-ratio-ben" class="you">-</span> · Marie <span id="out-ratio-marie" class="partner">-</span>
+            </div>
           </div>
         </div>
       </div>
@@ -347,6 +354,34 @@
           <span class="unit">%</span>
         </div>
         <input type="range" id="slider-taux" min="3.2" max="3.7" step="0.05" />
+      </div>
+
+      <div class="calc-field span-full" id="field-salaire-duo">
+        <label>Revenus mensuels nets (pour le calcul d'endettement)</label>
+        <div class="apport-split">
+          <div class="apport-split__col apport-split__col--ben">
+            <label for="in-salaire-ben">Salaire Ben</label>
+            <div class="value-input">
+              <input type="number" id="in-salaire-ben" step="50" />
+              <span class="unit">€</span>
+            </div>
+          </div>
+          <div class="apport-split__col apport-split__col--marie">
+            <label for="in-salaire-marie">Salaire Marie</label>
+            <div class="value-input">
+              <input type="number" id="in-salaire-marie" step="50" />
+              <span class="unit">€</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="calc-field span-full" id="field-salaire-solo" hidden>
+        <label>Revenu mensuel net (pour le calcul d'endettement)</label>
+        <div class="value-input">
+          <input type="number" id="in-salaire-solo" step="50" />
+          <span class="unit">€</span>
+        </div>
       </div>
 
       <div class="calc-field span-full">
@@ -447,7 +482,7 @@
         <p>Total par mois (prêt + charges)</p>
         <p id="cout-total-mois" class="you">-</p>
       </div>
-      <div class="stat-card">
+      <div class="stat-card" id="cout-pp-card">
         <p>Par personne / mois (50/50)</p>
         <p id="cout-pp-mois" class="partner">-</p>
       </div>
@@ -603,21 +638,21 @@
   <div id="contract-doc" class="contract"></div>
 </div>
 
-<script src="assets/js/utils.js?v=32" defer></script>
-<script src="assets/js/ownership.js?v=32" defer></script>
-<script src="assets/js/rate-simulation.js?v=32" defer></script>
-<script src="assets/js/app.js?v=32" defer></script>
-<script src="assets/js/contract.js?v=32" defer></script>
-<script src="assets/js/etf.js?v=32" defer></script>
-<script src="assets/js/cost.js?v=32" defer></script>
+<script src="assets/js/utils.js?v=33" defer></script>
+<script src="assets/js/ownership.js?v=33" defer></script>
+<script src="assets/js/rate-simulation.js?v=33" defer></script>
+<script src="assets/js/app.js?v=33" defer></script>
+<script src="assets/js/contract.js?v=33" defer></script>
+<script src="assets/js/etf.js?v=33" defer></script>
+<script src="assets/js/cost.js?v=33" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=32" defer></script>
-<script src="assets/js/state.js?v=32" defer></script>
-<script src="assets/js/dashboard.js?v=32" defer></script>
+<script src="assets/js/firebase-config.js?v=33" defer></script>
+<script src="assets/js/state.js?v=33" defer></script>
+<script src="assets/js/dashboard.js?v=33" defer></script>
 
 </body>
 </html>

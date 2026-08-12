@@ -16,10 +16,28 @@ const FRAIS_STANDARD_HORS_EMPRUNT = 15000; // enreg + notaire retranchés du bud
 let apport = 56000; // apport total par défaut (28 000 € Ben + 28 000 € Marie, hors frais)
 let benRatio = 0.5; // 50/50 par défaut (curseur au milieu) — éditable via les champs Apport Ben/Marie ou le curseur (pas de 5%)
 let tauxPct = 3.70;
-const SALAIRE_COMBINE = 4740;
 let SEUIL_ENDETTEMENT = 33;
 
+/* Emprunteur(s) : "duo" (par défaut) ou "solo" — pilote l'affichage des champs
+   Ben/Marie (apport, salaires) et l'onglet Répartition appartement. */
+let mode = 'duo';
+let salaireBen = 2370;
+let salaireMarie = 2370;
+let salaireSolo = 4740;
+function salaireCombineCalc() {
+  return mode === 'solo' ? salaireSolo : salaireBen + salaireMarie;
+}
+
 /* --- Références DOM ------------------------------------------------------- */
+const elModeToggle = document.querySelectorAll('.mode-toggle button');
+const elFieldSalaireDuo = document.getElementById('field-salaire-duo');
+const elFieldSalaireSolo = document.getElementById('field-salaire-solo');
+const elSalaireBen = document.getElementById('in-salaire-ben');
+const elSalaireMarie = document.getElementById('in-salaire-marie');
+const elSalaireSolo = document.getElementById('in-salaire-solo');
+const elApportSplitDuo = document.getElementById('apport-split-duo');
+const elTabBtnAppart = document.getElementById('tabBtnAppart');
+const elCoutPpCard = document.getElementById('cout-pp-card');
 const elSeuilEndettement = document.getElementById('in-seuil-endettement');
 const elCol15 = document.getElementById('col-duree-15');
 const elCol20 = document.getElementById('col-duree-20');
@@ -110,7 +128,7 @@ function interetTotalPour(years) {
 
 function renderColonne(years, elCol, elMensualite, elEndettement, elInteret) {
   const m = mensualitePour(years);
-  const pct = (m / SALAIRE_COMBINE) * 100;
+  const pct = (m / salaireCombineCalc()) * 100;
   elMensualite.textContent = fmt(Math.round(m)) + '/mois';
   elEndettement.textContent = pct.toFixed(1) + '% du salaire';
   elInteret.textContent = fmt(Math.round(interetTotalPour(years)));
@@ -162,6 +180,10 @@ function renderCalc() {
   elTaux.value = tauxPct.toFixed(2);
   elSliderTaux.value = tauxPct;
 
+  elSalaireBen.value = Math.round(salaireBen);
+  elSalaireMarie.value = Math.round(salaireMarie);
+  elSalaireSolo.value = Math.round(salaireSolo);
+
   elSeuilEndettement.value = SEUIL_ENDETTEMENT;
   renderColonne(15, elCol15, elOutMensualite15, elOutEndettement15, elOutInteret15);
   renderColonne(20, elCol20, elOutMensualite20, elOutEndettement20, elOutInteret20);
@@ -179,6 +201,36 @@ function renderCalc() {
   if (typeof refreshEtf === 'function') refreshEtf(); // resynchronise la projection ETF sur la durée cochée
   if (typeof refreshCout === 'function') refreshCout(); // resynchronise le coût annuel (mensualité)
 }
+
+// Bascule Solo/Duo : montre/cache les champs Ben/Marie (apport, salaires) et
+// l'onglet Répartition appartement, qui n'a pas de sens pour un emprunteur seul.
+function applyMode(newMode) {
+  mode = newMode;
+  elModeToggle.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+
+  const isSolo = mode === 'solo';
+  elFieldSalaireDuo.hidden = isSolo;
+  elFieldSalaireSolo.hidden = !isSolo;
+  elApportSplitDuo.hidden = isSolo;
+  elTabBtnAppart.hidden = isSolo;
+  if (elCoutPpCard) elCoutPpCard.hidden = isSolo;
+
+  // Si l'onglet Répartition était affiché au moment de passer en solo, on revient sur Simulation taux.
+  const tabAppart = document.getElementById('tab-appart');
+  if (isSolo && tabAppart && tabAppart.classList.contains('active')) {
+    switchTab('taux');
+  }
+
+  renderCalc();
+}
+
+elModeToggle.forEach(btn => {
+  btn.addEventListener('click', () => applyMode(btn.dataset.mode));
+});
+
+elSalaireBen.addEventListener('change', () => { salaireBen = Math.max(0, parseFloat(elSalaireBen.value) || 0); renderCalc(); });
+elSalaireMarie.addEventListener('change', () => { salaireMarie = Math.max(0, parseFloat(elSalaireMarie.value) || 0); renderCalc(); });
+elSalaireSolo.addEventListener('change', () => { salaireSolo = Math.max(0, parseFloat(elSalaireSolo.value) || 0); renderCalc(); });
 
 /* --- Interactions -------------------------------------------------------- */
 // Sélection de la durée (15/20/25), depuis les radios OU le sélecteur flottant.
@@ -259,7 +311,7 @@ elSeuilEndettement.addEventListener('change', () => {
   const coutTotal = coutTotalCalc();
   const r = tauxPct / 100 / 12;
   const n = 20 * 12;
-  const mensualiteCible = SALAIRE_COMBINE * (SEUIL_ENDETTEMENT / 100);
+  const mensualiteCible = salaireCombineCalc() * (SEUIL_ENDETTEMENT / 100);
   const annuityFactor = r === 0 ? n : (1 - Math.pow(1 + r, -n)) / r;
   const loanNecessaire = mensualiteCible * annuityFactor;
   apport = Math.min(Math.max(0, coutTotal - loanNecessaire), coutTotal);
@@ -288,4 +340,4 @@ elTaux.addEventListener('change', () => applyTaux(parseFloat(elTaux.value) || 3.
 elSliderTaux.addEventListener('input', () => applyTaux(parseFloat(elSliderTaux.value) || 3.7));
 
 /* --- Amorçage ------------------------------------------------------------ */
-renderCalc();
+applyMode(mode); // synchronise l'affichage Solo/Duo (et appelle renderCalc())

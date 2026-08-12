@@ -33,6 +33,10 @@ function captureState() {
     tauxPct,
     seuilEndettement: SEUIL_ENDETTEMENT,
     dureeChoisie,
+    mode,
+    salaireBen,
+    salaireMarie,
+    salaireSolo,
     // --- Répartition appartement ---
     equalizeShares,
     // --- Coût total annuel (le module cost.js encapsule ses variables ; on lit le DOM, qu'il tient à jour) ---
@@ -61,6 +65,9 @@ function applyState(s) {
   benRatio = s.benRatio;
   tauxPct = s.tauxPct;
   SEUIL_ENDETTEMENT = s.seuilEndettement;
+  salaireBen = s.salaireBen != null ? s.salaireBen : salaireBen;
+  salaireMarie = s.salaireMarie != null ? s.salaireMarie : salaireMarie;
+  salaireSolo = s.salaireSolo != null ? s.salaireSolo : salaireSolo;
   equalizeShares = s.equalizeShares;
   document.getElementById('chk-equalize-shares').checked = s.equalizeShares;
 
@@ -79,4 +86,9 @@ function applyState(s) {
   // et réaffiche tout (Simulation taux, Répartition, Coût) à partir des
   // variables ci-dessus.
   selectDuree(s.dureeChoisie);
+
+  // applyMode() affiche/masque les champs Ben/Marie et l'onglet Répartition
+  // selon le mode sauvegardé, puis rafraîchit tout une dernière fois.
+  // (Simulations sauvegardées avant l'ajout du mode Solo/Duo → "duo" par défaut.)
+  applyMode(s.mode || 'duo');
 }

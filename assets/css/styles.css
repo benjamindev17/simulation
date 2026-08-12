@@ -995,3 +995,28 @@ body.contract-open { overflow: hidden; }
   .current-sim-bar { width: 100%; margin-top: 4px; }
   .dash-sim-row { flex-direction: column; align-items: stretch; }
 }
+
+/* Bascule Solo / Duo (haut de l'onglet Simulation taux) */
+.mode-toggle {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--moss-soft);
+  border: 1px solid var(--moss-line);
+  border-radius: 999px;
+  padding: 4px;
+  margin: 0 0 1.25rem;
+}
+.mode-toggle button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--moss);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.mode-toggle button:hover:not(.active) { background: rgba(60, 91, 67, 0.08); }
+.mode-toggle button.active { background: var(--moss); color: #fff; }
