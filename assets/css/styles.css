@@ -714,6 +714,11 @@ body.contract-open { overflow: hidden; }
 #btn-print-contract { background: var(--moss); color: #fff; }
 #btn-close-contract { background: var(--paper-raised); color: var(--ink); border: 1px solid var(--line); }
 
+body.recap-open { overflow: hidden; }
+#btn-recap-edit { background: var(--moss); color: #fff; display: inline-flex; align-items: center; gap: 6px; }
+#btn-recap-edit:hover { background: #33503b; }
+#btn-close-recap { background: var(--paper-raised); color: var(--ink); border: 1px solid var(--line); }
+
 .contract {
   max-width: 820px;
   margin: 0 auto;
@@ -812,6 +817,13 @@ body.contract-open { overflow: hidden; }
   .contract h1 { font-size: 17px; }
   .contract .c-sign { flex-direction: column; gap: 24px; }
   .contract .c-table--data { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+
+  /* Tableaux clé/valeur (récap + convention) : passent en ligne flex pour éviter
+     tout débordement horizontal quand le libellé + la valeur sont trop larges. */
+  .contract .c-table--kv tr { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .contract .c-table--kv td { display: block; width: auto; }
+  .contract .c-table--kv td:first-child { white-space: normal; flex: 1 1 auto; min-width: 0; }
+  .contract .c-table--kv td:last-child { flex: 0 0 auto; text-align: right; }
 }
 
 /* Onglet Coût total annuel — ligne de total du tableau */

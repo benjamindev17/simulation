@@ -77,7 +77,7 @@
           '<p class="dash-sim-row__date">Mis à jour le ' + formatDate(data.updatedAt) + '</p>' +
         '</div>' +
         '<div class="dash-sim-row__actions">' +
-          '<button type="button" class="btn-secondary" data-action="load">Charger</button>' +
+          '<button type="button" class="btn-secondary" data-action="load">Consulter</button>' +
           '<button type="button" class="btn-secondary" data-action="rename">Renommer</button>' +
           '<button type="button" class="btn-danger" data-action="delete">Supprimer</button>' +
         '</div>';
@@ -88,7 +88,13 @@
         currentSimId = doc.id;
         elCurrentName.textContent = data.nom || 'Sans nom';
         loadCurrentBar();
-        switchTab('taux');
+        // Consultation d'abord : récapitulatif en lecture seule, façon document.
+        // Le crayon dans sa barre d'outils bascule vers l'édition complète (switchTab).
+        if (typeof window.openRecap === 'function') {
+          window.openRecap(data.nom, formatDate(data.updatedAt), () => switchTab('taux'));
+        } else {
+          switchTab('taux');
+        }
       });
 
       row.querySelector('[data-action="rename"]').addEventListener('click', async () => {
