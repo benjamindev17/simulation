@@ -371,6 +371,18 @@ input[type="range"] {
   color: var(--ink);
 }
 .calc-field input[type="number"]:focus { outline: 1px solid var(--moss); border-radius: 4px; }
+.calc-field input[type="text"] {
+  width: 100%;
+  min-width: 0;
+  font-family: var(--font-sans, inherit);
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: var(--ink);
+}
+.calc-field input[type="text"]:focus { outline: 1px solid var(--moss); border-radius: 4px; }
 .calc-field .unit { font-family: var(--font-mono); font-size: 13px; color: var(--ink-faint); }
 .calc-field.slider-field input[type="range"] { width: 100%; margin-top: 6px; }
 .calc-field.readonly { background: var(--moss-soft); border-color: var(--moss-line); }
@@ -501,7 +513,7 @@ input[type="range"] {
   padding-top: 8px;
   border-top: 1px solid var(--line-soft);
 }
-.apport-split__col { flex: 1; }
+.apport-split__col { flex: 1; min-width: 0; }
 .apport-split__col label { font-size: 11px; margin-bottom: 3px; }
 .apport-split__col .unit { font-size: 11px; }
 .apport-split__col input[type="number"] { font-size: 14px; }
@@ -1020,3 +1032,101 @@ body.contract-open { overflow: hidden; }
 }
 .mode-toggle button:hover:not(.active) { background: rgba(60, 91, 67, 0.08); }
 .mode-toggle button.active { background: var(--moss); color: #fff; }
+
+/* ==========================================================================
+   9. Modale générique (showPrompt / showConfirm)
+   ========================================================================== */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(27, 30, 26, 0.5);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--paper-raised);
+  border-radius: 16px;
+  padding: 1.5rem 1.5rem 1.25rem;
+  box-shadow: 0 20px 60px rgba(27, 30, 26, 0.28), 0 2px 8px rgba(27, 30, 26, 0.12);
+  animation: modal-pop 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+}
+@keyframes modal-pop {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-title {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.modal-message {
+  margin: 0 0 4px;
+  font-size: 13.5px;
+  color: var(--ink-muted);
+  line-height: 1.55;
+}
+.modal-input-wrap { margin: 4px 0 2px; }
+.modal-input {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.modal-input:focus {
+  outline: none;
+  border-color: var(--moss);
+  box-shadow: 0 0 0 3px rgba(60, 91, 67, 0.15);
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 1.25rem;
+}
+.modal-actions button { padding: 9px 18px; font-size: 13.5px; }
+
+/* ==========================================================================
+   10. Confirmation visuelle « Enregistré » (bouton Enregistrer les modifications)
+   ========================================================================== */
+#btn-save-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+#btn-save-current.btn-save--success {
+  background: var(--moss);
+  color: #fff;
+}
+.btn-save__check {
+  flex-shrink: 0;
+  animation: check-pop 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+@keyframes check-pop {
+  from { transform: scale(0.3); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Mode solo : masque les colonnes liées à la répartition entre 2 personnes
+   (Capital Marie/Ben, Part Ben/Marie = 6e/7e/9e/10e colonnes) dans le tableau
+   d'étalement, qui reste sinon affiché (mensualité, intérêts, capital, solde). */
+#amort-table.solo-mode th:nth-child(6), #amort-table.solo-mode td:nth-child(6),
+#amort-table.solo-mode th:nth-child(7), #amort-table.solo-mode td:nth-child(7),
+#amort-table.solo-mode th:nth-child(9), #amort-table.solo-mode td:nth-child(9),
+#amort-table.solo-mode th:nth-child(10), #amort-table.solo-mode td:nth-child(10) {
+  display: none;
+}
+/* Les colonnes restantes reprennent l'espace libéré par les colonnes masquées, au lieu de laisser un vide à droite. */
+#amort-table.solo-mode { table-layout: auto; }

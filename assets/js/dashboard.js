@@ -91,15 +91,26 @@
         switchTab('taux');
       });
 
-      row.querySelector('[data-action="rename"]').addEventListener('click', () => {
-        const nouveauNom = prompt('Nouveau nom de la simulation :', data.nom || '');
-        if (nouveauNom === null || nouveauNom.trim() === '') return;
-        simsCollection().doc(doc.id).update({ nom: nouveauNom.trim() });
-        if (currentSimId === doc.id) elCurrentName.textContent = nouveauNom.trim();
+      row.querySelector('[data-action="rename"]').addEventListener('click', async () => {
+        const nouveauNom = await showPrompt({
+          title: 'Renommer la simulation',
+          defaultValue: data.nom || '',
+          placeholder: 'Nom de la simulation',
+          confirmText: 'Renommer'
+        });
+        if (nouveauNom === null || nouveauNom === '') return;
+        simsCollection().doc(doc.id).update({ nom: nouveauNom });
+        if (currentSimId === doc.id) elCurrentName.textContent = nouveauNom;
       });
 
-      row.querySelector('[data-action="delete"]').addEventListener('click', () => {
-        if (!confirm('Supprimer définitivement « ' + (data.nom || 'cette simulation') + ' » ?')) return;
+      row.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+        const ok = await showConfirm({
+          title: 'Supprimer cette simulation ?',
+          message: '« ' + (data.nom || 'Cette simulation') + ' » sera définitivement supprimée. Cette action est irréversible.',
+          confirmText: 'Supprimer',
+          danger: true
+        });
+        if (!ok) return;
         simsCollection().doc(doc.id).delete();
         if (currentSimId === doc.id) unloadCurrentSim();
       });
@@ -148,29 +159,48 @@
     auth.signOut();
   });
 
-  btnNewSim.addEventListener('click', () => {
-    const nom = prompt('Nom de cette simulation :', 'Ma simulation');
-    if (nom === null || nom.trim() === '') return;
+  btnNewSim.addEventListener('click', async () => {
+    const nom = await showPrompt({
+      title: 'Nouvelle simulation',
+      defaultValue: 'Ma simulation',
+      placeholder: 'Nom de la simulation',
+      confirmText: 'Créer'
+    });
+    if (nom === null || nom === '') return;
     const now = firebase.firestore.FieldValue.serverTimestamp();
     simsCollection().add({
-      nom: nom.trim(),
+      nom: nom,
       state: captureState(),
       createdAt: now,
       updatedAt: now
     }).then((docRef) => {
       currentSimId = docRef.id;
-      elCurrentName.textContent = nom.trim();
+      elCurrentName.textContent = nom;
       loadCurrentBar();
     }).catch((err) => {
       alert('Impossible d’enregistrer la simulation : ' + err.message);
     });
   });
 
+  // Petite confirmation visuelle : le bouton passe en vert avec une coche pendant ~1,6s.
+  function flashSaveSuccess() {
+    const original = btnSaveCurrent.innerHTML;
+    btnSaveCurrent.classList.add('btn-save--success');
+    btnSaveCurrent.innerHTML =
+      '<svg class="btn-save__check" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="4 12 9 17 20 6"/></svg> Enregistré';
+    setTimeout(() => {
+      btnSaveCurrent.classList.remove('btn-save--success');
+      btnSaveCurrent.innerHTML = original;
+    }, 1600);
+  }
+
   btnSaveCurrent.addEventListener('click', () => {
     if (!currentSimId) return;
     simsCollection().doc(currentSimId).update({
       state: captureState(),
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      flashSaveSuccess();
     }).catch((err) => {
       alert('Impossible d’enregistrer les modifications : ' + err.message);
     });

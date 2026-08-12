@@ -6,26 +6,40 @@
    ========================================================================== */
 
 /* --- État ---------------------------------------------------------------- */
-let prixAppart = 340000;
+// Simulation vierge par défaut (page non chargée depuis une sauvegarde) : les
+// montants personnels démarrent à 0/vide, pour que l'outil soit partageable
+// sans exposer les données de qui l'a configuré. Seules les charges de
+// l'onglet Coût total annuel (assurances, copro…) gardent des valeurs
+// indicatives généralistes (cf. cost.js), comme demandé.
+let prixAppart = 0;
 let travaux = 0; // enveloppe travaux — financée, mais non soumise aux droits d'enregistrement ni au notaire
 const TAUX_ENREGISTREMENT = 3; // % fixe
-let fraisNotaire = 4868.95;
+let fraisNotaire = 0;
 let fraisBancaires = 0; // frais de crédit éventuellement imposés par la banque (saisis à la main)
-const APPORT_BUDGET = 71000; // enveloppe cash de départ : apport de 71 000 € si frais financés, 56 000 € si frais payés à part
-const FRAIS_STANDARD_HORS_EMPRUNT = 15000; // enreg + notaire retranchés du budget → apport de base 56 000 quand la case est cochée
-let apport = 56000; // apport total par défaut (28 000 € Ben + 28 000 € Marie, hors frais)
-let benRatio = 0.5; // 50/50 par défaut (curseur au milieu) — éditable via les champs Apport Ben/Marie ou le curseur (pas de 5%)
+const APPORT_BUDGET = 71000; // enveloppe cash de départ si la case « frais hors emprunt » est (re)cochée manuellement
+const FRAIS_STANDARD_HORS_EMPRUNT = 15000; // enreg + notaire retranchés du budget dans ce cas
+let apport = 0;
+let benRatio = 0.5; // 50/50 par défaut (curseur au milieu) — éditable via les champs Apport 1/2 ou le curseur (pas de 5%)
 let tauxPct = 3.70;
 let SEUIL_ENDETTEMENT = 33;
 
 /* Emprunteur(s) : "duo" (par défaut) ou "solo" — pilote l'affichage des champs
-   Ben/Marie (apport, salaires) et l'onglet Répartition appartement. */
+   liés à la 2e personne (apport, salaire) et l'onglet Répartition appartement. */
 let mode = 'duo';
-let salaireBen = 2370;
-let salaireMarie = 2370;
-let salaireSolo = 4740;
+let salaireBen = 0;
+let salaireMarie = 0;
+let salaireSolo = 0;
 function salaireCombineCalc() {
   return mode === 'solo' ? salaireSolo : salaireBen + salaireMarie;
+}
+
+/* Noms des deux emprunteurs — éditables, utilisés partout où le nom apparaît
+   (libellés, tableau de répartition, contrat). Neutres par défaut. */
+let nomA = 'Personne 1';
+let nomB = 'Personne 2';
+function syncNames() {
+  document.querySelectorAll('.name-a').forEach(el => { el.textContent = nomA; });
+  document.querySelectorAll('.name-b').forEach(el => { el.textContent = nomB; });
 }
 
 /* --- Références DOM ------------------------------------------------------- */
@@ -38,6 +52,9 @@ const elSalaireSolo = document.getElementById('in-salaire-solo');
 const elApportSplitDuo = document.getElementById('apport-split-duo');
 const elTabBtnAppart = document.getElementById('tabBtnAppart');
 const elCoutPpCard = document.getElementById('cout-pp-card');
+const elFieldNomsDuo = document.getElementById('field-noms-duo');
+const elNomA = document.getElementById('in-nom-a');
+const elNomB = document.getElementById('in-nom-b');
 const elSeuilEndettement = document.getElementById('in-seuil-endettement');
 const elCol15 = document.getElementById('col-duree-15');
 const elCol20 = document.getElementById('col-duree-20');
@@ -184,6 +201,10 @@ function renderCalc() {
   elSalaireMarie.value = Math.round(salaireMarie);
   elSalaireSolo.value = Math.round(salaireSolo);
 
+  elNomA.value = nomA;
+  elNomB.value = nomB;
+  syncNames();
+
   elSeuilEndettement.value = SEUIL_ENDETTEMENT;
   renderColonne(15, elCol15, elOutMensualite15, elOutEndettement15, elOutInteret15);
   renderColonne(20, elCol20, elOutMensualite20, elOutEndettement20, elOutInteret20);
@@ -202,8 +223,11 @@ function renderCalc() {
   if (typeof refreshCout === 'function') refreshCout(); // resynchronise le coût annuel (mensualité)
 }
 
-// Bascule Solo/Duo : montre/cache les champs Ben/Marie (apport, salaires) et
-// l'onglet Répartition appartement, qui n'a pas de sens pour un emprunteur seul.
+// Bascule Solo/Duo : montre/cache les champs liés à la 2e personne (apport,
+// salaire, nom). L'onglet Répartition reste disponible dans les deux modes —
+// le tableau d'étalement (mensualité, intérêts, capital, solde) est utile
+// même seul(e) ; seules les colonnes/cartes de répartition entre 2 personnes
+// s'y masquent.
 function applyMode(newMode) {
   mode = newMode;
   elModeToggle.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
@@ -212,14 +236,21 @@ function applyMode(newMode) {
   elFieldSalaireDuo.hidden = isSolo;
   elFieldSalaireSolo.hidden = !isSolo;
   elApportSplitDuo.hidden = isSolo;
-  elTabBtnAppart.hidden = isSolo;
   if (elCoutPpCard) elCoutPpCard.hidden = isSolo;
+  if (elFieldNomsDuo) elFieldNomsDuo.hidden = isSolo; // un seul emprunteur en solo : pas de 2e nom à saisir
 
-  // Si l'onglet Répartition était affiché au moment de passer en solo, on revient sur Simulation taux.
-  const tabAppart = document.getElementById('tab-appart');
-  if (isSolo && tabAppart && tabAppart.classList.contains('active')) {
-    switchTab('taux');
-  }
+  // Onglet Répartition / tableau d'étalement : garde la mécanique du prêt (toujours utile en solo),
+  // masque uniquement ce qui suppose 2 personnes.
+  elTabBtnAppart.textContent = isSolo ? 'Tableau d’étalement' : 'Répartition appartement';
+  const elRepartitionH1 = document.getElementById('repartition-h1');
+  if (elRepartitionH1) elRepartitionH1.textContent = isSolo ? 'Tableau d’étalement du prêt' : 'Répartition de l’appartenance de l’appartement';
+  const idsToHideInSolo = ['repartition-assumptions', 'stat-total-b', 'repartition-formula-note', 'card-total-b', 'field-remboursement-personne', 'repartition-part-box'];
+  idsToHideInSolo.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.hidden = isSolo;
+  });
+  const amortTable = document.getElementById('amort-table');
+  if (amortTable) amortTable.classList.toggle('solo-mode', isSolo);
 
   renderCalc();
 }
@@ -231,6 +262,9 @@ elModeToggle.forEach(btn => {
 elSalaireBen.addEventListener('change', () => { salaireBen = Math.max(0, parseFloat(elSalaireBen.value) || 0); renderCalc(); });
 elSalaireMarie.addEventListener('change', () => { salaireMarie = Math.max(0, parseFloat(elSalaireMarie.value) || 0); renderCalc(); });
 elSalaireSolo.addEventListener('change', () => { salaireSolo = Math.max(0, parseFloat(elSalaireSolo.value) || 0); renderCalc(); });
+
+elNomA.addEventListener('change', () => { nomA = elNomA.value.trim() || 'Personne 1'; renderCalc(); });
+elNomB.addEventListener('change', () => { nomB = elNomB.value.trim() || 'Personne 2'; renderCalc(); });
 
 /* --- Interactions -------------------------------------------------------- */
 // Sélection de la durée (15/20/25), depuis les radios OU le sélecteur flottant.

@@ -37,6 +37,8 @@ function captureState() {
     salaireBen,
     salaireMarie,
     salaireSolo,
+    nomA,
+    nomB,
     // --- Répartition appartement ---
     equalizeShares,
     // --- Coût total annuel (le module cost.js encapsule ses variables ; on lit le DOM, qu'il tient à jour) ---
@@ -68,6 +70,8 @@ function applyState(s) {
   salaireBen = s.salaireBen != null ? s.salaireBen : salaireBen;
   salaireMarie = s.salaireMarie != null ? s.salaireMarie : salaireMarie;
   salaireSolo = s.salaireSolo != null ? s.salaireSolo : salaireSolo;
+  nomA = s.nomA || nomA;
+  nomB = s.nomB || nomB;
   equalizeShares = s.equalizeShares;
   document.getElementById('chk-equalize-shares').checked = s.equalizeShares;
 

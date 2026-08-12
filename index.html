@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Simulation patrimoine — ETF & Appartement</title>
+<title>Simule ton prêt</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=33">
+<link rel="stylesheet" href="assets/css/styles.css?v=37">
 </head>
 <body>
 
@@ -21,8 +21,8 @@
     </svg>
   </span>
   <div class="page-header__text">
-    <p class="eyebrow">Projet appartement</p>
-    <h1 class="page-title">Simulation patrimoine</h1>
+    <p class="eyebrow">Simulation patrimoine</p>
+    <h1 class="page-title">Simule ton prêt</h1>
   </div>
   <button type="button" id="tabBtnDashboard" class="header-account-btn">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -68,10 +68,10 @@
   <!-- ===================== TAB : APPARTEMENT ===================== -->
   <section id="tab-appart" class="panel">
 
-    <h1>Répartition de l'appartenance de l'appartement</h1>
+    <h1 id="repartition-h1">Répartition de l'appartenance de l'appartement</h1>
 
-    <div class="assumptions">
-      <b>Données utilisées</b> — <span id="assumptions-apport">Apport toi : 70 000 € (70%) · Apport copine : 30 000 € (30%)</span> · Remboursement à parts égales (<span id="assumptions-mensualite">-</span>, pour info) · Montant emprunté, taux et mensualité repris en temps réel de l'onglet Simulation taux.<br>
+    <div class="assumptions" id="repartition-assumptions">
+      <b>Données utilisées</b> — <span id="assumptions-apport">-</span> · Remboursement à parts égales (<span id="assumptions-mensualite">-</span>, pour info) · Montant emprunté, taux et mensualité repris en temps réel de l'onglet Simulation taux.<br>
       <b>Méthode</b> : l'intérêt est un coût, pas de la propriété. Seul le <b>capital remboursé</b> construit de la part. Comme vous remboursez chacun la moitié de la mensualité, vous financez chacun la moitié du capital remboursé chaque mois. Ta part à l'instant t = (ton apport + 50% du capital cumulé remboursé) / (apport total + capital cumulé remboursé). Après le remboursement complet du prêt, la répartition se fige.
       <br><br>
       <b>Vérifie avant d'agir</b> : ce calcul suppose que le partage 50/50 des mensualités est explicitement traduit en clause de propriété proportionnelle dans l'acte notarié, sinon la loi par défaut (indivision à parts égales ou selon l'acte initial) peut ne pas suivre cette logique.
@@ -81,15 +81,15 @@
 
     <div class="stats-row">
       <div class="stat-card">
-        <p>Total versé (toi) — apport + remboursement</p>
+        <p>Total versé (<span class="name-a">Ben</span>) — apport + remboursement</p>
         <p id="total-verse-a" class="you">-</p>
         <div class="stat-breakdown">
           <div class="kv"><span class="kv__k">dont capital</span><span id="capital-verse-a">-</span></div>
           <div class="kv"><span class="kv__k">dont intérêts</span><span id="interet-verse-a">-</span></div>
         </div>
       </div>
-      <div class="stat-card">
-        <p>Total versé (copine) — apport + remboursement</p>
+      <div class="stat-card" id="stat-total-b">
+        <p>Total versé (<span class="name-b">Marie</span>) — apport + remboursement</p>
         <p id="total-verse-b" class="partner">-</p>
         <div class="stat-breakdown">
           <div class="kv"><span class="kv__k">dont capital</span><span id="capital-verse-b">-</span></div>
@@ -102,8 +102,8 @@
     <p class="note note--flush">
       Échéancier détaillé du prêt, sur la base du montant à emprunter et du taux actuels (onglet Simulation taux), remboursé sur <span class="duree-ans">20</span> ans.
     </p>
-    <p class="note note--formula">
-      Formule — Ta part (%) = (Apport toi + 50% × capital cumulé remboursé) / (Apport total + capital cumulé remboursé) — même formule pour la part copine, avec son apport à elle.
+    <p class="note note--formula" id="repartition-formula-note">
+      Formule — Part <span class="name-a">Ben</span> (%) = (Apport <span class="name-a">Ben</span> + 50% × capital cumulé remboursé) / (Apport total + capital cumulé remboursé) — même formule pour la part de <span class="name-b">Marie</span>, avec son apport à elle.
     </p>
 
     <p class="note note--flush">Clique sur une ligne du tableau ci-dessous pour voir le détail de ce mois.</p>
@@ -134,7 +134,7 @@
       </div>
 
       <div class="calc-field calc-field--moss you">
-        <label>Ben aura payé au total, à cette date</label>
+        <label><span class="name-a">Ben</span> aura payé au total, à cette date</label>
         <div class="value-input"><span id="detail-total-a" class="detail-value--lg">-</span></div>
         <div class="detail-breakdown">
           <div class="kv"><span class="kv__k">apport</span><span id="detail-apport-a">-</span></div>
@@ -142,8 +142,8 @@
           <div class="kv"><span class="kv__k">dont intérêts</span><span id="detail-total-a-interet">-</span></div>
         </div>
       </div>
-      <div class="calc-field calc-field--amber partner">
-        <label>Marie aura payé au total, à cette date</label>
+      <div class="calc-field calc-field--amber partner" id="card-total-b">
+        <label><span class="name-b">Marie</span> aura payé au total, à cette date</label>
         <div class="value-input"><span id="detail-total-b" class="detail-value--lg">-</span></div>
         <div class="detail-breakdown detail-breakdown--amber">
           <div class="kv"><span class="kv__k">apport</span><span id="detail-apport-b">-</span></div>
@@ -152,29 +152,29 @@
         </div>
       </div>
 
-      <div class="calc-field">
+      <div class="calc-field" id="field-remboursement-personne">
         <label>Remboursement mensuel par personne</label>
         <div class="pay-row">
-          <span class="you">Ben paie</span>
+          <span class="you"><span class="name-a">Ben</span> paie</span>
           <span id="detail-mensualite-ben" class="you pay-row__amount">-</span>
         </div>
         <div class="pay-row">
-          <span class="partner">Marie paie</span>
+          <span class="partner"><span class="name-b">Marie</span> paie</span>
           <span id="detail-mensualite-marie" class="partner pay-row__amount">-</span>
         </div>
         <label class="equalize-toggle">
           <input type="checkbox" id="chk-equalize-shares">
-          <span class="equalize-toggle__text">Équilibrer les remboursements pour une propriété 50/50 au bout des <span class="duree-ans">20</span> ans (Marie paie davantage)</span>
+          <span class="equalize-toggle__text">Équilibrer les remboursements pour une propriété 50/50 au bout des <span class="duree-ans">20</span> ans (<span class="name-b">Marie</span> paie davantage)</span>
         </label>
         <p class="equalize-note" id="equalize-note" style="display:none;">
           <b>Modèle 50/50 activé</b> : les <b>intérêts sont partagés moitié-moitié</b> (coût commun du crédit, <span id="equalize-note-int">-</span> chacun) ; seul le <b>capital</b> est réparti différemment pour aboutir à une <b>propriété 50/50</b> au terme. Résultat : même total déboursé par chacun.
         </p>
       </div>
 
-      <div class="calc-field part-box">
+      <div class="calc-field part-box" id="repartition-part-box">
         <label>Répartition à ce moment</label>
-        <div class="part-row"><span class="you">Ben</span><span id="detail-part-a" class="you part-row__pct">-</span></div>
-        <div class="part-row"><span class="partner">Marie</span><span id="detail-part-b" class="partner part-row__pct">-</span></div>
+        <div class="part-row"><span class="you name-a">Ben</span><span id="detail-part-a" class="you part-row__pct">-</span></div>
+        <div class="part-row"><span class="partner name-b">Marie</span><span id="detail-part-b" class="partner part-row__pct">-</span></div>
       </div>
 
       <div class="calc-field computed span-full">
@@ -208,11 +208,11 @@
             <th>Mensualité<span class="col-resizer" data-col="2"></span></th>
             <th>Intérêts<span class="col-resizer" data-col="3"></span></th>
             <th>Capital remboursé<span class="col-resizer" data-col="4"></span></th>
-            <th class="partner">Capital Marie<span class="col-resizer" data-col="5"></span></th>
-            <th class="you">Capital Ben<span class="col-resizer" data-col="6"></span></th>
+            <th class="partner">Capital <span class="name-b">Marie</span><span class="col-resizer" data-col="5"></span></th>
+            <th class="you">Capital <span class="name-a">Ben</span><span class="col-resizer" data-col="6"></span></th>
             <th>Solde restant dû<span class="col-resizer" data-col="7"></span></th>
-            <th>Part Ben<span class="col-resizer" data-col="8"></span></th>
-            <th>Part Marie<span class="col-resizer" data-col="9"></span></th>
+            <th>Part <span class="name-a">Ben</span><span class="col-resizer" data-col="8"></span></th>
+            <th>Part <span class="name-b">Marie</span><span class="col-resizer" data-col="9"></span></th>
           </tr>
         </thead>
         <tbody id="amort-tbody"></tbody>
@@ -231,6 +231,20 @@
     <div class="mode-toggle" role="group" aria-label="Emprunteur(s)">
       <button type="button" data-mode="duo" class="active">À deux</button>
       <button type="button" data-mode="solo">Seul(e)</button>
+    </div>
+
+    <div class="calc-field span-full" id="field-noms-duo" style="margin-bottom:1.25rem;">
+      <label>Noms</label>
+      <div class="apport-split">
+        <div class="apport-split__col apport-split__col--ben">
+          <label for="in-nom-a">Emprunteur 1</label>
+          <div class="value-input"><input type="text" id="in-nom-a" maxlength="30" /></div>
+        </div>
+        <div class="apport-split__col apport-split__col--marie">
+          <label for="in-nom-b">Emprunteur 2</label>
+          <div class="value-input"><input type="text" id="in-nom-b" maxlength="30" /></div>
+        </div>
+      </div>
     </div>
 
     <div id="taux-warning" class="warning-box" style="display:none;"></div>
@@ -303,14 +317,14 @@
         <div id="apport-split-duo">
           <div class="apport-split">
             <div class="apport-split__col apport-split__col--ben">
-              <label for="in-apport-ben">Apport Ben</label>
+              <label for="in-apport-ben">Apport <span class="name-a">Ben</span></label>
               <div class="value-input">
                 <input type="number" id="in-apport-ben" step="500" />
                 <span class="unit">€</span>
               </div>
             </div>
             <div class="apport-split__col apport-split__col--marie">
-              <label for="in-apport-marie">Apport Marie</label>
+              <label for="in-apport-marie">Apport <span class="name-b">Marie</span></label>
               <div class="value-input">
                 <input type="number" id="in-apport-marie" step="500" />
                 <span class="unit">€</span>
@@ -320,12 +334,12 @@
           <div class="apport-slider">
             <input type="range" id="in-apport-ratio" min="0" max="100" step="5" />
             <div class="apport-slider__labels">
-              <span class="you">100% Ben</span>
+              <span class="you">100% <span class="name-a">Ben</span></span>
               <span class="apport-slider__mid">50 / 50</span>
-              <span class="partner">100% Marie</span>
+              <span class="partner">100% <span class="name-b">Marie</span></span>
             </div>
             <div class="apport-slider__out">
-              Ben <span id="out-ratio-ben" class="you">-</span> · Marie <span id="out-ratio-marie" class="partner">-</span>
+              <span class="name-a">Ben</span> <span id="out-ratio-ben" class="you">-</span> · <span class="name-b">Marie</span> <span id="out-ratio-marie" class="partner">-</span>
             </div>
           </div>
         </div>
@@ -360,14 +374,14 @@
         <label>Revenus mensuels nets (pour le calcul d'endettement)</label>
         <div class="apport-split">
           <div class="apport-split__col apport-split__col--ben">
-            <label for="in-salaire-ben">Salaire Ben</label>
+            <label for="in-salaire-ben">Salaire <span class="name-a">Ben</span></label>
             <div class="value-input">
               <input type="number" id="in-salaire-ben" step="50" />
               <span class="unit">€</span>
             </div>
           </div>
           <div class="apport-split__col apport-split__col--marie">
-            <label for="in-salaire-marie">Salaire Marie</label>
+            <label for="in-salaire-marie">Salaire <span class="name-b">Marie</span></label>
             <div class="value-input">
               <input type="number" id="in-salaire-marie" step="50" />
               <span class="unit">€</span>
@@ -638,21 +652,37 @@
   <div id="contract-doc" class="contract"></div>
 </div>
 
-<script src="assets/js/utils.js?v=33" defer></script>
-<script src="assets/js/ownership.js?v=33" defer></script>
-<script src="assets/js/rate-simulation.js?v=33" defer></script>
-<script src="assets/js/app.js?v=33" defer></script>
-<script src="assets/js/contract.js?v=33" defer></script>
-<script src="assets/js/etf.js?v=33" defer></script>
-<script src="assets/js/cost.js?v=33" defer></script>
+<!-- Modale générique (remplace prompt()/confirm() natifs) — pilotée par modal.js -->
+<div id="modal-overlay" class="modal-overlay" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <h3 id="modal-title" class="modal-title"></h3>
+    <p id="modal-message" class="modal-message" hidden></p>
+    <div id="modal-input-wrap" class="modal-input-wrap" hidden>
+      <input type="text" id="modal-input" class="modal-input" maxlength="60">
+    </div>
+    <div class="modal-actions">
+      <button type="button" id="modal-cancel" class="btn-secondary">Annuler</button>
+      <button type="button" id="modal-confirm" class="btn-moss">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/utils.js?v=37" defer></script>
+<script src="assets/js/ownership.js?v=37" defer></script>
+<script src="assets/js/rate-simulation.js?v=37" defer></script>
+<script src="assets/js/app.js?v=37" defer></script>
+<script src="assets/js/contract.js?v=37" defer></script>
+<script src="assets/js/etf.js?v=37" defer></script>
+<script src="assets/js/cost.js?v=37" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=33" defer></script>
-<script src="assets/js/state.js?v=33" defer></script>
-<script src="assets/js/dashboard.js?v=33" defer></script>
+<script src="assets/js/firebase-config.js?v=37" defer></script>
+<script src="assets/js/state.js?v=37" defer></script>
+<script src="assets/js/modal.js?v=37" defer></script>
+<script src="assets/js/dashboard.js?v=37" defer></script>
 
 </body>
 </html>

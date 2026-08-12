@@ -51,7 +51,7 @@
     const today = new Date().toLocaleDateString('fr-BE');
 
     const modelHtml = equalizeShares
-      ? '<p>Les parties conviennent que les <b>intérêts</b> du crédit, considérés comme un <b>coût commun</b>, sont supportés à parts égales (50 / 50), soit <b>' + fmt(Math.round(interetChacun)) + '</b> pour chacune sur toute la durée. Le <b>capital</b> est réparti de sorte qu’<b>au terme du prêt, chacune détienne 50 % du bien</b>. En conséquence, les remboursements mensuels fixes sont : <b>Ben ' + fmt(Math.round(payBen)) + '/mois</b>, <b>Marie ' + fmt(Math.round(payMarie)) + '/mois</b>. Ce mécanisme conduit à un <b>total déboursé identique</b> par chacune au terme.</p>'
+      ? '<p>Les parties conviennent que les <b>intérêts</b> du crédit, considérés comme un <b>coût commun</b>, sont supportés à parts égales (50 / 50), soit <b>' + fmt(Math.round(interetChacun)) + '</b> pour chacune sur toute la durée. Le <b>capital</b> est réparti de sorte qu’<b>au terme du prêt, chacune détienne 50 % du bien</b>. En conséquence, les remboursements mensuels fixes sont : <b>' + nomA + ' ' + fmt(Math.round(payBen)) + '/mois</b>, <b>' + nomB + ' ' + fmt(Math.round(payMarie)) + '/mois</b>. Ce mécanisme conduit à un <b>total déboursé identique</b> par chacune au terme.</p>'
       : '<p>Les parties remboursent <b>chacune la moitié de la mensualité</b>, soit <b>' + fmt(Math.round(payBen)) + '/mois</b> chacune. La propriété de chacune reflète son apport augmenté de la moitié du capital remboursé ; la quote-part finale résulte donc de l’écart d’apport initial.</p>';
 
     doc.innerHTML =
@@ -62,8 +62,8 @@
       '<div class="c-disclaimer"><b>Document préparatoire</b> — ce projet, pré-rempli à partir d’une simulation, n’est <b>pas un acte authentique</b>. Il doit être <b>relu, corrigé et validé par le notaire</b>, qui lui donnera sa forme définitive et, le cas échéant, l’annexera à l’acte. Il ne constitue pas un conseil juridique.</div>' +
 
       '<h2>1. Entre les soussignés</h2>' +
-      '<p><b>Partie 1</b> — Benjamin « Ben » ' + B(150) + ', né le ' + B(90) + ' à ' + B(110) + ', n° registre national ' + B(130) + ', domicilié ' + LINE() + '.</p>' +
-      '<p><b>Partie 2</b> — Marie ' + B(150) + ', née le ' + B(90) + ' à ' + B(110) + ', n° registre national ' + B(130) + ', domiciliée ' + LINE() + '.</p>' +
+      '<p><b>Partie 1</b> — ' + nomA + ' ' + B(150) + ', né(e) le ' + B(90) + ' à ' + B(110) + ', n° registre national ' + B(130) + ', domicilié(e) ' + LINE() + '.</p>' +
+      '<p><b>Partie 2</b> — ' + nomB + ' ' + B(150) + ', né(e) le ' + B(90) + ' à ' + B(110) + ', n° registre national ' + B(130) + ', domicilié(e) ' + LINE() + '.</p>' +
       '<p><b>Statut des parties</b> (cocher / compléter) : ☐ mariées (régime : ' + B(110) + ') · ☐ cohabitantes légales · ☐ cohabitantes de fait.</p>' +
 
       '<h2>2. Bien concerné</h2>' +
@@ -80,15 +80,15 @@
 
       '<h2>4. Apports de chacune</h2>' +
       '<table class="c-table c-table--kv">' +
-        '<tr><td>Apport de Ben</td><td>' + fmt(Math.round(APPORT_A)) + ' (' + pct0(benPct) + ')</td></tr>' +
-        '<tr><td>Apport de Marie</td><td>' + fmt(Math.round(APPORT_B)) + ' (' + pct0(mariePct) + ')</td></tr>' +
+        '<tr><td>Apport de ' + nomA + '</td><td>' + fmt(Math.round(APPORT_A)) + ' (' + pct0(benPct) + ')</td></tr>' +
+        '<tr><td>Apport de ' + nomB + '</td><td>' + fmt(Math.round(APPORT_B)) + ' (' + pct0(mariePct) + ')</td></tr>' +
         '<tr class="c-total"><td>Apport total</td><td>' + fmt(Math.round(apport)) + '</td></tr>' +
       '</table>' +
-      '<p>Origine des fonds — Ben : ' + LINE() + '. Marie : ' + LINE() + '. <i>(Les parties joignent les preuves bancaires en annexe B afin d’établir le caractère propre de leurs apports.)</i></p>' +
+      '<p>Origine des fonds — ' + nomA + ' : ' + LINE() + '. ' + nomB + ' : ' + LINE() + '. <i>(Les parties joignent les preuves bancaires en annexe B afin d’établir le caractère propre de leurs apports.)</i></p>' +
 
       '<h2>5. Emprunt</h2>' +
       '<p>Montant emprunté : <b>' + fmt(Math.round(loan.loanAmount)) + '</b> · Organisme : ' + B(150) + ' · Taux annuel : <b>' + tauxPct.toFixed(2) + ' %</b> · Durée : <b>' + dureeChoisie + ' ans</b> · Mensualité : <b>' + fmt(Math.round(loan.mensualite)) + '/mois</b> · Coût total des intérêts : <b>' + fmt(Math.round(totalInterest)) + '</b>.</p>' +
-      '<p>L’emprunt est contracté <b>solidairement</b> par les deux parties envers l’organisme prêteur. <b>Assurance solde restant dû</b> — Ben : quotité ' + B(50) + ' %, Marie : quotité ' + B(50) + ' % ; bénéficiaire : ' + B(130) + '.</p>' +
+      '<p>L’emprunt est contracté <b>solidairement</b> par les deux parties envers l’organisme prêteur. <b>Assurance solde restant dû</b> — ' + nomA + ' : quotité ' + B(50) + ' %, ' + nomB + ' : quotité ' + B(50) + ' % ; bénéficiaire : ' + B(130) + '.</p>' +
 
       '<h2>6. Répartition du remboursement</h2>' +
       modelHtml +
@@ -98,8 +98,8 @@
       '<p>Les parties reconnaissent que <b>seul le capital construit la propriété</b> (les intérêts sont un coût). La quote-part de chacune se calcule selon la formule :</p>' +
       '<p class="c-formula">part = (apport + capital financé) / (apport total + capital total remboursé)</p>' +
       '<table class="c-table c-table--kv">' +
-        '<tr><td>Quotité à l’achat (selon les apports)</td><td>Ben ' + pct0(benPct) + ' · Marie ' + pct0(mariePct) + '</td></tr>' +
-        '<tr><td>Quotité visée au terme du prêt</td><td>Ben ' + pct(finShares.shareA) + ' · Marie ' + pct(finShares.shareB) + '</td></tr>' +
+        '<tr><td>Quotité à l’achat (selon les apports)</td><td>' + nomA + ' ' + pct0(benPct) + ' · ' + nomB + ' ' + pct0(mariePct) + '</td></tr>' +
+        '<tr><td>Quotité visée au terme du prêt</td><td>' + nomA + ' ' + pct(finShares.shareA) + ' · ' + nomB + ' ' + pct(finShares.shareB) + '</td></tr>' +
       '</table>' +
       '<p><b>Important</b> — l’acte notarié fixe des quotités à un instant donné ; il ne les fait pas évoluer mois par mois. Les parties conviennent d’inscrire à l’acte la quotité ' + B(110) + ' et de régler entre elles, par la présente convention, les compensations correspondant à l’évolution décrite en annexe A. Le notaire arrêtera la formulation définitive.</p>' +
 
@@ -123,10 +123,10 @@
 
       '<h2>14. Signatures</h2>' +
       '<p>Fait à ' + B(130) + ', le ' + B(100) + ', en ' + B(40) + ' exemplaires originaux. Projet destiné à être soumis au notaire pour validation.</p>' +
-      '<div class="c-sign"><div>Ben<br><br>' + LINE() + '</div><div>Marie<br><br>' + LINE() + '</div></div>' +
+      '<div class="c-sign"><div>' + nomA + '<br><br>' + LINE() + '</div><div>' + nomB + '<br><br>' + LINE() + '</div></div>' +
 
       '<h2>Annexe A — Répartition annuelle</h2>' +
-      '<table class="c-table c-table--data"><thead><tr><th>Année</th><th>Capital remboursé (cumul)</th><th>dont Ben</th><th>dont Marie</th><th>Part Ben</th><th>Part Marie</th><th>Solde restant dû</th></tr></thead><tbody>' + annualRows(loan) + '</tbody></table>' +
+      '<table class="c-table c-table--data"><thead><tr><th>Année</th><th>Capital remboursé (cumul)</th><th>dont ' + nomA + '</th><th>dont ' + nomB + '</th><th>Part ' + nomA + '</th><th>Part ' + nomB + '</th><th>Solde restant dû</th></tr></thead><tbody>' + annualRows(loan) + '</tbody></table>' +
       '<p class="c-annex-note">Hypothèses : prix ' + fmt(Math.round(prixAppart)) + ', emprunt ' + fmt(Math.round(loan.loanAmount)) + ' au taux de ' + tauxPct.toFixed(2) + ' % sur ' + dureeChoisie + ' ans. Modèle de remboursement : ' + (equalizeShares ? 'équilibré (intérêts 50/50, propriété 50/50 au terme)' : 'moitié-moitié des mensualités') + '. Document généré le ' + today + '.</p>' +
 
       '<h2>Annexe B — Preuves d’apports</h2>' +

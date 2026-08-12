@@ -32,6 +32,10 @@ let payMarie = 0; // remboursement mensuel fixe de Marie
 // l'équité de Ben égale la moitié de (apport total + capital emprunté).
 function computePayments(loanData) {
   const { mensualite, nTotal, loanAmount } = loanData;
+  // Solo : un seul emprunteur, tout lui est attribué (pas de répartition à calculer).
+  if (typeof mode !== 'undefined' && mode === 'solo') {
+    return { payBen: mensualite, payMarie: 0 };
+  }
   if (!equalizeShares || mensualite <= 0) {
     return { payBen: mensualite / 2, payMarie: mensualite / 2 };
   }
@@ -201,16 +205,16 @@ function selectMonth(m) {
   document.getElementById('detail-valeur-appart').textContent = fmt(Math.round(marketValueNow));
 
   let venteMarcheHtml =
-    'Prix initial (' + fmt(Math.round(prixAppart)) + ') apprécié à ' + APPART_GROWTH + '%/an sur ' + (m / 12).toFixed(1) + ' ans ≈ ' + fmt(Math.round(marketValueNow)) + '. Moins les <b>frais d’agence (' + AGENCY_FEE_PCT + '% = ' + fmt(Math.round(fraisAgence)) + ')</b> et le solde restant dû (' + fmt(Math.round(row.balance)) + '), il resterait ' + fmt(Math.round(netProceedsMarket)) + ' à partager : <span class="you">' + fmt(Math.round(saleMarketA)) + ' iraient à Benjamin</span> et <span class="partner">' + fmt(Math.round(saleMarketB)) + ' iraient à Marie</span>.';
+    'Prix initial (' + fmt(Math.round(prixAppart)) + ') apprécié à ' + APPART_GROWTH + '%/an sur ' + (m / 12).toFixed(1) + ' ans ≈ ' + fmt(Math.round(marketValueNow)) + '. Moins les <b>frais d’agence (' + AGENCY_FEE_PCT + '% = ' + fmt(Math.round(fraisAgence)) + ')</b> et le solde restant dû (' + fmt(Math.round(row.balance)) + '), il resterait ' + fmt(Math.round(netProceedsMarket)) + ' à partager : <span class="you">' + fmt(Math.round(saleMarketA)) + ' iraient à ' + nomA + '</span> et <span class="partner">' + fmt(Math.round(saleMarketB)) + ' iraient à ' + nomB + '</span>.';
 
   // Explication uniquement si l'un des deux récupérerait moins que son apport initial — sinon on n'encombre pas la carte.
   const dessousA = saleMarketA < APPORT_A;
   const dessousB = saleMarketB < APPORT_B;
   if (dessousA || dessousB) {
     let qui;
-    if (dessousA && dessousB) qui = 'Benjamin et Marie récupèrent tous les deux moins que leur apport initial';
-    else if (dessousA) qui = 'Benjamin récupère moins que son apport initial (' + fmt(APPORT_A) + ')';
-    else qui = 'Marie récupère moins que son apport initial (' + fmt(APPORT_B) + ')';
+    if (dessousA && dessousB) qui = nomA + ' et ' + nomB + ' récupèrent tous les deux moins que leur apport initial';
+    else if (dessousA) qui = nomA + ' récupère moins que son apport initial (' + fmt(APPORT_A) + ')';
+    else qui = nomB + ' récupère moins que son apport initial (' + fmt(APPORT_B) + ')';
     venteMarcheHtml += '<br><br><span style="color:var(--brick); font-weight:500;">⚠ ' + qui + '.</span> Ce n’est pas une perte de valeur du bien — c’est parce que les frais d’acquisition (enregistrement + notaire, payés une fois à l’achat) ne sont jamais récupérés à la revente. Tant que l’appréciation du bien et le capital déjà remboursé ne compensent pas ces frais, une revente rapide coûterait de l’argent même sans baisse de marché.';
   }
 
@@ -224,19 +228,22 @@ function selectMonth(m) {
 // Recalcule et réaffiche tout l'onglet 2 (synthèse + échéancier complet) à partir de l'état courant —
 // appelé au chargement et à chaque changement dans l'onglet Simulation taux.
 function refreshTab2() {
-  // L'apport "brut" de chacun (70/30) est recalculé sur l'apport réellement en vigueur — pas figé à 100K.
+  // L'apport "brut" de chacun est recalculé sur l'apport réellement en vigueur — pas figé.
   // Les frais d'acquisition sont toujours payés à part (case "Frais hors emprunt" cochée par défaut dans l'onglet Simulation taux) :
   // l'apport ci-dessous ne contient donc jamais de part de frais, l'apport effectif = apport brut, sans rééquilibrage à calculer.
-  APPORT_A_RAW = apport * benRatio;
-  APPORT_B_RAW = apport * (1 - benRatio);
+  // Solo : un seul emprunteur, apport et capital lui sont attribués à 100% (le curseur benRatio n'est pas utilisé en solo).
+  const effectiveBenRatio = (typeof mode !== 'undefined' && mode === 'solo') ? 1 : benRatio;
+  APPORT_A_RAW = apport * effectiveBenRatio;
+  APPORT_B_RAW = apport * (1 - effectiveBenRatio);
   APPORT_A = APPORT_A_RAW;
   APPORT_B = APPORT_B_RAW;
   document.getElementById('assumptions-apport').textContent =
-    'Apport Benjamin : ' + fmt(Math.round(APPORT_A_RAW)) + ' (' + (benRatio * 100).toFixed(0) + '%) · Apport Marie : ' + fmt(Math.round(APPORT_B_RAW)) + ' (' + ((1 - benRatio) * 100).toFixed(0) + '%)';
+    'Apport ' + nomA + ' : ' + fmt(Math.round(APPORT_A_RAW)) + ' (' + (benRatio * 100).toFixed(0) + '%) · Apport ' + nomB + ' : ' + fmt(Math.round(APPORT_B_RAW)) + ' (' + ((1 - benRatio) * 100).toFixed(0) + '%)';
 
-  // Reflète la durée choisie et l'appréciation dans les libellés de l'onglet.
+  // Reflète la durée choisie, l'appréciation et les noms dans les libellés de l'onglet.
   document.querySelectorAll('.duree-ans').forEach(el => { el.textContent = dureeChoisie; });
   document.querySelectorAll('.growth-pct').forEach(el => { el.textContent = APPART_GROWTH; });
+  if (typeof syncNames === 'function') syncNames();
 
   const freshLoanData = buildLoanSchedule();
 
@@ -245,7 +252,7 @@ function refreshTab2() {
 
   if (equalizeShares) {
     document.getElementById('assumptions-mensualite').textContent =
-      'Ben ' + fmt(Math.round(payBen)) + '/mois · Marie ' + fmt(Math.round(payMarie)) + '/mois (intérêts partagés 50/50)';
+      nomA + ' ' + fmt(Math.round(payBen)) + '/mois · ' + nomB + ' ' + fmt(Math.round(payMarie)) + '/mois (intérêts partagés 50/50)';
   } else {
     document.getElementById('assumptions-mensualite').textContent = fmt(Math.round(payBen)) + '/mois chacun';
   }
