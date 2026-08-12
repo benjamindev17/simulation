@@ -102,6 +102,27 @@ h2 { font-size: 15px; font-weight: 600; margin: 0 0 1rem; }
   color: var(--paper);
 }
 
+/* Bouton « Mes simulations » dans le header, à droite */
+.header-account-btn {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(247, 245, 239, 0.13);
+  border: 1px solid rgba(247, 245, 239, 0.22);
+  border-radius: 999px;
+  padding: 9px 16px 9px 12px;
+  cursor: pointer;
+  color: var(--paper);
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.header-account-btn:hover { background: rgba(247, 245, 239, 0.2); }
+.header-account-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+.header-account-btn.active { background: var(--paper); color: var(--moss); }
+
 .content { padding: 0 1.5rem; }
 
 /* Barre d'onglets + action « Créer le contrat » à droite */
@@ -112,6 +133,14 @@ h2 { font-size: 15px; font-weight: 600; margin: 0 0 1rem; }
   gap: 12px;
   flex-wrap: wrap;
   margin: 0.25rem 0 1.75rem;
+}
+
+/* Deux groupes d'onglets distincts : outil principal (Simulation/Répartition/Coût) vs ETF (outil indépendant) */
+.tabs-groups {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 /* Onglets : segmented control en pilules */
@@ -720,14 +749,17 @@ body.contract-open { overflow: hidden; }
 @media screen and (max-width: 640px) {
   .content { padding: 0 0.9rem 3rem; }
 
-  /* En-tête plus compact */
-  .page-header { padding: 1.2rem 0.9rem; gap: 12px; }
+  /* En-tête plus compact — le bouton « Mes simulations » passe en icône seule, sous le titre si besoin */
+  .page-header { padding: 1.2rem 0.9rem; gap: 10px 12px; flex-wrap: wrap; }
   .page-header h1.page-title { font-size: 19px; }
   .page-header__icon { width: 40px; height: 40px; }
   .page-header__icon svg { width: 23px; height: 23px; }
+  .header-account-btn { padding: 8px; }
+  .header-account-btn__label { display: none; }
 
-  /* Barre d'onglets : onglets pleine largeur, bouton contrat dessous */
+  /* Barre d'onglets : les deux groupes (Simulation/Répartition/Coût vs ETF) empilés et bien séparés */
   .tabs-row { gap: 8px; }
+  .tabs-groups { flex-direction: column; align-items: stretch; width: 100%; gap: 8px; }
   .tabs { width: 100%; overflow-x: auto; }
   .tabs button { flex: 1 0 auto; text-align: center; padding: 10px 10px; }
   #btn-generate-contract { width: 100%; }
@@ -903,6 +935,7 @@ body.contract-open { overflow: hidden; }
 .dash-sim-list { display: flex; flex-direction: column; gap: 10px; }
 
 /* Barre « simulation chargée » dans tabs-row (visible sur tous les onglets) */
+.current-sim-bar[hidden] { display: none; }
 .current-sim-bar {
   display: flex;
   align-items: center;
