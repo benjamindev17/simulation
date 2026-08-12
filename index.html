@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=38">
+<link rel="stylesheet" href="assets/css/styles.css?v=39">
 </head>
 <body>
 
@@ -51,10 +51,25 @@
         <button id="tabBtnAppart">Répartition appartement</button>
         <button id="tabBtnCout">Coût total annuel</button>
       </nav>
-      <nav class="tabs tabs--secondary">
+      <nav class="tabs tabs--secondary" id="tabs-etf-group">
         <button id="tabBtnEtf">Placement ETF</button>
       </nav>
     </div>
+
+    <!-- Menu déroulant mobile — remplace la barre d'onglets qui défile horizontalement en dessous de 640px -->
+    <div class="tabs-dropdown" id="tabs-dropdown">
+      <button type="button" class="tabs-dropdown__trigger" id="tabs-dropdown-trigger" aria-haspopup="listbox" aria-expanded="false">
+        <span id="tabs-dropdown-label">Simulation taux</span>
+        <svg class="tabs-dropdown__chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="tabs-dropdown__panel" id="tabs-dropdown-panel" role="listbox">
+        <button type="button" class="tabs-dropdown__item active" data-tab="taux" role="option" aria-selected="true">Simulation taux</button>
+        <button type="button" class="tabs-dropdown__item" data-tab="appart" role="option" aria-selected="false" id="tabs-dropdown-item-appart">Répartition appartement</button>
+        <button type="button" class="tabs-dropdown__item" data-tab="cout" role="option" aria-selected="false">Coût total annuel</button>
+        <button type="button" class="tabs-dropdown__item" data-tab="etf" role="option" aria-selected="false" id="tabs-dropdown-item-etf">Placement ETF</button>
+      </div>
+    </div>
+
     <div id="duree-float" class="duree-float" role="group" aria-label="Durée du crédit">
       <span class="duree-float__label">Durée crédit</span>
       <div class="duree-float__btns">
@@ -601,6 +616,17 @@
 
     <h1>Mes simulations</h1>
 
+    <!-- Préférences d'affichage — indépendantes de la connexion / de Firestore, toujours visibles ici. -->
+    <div class="dash-prefs">
+      <label class="dash-prefs__row">
+        <input type="checkbox" id="chk-pref-etf">
+        <span>
+          <b>Simulation ETF</b>
+          <small>Affiche l'onglet « Placement ETF » dans la barre de navigation.</small>
+        </span>
+      </label>
+    </div>
+
     <!-- État : Firebase non configuré (aucun firebase-config.js valide trouvé) -->
     <div id="dash-not-configured" class="warning-box" hidden>
       Le compte n'est pas encore relié. Cette fonctionnalité arrive bientôt — rien à faire de ton côté pour l'instant.
@@ -690,23 +716,23 @@
   </div>
 </div>
 
-<script src="assets/js/utils.js?v=38" defer></script>
-<script src="assets/js/ownership.js?v=38" defer></script>
-<script src="assets/js/rate-simulation.js?v=38" defer></script>
-<script src="assets/js/app.js?v=38" defer></script>
-<script src="assets/js/contract.js?v=38" defer></script>
-<script src="assets/js/etf.js?v=38" defer></script>
-<script src="assets/js/cost.js?v=38" defer></script>
+<script src="assets/js/utils.js?v=39" defer></script>
+<script src="assets/js/ownership.js?v=39" defer></script>
+<script src="assets/js/rate-simulation.js?v=39" defer></script>
+<script src="assets/js/app.js?v=39" defer></script>
+<script src="assets/js/contract.js?v=39" defer></script>
+<script src="assets/js/etf.js?v=39" defer></script>
+<script src="assets/js/cost.js?v=39" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=38" defer></script>
-<script src="assets/js/state.js?v=38" defer></script>
-<script src="assets/js/modal.js?v=38" defer></script>
-<script src="assets/js/recap.js?v=38" defer></script>
-<script src="assets/js/dashboard.js?v=38" defer></script>
+<script src="assets/js/firebase-config.js?v=39" defer></script>
+<script src="assets/js/state.js?v=39" defer></script>
+<script src="assets/js/modal.js?v=39" defer></script>
+<script src="assets/js/recap.js?v=39" defer></script>
+<script src="assets/js/dashboard.js?v=39" defer></script>
 
 </body>
 </html>

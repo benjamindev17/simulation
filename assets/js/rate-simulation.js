@@ -242,6 +242,10 @@ function applyMode(newMode) {
   // Onglet Répartition / tableau d'étalement : garde la mécanique du prêt (toujours utile en solo),
   // masque uniquement ce qui suppose 2 personnes.
   elTabBtnAppart.textContent = isSolo ? 'Tableau d’étalement' : 'Répartition appartement';
+  const elDropdownItemAppart = document.getElementById('tabs-dropdown-item-appart');
+  if (elDropdownItemAppart) elDropdownItemAppart.textContent = elTabBtnAppart.textContent;
+  if (typeof dropdownLabels !== 'undefined') dropdownLabels.appart = elTabBtnAppart.textContent;
+  if (typeof syncDropdown === 'function') syncDropdown();
   const elRepartitionH1 = document.getElementById('repartition-h1');
   if (elRepartitionH1) elRepartitionH1.textContent = isSolo ? 'Tableau d’étalement du prêt' : 'Répartition de l’appartenance de l’appartement';
   const idsToHideInSolo = ['repartition-assumptions', 'stat-total-b', 'repartition-formula-note', 'card-total-b', 'field-remboursement-personne', 'repartition-part-box'];

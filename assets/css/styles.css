@@ -178,6 +178,58 @@ h2 { font-size: 15px; font-weight: 600; margin: 0 0 1rem; }
   box-shadow: 0 1px 3px rgba(27, 30, 26, 0.22);
 }
 
+/* Menu déroulant des sections — masqué par défaut (desktop), affiché uniquement sur mobile (cf. media query) */
+.tabs-dropdown { display: none; position: relative; width: 100%; }
+.tabs-dropdown__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font-family: var(--font-sans);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+.tabs-dropdown__chevron { flex-shrink: 0; color: var(--ink-muted); transition: transform 0.18s ease; }
+.tabs-dropdown.open .tabs-dropdown__trigger { border-color: var(--moss-line); }
+.tabs-dropdown.open .tabs-dropdown__chevron { transform: rotate(180deg); }
+.tabs-dropdown__panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 28px rgba(27, 30, 26, 0.18);
+  overflow: hidden;
+}
+.tabs-dropdown.open .tabs-dropdown__panel { display: block; }
+.tabs-dropdown__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--line-soft);
+  padding: 12px 14px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+}
+.tabs-dropdown__item:first-child { border-top: none; }
+.tabs-dropdown__item:hover { background: var(--paper); }
+.tabs-dropdown__item.active { color: var(--moss); font-weight: 700; background: var(--moss-soft); }
+
 .panel { display: none; }
 .panel.active { display: block; }
 
@@ -322,6 +374,19 @@ input[type="range"] {
   margin-bottom: 1.5rem;
 }
 .assumptions b { font-weight: 600; }
+
+/* Préférences d'affichage (onglet Mes simulations) — ex. activer/désactiver l'onglet ETF */
+.dash-prefs {
+  background: var(--paper-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+  margin-bottom: 1.25rem;
+}
+.dash-prefs__row { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.dash-prefs__row input[type="checkbox"] { margin-top: 3px; accent-color: var(--moss); flex-shrink: 0; }
+.dash-prefs__row b { display: block; font-size: 13.5px; font-weight: 600; }
+.dash-prefs__row small { display: block; font-size: 12px; color: var(--ink-muted); margin-top: 2px; }
 
 .warning-box {
   background: var(--brick-soft);
@@ -774,14 +839,11 @@ body.recap-open { overflow: hidden; }
   .header-account-btn { padding: 8px; }
   .header-account-btn__label { display: none; }
 
-  /* Barre d'onglets : les deux groupes (Simulation/Répartition/Coût vs ETF) empilés et bien séparés */
+  /* Barre d'onglets : la version en pilules qui défile horizontalement est remplacée
+     par un menu déroulant, plus confortable à utiliser au doigt. */
   .tabs-row { gap: 8px; }
-  .tabs-groups { flex-direction: column; align-items: stretch; width: 100%; gap: 8px; }
-  .tabs { width: 100%; overflow-x: auto; }
-  .tabs button { flex: 1 0 auto; text-align: center; padding: 10px 10px; }
-  /* ETF : pilule compacte, pas étirée en pleine largeur comme le groupe principal */
-  .tabs--secondary { width: auto; align-self: flex-start; }
-  .tabs--secondary button { flex: 0 0 auto; padding: 10px 18px; }
+  .tabs-groups { display: none; }
+  .tabs-dropdown { display: block; width: 100%; }
   #btn-generate-contract { width: 100%; }
 
   h1 { font-size: 17px; margin: 1.4rem 0 0.9rem; }
