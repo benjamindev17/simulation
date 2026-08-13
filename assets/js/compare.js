@@ -57,7 +57,7 @@
 
     const c = s.cout || {};
     const anMensualite = mensualite * 12;
-    const totalAn = anMensualite + (c.asrd || 0) + (c.incendie || 0) + (c.copro || 0) * 12 +
+    const totalAn = anMensualite + (c.asrd || 0) + (c.incendie || 0) + (c.compte || 0) + (c.copro || 0) * 12 +
       (c.reserve || 0) * 12 + (c.precompte || 0) + (c.dechets || 0) + (c.charges || 0) * 12 + (c.energie || 0) * 12;
     const chargesMois = (totalAn - anMensualite) / 12;
     const totalMois = mensualite + chargesMois;
@@ -107,6 +107,7 @@
     html += row('Prix de l’appartement', entries.map((e) => e.state.prixAppart), { formatter: euros });
     html += row('Aménagement', entries.map((e) => e.state.travaux || 0), { formatter: euros });
     html += row('Coût total du projet', summaries.map((s) => s.coutTotal), { formatter: euros });
+    html += row('Frais bancaires (frais de dossier)', entries.map((e) => e.state.fraisBancaires || 0), { best: true, formatter: euros });
     html += row('Apport total', entries.map((e) => e.state.apport), { formatter: euros });
     html += row('Montant emprunté', summaries.map((s) => s.montant), { formatter: euros });
     html += row('Taux annuel', entries.map((e) => e.state.tauxPct.toFixed(2) + ' %'));
@@ -114,12 +115,19 @@
     html += row('Mensualité', summaries.map((s) => s.mensualite), { best: true, formatter: eurosPerMois });
     html += row('Coût total des intérêts', summaries.map((s) => s.totalInterest), { best: true, formatter: euros });
     html += row('Quotité visée au terme', summaries.map((s) => s.isSolo ? null : pct0(s.shareA) + ' / ' + pct0(s.shareB)));
+    html += row('Assurance solde restant dû (ADI)', entries.map((e) => (e.state.cout && e.state.cout.asrd) || 0), { best: true, formatter: eurosPerAn });
+    html += row('Compte bancaire', entries.map((e) => (e.state.cout && e.state.cout.compte) || 0), { best: true, formatter: eurosPerAn });
     html += row('Coût annuel de possession', summaries.map((s) => s.totalAn), { best: true, formatter: eurosPerAn });
     html += row('Total prêt + charges', summaries.map((s) => s.totalMois), { best: true, formatter: eurosPerMois });
     html += row('Coût réel hors capital', summaries.map((s) => s.coutReelAn), { best: true, formatter: eurosPerAn });
+    html += row('Indemnité de remboursement anticipé', entries.map((e) => e.state.iraMois != null ? e.state.iraMois : 3), {
+      best: true,
+      formatter: (v) => (v == null ? '—' : (v.toFixed(1).replace(/\.0$/, '') + ' mois'))
+    });
+    html += row('Conditions particulières (remb. anticipé)', entries.map((e) => e.state.iraConditions || null));
 
     html += '</tbody></table>';
-    html += '<p class="c-annex-note">Les cases en vert repèrent, pour chaque ligne, la simulation la moins coûteuse. Le tableau d’étalement mensuel et l’onglet Placement ETF ne font pas partie de cette comparaison.</p>';
+    html += '<p class="c-annex-note">Les cases en vert repèrent, pour chaque ligne, la simulation la moins coûteuse (ou la moins pénalisante pour l’indemnité de remboursement anticipé). Le tableau d’étalement mensuel et l’onglet Placement ETF ne font pas partie de cette comparaison.</p>';
 
     doc.innerHTML = html;
   }

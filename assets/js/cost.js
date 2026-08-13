@@ -9,6 +9,7 @@
   const elMensualite = el('cout-mensualite');
   const elAsrd = el('in-cout-asrd');
   const elIncendie = el('in-cout-incendie');
+  const elCompte = el('in-cout-compte');
   const elCopro = el('in-cout-copro');
   const elReserve = el('in-cout-reserve');
   const elPrecompte = el('in-cout-precompte');
@@ -20,6 +21,7 @@
   // Valeurs par défaut (Wallonie) fournies par l'utilisateur.
   let asrd = 440;        // €/an
   let incendie = 300;    // €/an
+  let compte = 0;        // €/an — compte à vue souvent imposé par la banque ; 0 si gratuit
   let copro = 125;       // €/mois
   let reserve = 100;     // €/mois total (50 € par personne)
   let precompte = 1250;  // €/an
@@ -41,6 +43,7 @@
     elMensualite.textContent = fmt(Math.round(mensualite));
     elAsrd.value = Math.round(asrd);
     elIncendie.value = Math.round(incendie);
+    elCompte.value = Math.round(compte);
     elCopro.value = Math.round(copro);
     elReserve.value = Math.round(reserve);
     elPrecompte.value = Math.round(precompte);
@@ -54,7 +57,7 @@
     const anCharges = charges * 12;
     const anEnergie = energie * 12;
 
-    const totalAn = anMensualite + asrd + incendie + anCopro + anReserve + precompte + dechets + anCharges + anEnergie;
+    const totalAn = anMensualite + asrd + incendie + compte + anCopro + anReserve + precompte + dechets + anCharges + anEnergie;
     const chargesAn = totalAn - anMensualite;        // toutes les charges (hors mensualité du prêt)
     const chargesMois = chargesAn / 12;              // charges mensualisées
     const totalMois = mensualite + chargesMois;      // mensualité du prêt + charges mensualisées
@@ -70,6 +73,7 @@
     let html = row('Mensualité du prêt (capital + intérêts)', anMensualite);
     html += row('Assurance solde restant dû (ADI)', asrd);
     html += row('Assurance habitation (incendie + RC)', incendie);
+    if (compte > 0) html += row('Compte bancaire (imposé par la banque)', compte);
     html += row('Charges de copropriété', anCopro);
     html += row('Fonds de réserve (gros travaux)', anReserve);
     html += row('Précompte immobilier', precompte);
@@ -83,6 +87,7 @@
   const num = (v) => Math.max(0, parseFloat(v) || 0);
   elAsrd.addEventListener('change', () => { asrd = num(elAsrd.value); refreshCout(); });
   elIncendie.addEventListener('change', () => { incendie = num(elIncendie.value); refreshCout(); });
+  elCompte.addEventListener('change', () => { compte = num(elCompte.value); refreshCout(); });
   elCopro.addEventListener('change', () => { copro = num(elCopro.value); refreshCout(); });
   elReserve.addEventListener('change', () => { reserve = num(elReserve.value); refreshCout(); });
   elPrecompte.addEventListener('change', () => { precompte = num(elPrecompte.value); refreshCout(); });

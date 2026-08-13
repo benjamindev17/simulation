@@ -31,6 +31,7 @@
     // Coût total annuel — mêmes valeurs que l'onglet dédié (les champs sont tenus à jour par cost.js).
     const asrd = numVal('in-cout-asrd');
     const incendie = numVal('in-cout-incendie');
+    const compte = numVal('in-cout-compte');
     const copro = numVal('in-cout-copro');
     const reserve = numVal('in-cout-reserve');
     const precompte = numVal('in-cout-precompte');
@@ -39,7 +40,7 @@
     const energie = numVal('in-cout-energie');
     const anMensualite = loan.mensualite * 12;
     const anCopro = copro * 12, anReserve = reserve * 12, anCharges = charges * 12, anEnergie = energie * 12;
-    const totalAn = anMensualite + asrd + incendie + anCopro + anReserve + precompte + dechets + anCharges + anEnergie;
+    const totalAn = anMensualite + asrd + incendie + compte + anCopro + anReserve + precompte + dechets + anCharges + anEnergie;
     const chargesMois = (totalAn - anMensualite) / 12;
     const totalMois = loan.mensualite + chargesMois;
     const capitalMoyenAn = dureeChoisie > 0 ? loan.loanAmount / dureeChoisie : 0;
@@ -85,6 +86,14 @@
       '<tr><td>Coût total des intérêts sur la durée</td><td>' + fmt(Math.round(totalInterest)) + '</td></tr>' +
       '</table>';
 
+    html += '<h2>Remboursement anticipé</h2>';
+    html += '<table class="c-table c-table--kv">' +
+      '<tr><td>Indemnité prévue au contrat</td><td>' + iraMois.toFixed(1).replace(/\.0$/, '') + ' mois d’intérêts</td></tr>' +
+      '</table>';
+    html += '<p>' + (iraConditions
+      ? 'Conditions particulières : ' + iraConditions + '.'
+      : 'Aucune condition particulière renseignée — plafond légal en Belgique : 3 mois d’intérêts sur le capital remboursé par anticipation.') + '</p>';
+
     if (!isSolo) {
       html += '<h2>Répartition de la propriété</h2>';
       html += '<p>Modèle : ' + (equalizeShares
@@ -103,6 +112,7 @@
       row('Mensualité du prêt (capital + intérêts)', anMensualite) +
       row('Assurance solde restant dû (ADI)', asrd) +
       row('Assurance habitation', incendie) +
+      (compte > 0 ? row('Compte bancaire (imposé par la banque)', compte) : '') +
       row('Charges de copropriété', anCopro) +
       row('Fonds de réserve', anReserve) +
       row('Précompte immobilier', precompte) +

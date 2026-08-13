@@ -23,6 +23,12 @@ let benRatio = 0.5; // 50/50 par défaut (curseur au milieu) — éditable via l
 let tauxPct = 3.70;
 let SEUIL_ENDETTEMENT = 33;
 
+/* Indemnité de remboursement anticipé (IRA) — condition du prêt, pas un coût récurrent : affichée
+   à titre informatif (recap/comparaison), jamais comptée dans les totaux annuels/mensuels.
+   Plafond légal en Belgique : 3 mois d'intérêts. */
+let iraMois = 3;
+let iraConditions = '';
+
 /* Emprunteur(s) : "duo" (par défaut) ou "solo" — pilote l'affichage des champs
    liés à la 2e personne (apport, salaire) et l'onglet Répartition appartement. */
 let mode = 'duo';
@@ -88,6 +94,8 @@ const elQuotite = document.getElementById('in-quotite');
 const elMontant = document.getElementById('in-montant');
 const elTaux = document.getElementById('in-taux');
 const elSliderTaux = document.getElementById('slider-taux');
+const elIraMois = document.getElementById('in-ira-mois');
+const elIraConditions = document.getElementById('in-ira-conditions');
 
 // Colonnes du tableau d'étalement retirées/réinsérées selon le mode solo/duo (cf. applyMode).
 const elAmortColgroup = document.querySelector('#amort-table colgroup');
@@ -219,6 +227,9 @@ function renderCalc() {
   elNomB.value = nomB;
   syncNames();
 
+  elIraMois.value = iraMois;
+  elIraConditions.value = iraConditions;
+
   elSeuilEndettement.value = SEUIL_ENDETTEMENT;
   renderColonne(15, elCol15, elOutMensualite15, elOutEndettement15, elOutInteret15);
   renderColonne(20, elCol20, elOutMensualite20, elOutEndettement20, elOutInteret20);
@@ -295,6 +306,9 @@ elSalaireSolo.addEventListener('change', () => { salaireSolo = Math.max(0, parse
 
 elNomA.addEventListener('change', () => { nomA = elNomA.value.trim() || 'Personne 1'; renderCalc(); });
 elNomB.addEventListener('change', () => { nomB = elNomB.value.trim() || 'Personne 2'; renderCalc(); });
+
+elIraMois.addEventListener('change', () => { iraMois = Math.max(0, parseFloat(elIraMois.value) || 0); renderCalc(); });
+elIraConditions.addEventListener('change', () => { iraConditions = elIraConditions.value.trim(); renderCalc(); });
 
 /* --- Interactions -------------------------------------------------------- */
 // Sélection de la durée (15/20/25), depuis les radios OU le sélecteur flottant.

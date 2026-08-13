@@ -39,12 +39,15 @@ function captureState() {
     salaireSolo,
     nomA,
     nomB,
+    iraMois,
+    iraConditions,
     // --- Répartition appartement ---
     equalizeShares,
     // --- Coût total annuel (le module cost.js encapsule ses variables ; on lit le DOM, qu'il tient à jour) ---
     cout: {
       asrd: numVal('in-cout-asrd'),
       incendie: numVal('in-cout-incendie'),
+      compte: numVal('in-cout-compte'),
       copro: numVal('in-cout-copro'),
       reserve: numVal('in-cout-reserve'),
       precompte: numVal('in-cout-precompte'),
@@ -72,12 +75,15 @@ function applyState(s) {
   salaireSolo = s.salaireSolo != null ? s.salaireSolo : salaireSolo;
   nomA = s.nomA || nomA;
   nomB = s.nomB || nomB;
+  iraMois = s.iraMois != null ? s.iraMois : iraMois;
+  iraConditions = s.iraConditions || '';
   equalizeShares = s.equalizeShares;
   document.getElementById('chk-equalize-shares').checked = s.equalizeShares;
 
   if (s.cout) {
     setValAndFire('in-cout-asrd', s.cout.asrd);
     setValAndFire('in-cout-incendie', s.cout.incendie);
+    setValAndFire('in-cout-compte', s.cout.compte || 0);
     setValAndFire('in-cout-copro', s.cout.copro);
     setValAndFire('in-cout-reserve', s.cout.reserve);
     setValAndFire('in-cout-precompte', s.cout.precompte);
