@@ -170,11 +170,13 @@ function interetTotalPour(years) {
 
 function renderColonne(years, elCol, elMensualite, elEndettement, elInteret) {
   const m = mensualitePour(years);
-  const pct = (m / salaireCombineCalc()) * 100;
+  const salaire = salaireCombineCalc();
+  // Salaire pas encore renseigné : pas de pourcentage à afficher (division par 0 → NaN/Infinity sinon).
+  const pct = salaire > 0 ? (m / salaire) * 100 : null;
   elMensualite.textContent = fmt(Math.round(m)) + '/mois';
-  elEndettement.textContent = pct.toFixed(1) + '% du salaire';
+  elEndettement.textContent = pct === null ? 'Revenu non renseigné' : pct.toFixed(1) + '% du salaire';
   elInteret.textContent = fmt(Math.round(interetTotalPour(years)));
-  elCol.style.backgroundColor = couleurEndettement(pct);
+  elCol.style.backgroundColor = pct === null ? '' : couleurEndettement(pct);
 }
 
 /* --- Rendu --------------------------------------------------------------- */

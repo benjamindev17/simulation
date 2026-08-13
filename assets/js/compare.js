@@ -64,7 +64,12 @@
     const capitalMoyenAn = s.dureeChoisie > 0 ? montant / s.dureeChoisie : 0;
     const coutReelAn = totalAn - capitalMoyenAn;
 
-    return { isSolo, coutTotal, montant, mensualite, totalInterest, payBen, payMarie, shareA, shareB, totalAn, totalMois, coutReelAn };
+    // Taux d'endettement = mensualité / revenus nets combinés — null si revenus pas renseignés
+    // (évite une division par 0, comme dans rate-simulation.js/renderColonne).
+    const salaireCombine = isSolo ? (s.salaireSolo || 0) : (s.salaireBen || 0) + (s.salaireMarie || 0);
+    const tauxEndettement = salaireCombine > 0 ? (mensualite / salaireCombine) * 100 : null;
+
+    return { isSolo, coutTotal, montant, mensualite, totalInterest, payBen, payMarie, shareA, shareB, totalAn, totalMois, coutReelAn, tauxEndettement };
   }
 
   // Ligne de tableau : "values" sont des valeurs BRUTES (nombre ou null/chaîne), formatées via
@@ -113,6 +118,10 @@
     html += row('Taux annuel', entries.map((e) => e.state.tauxPct.toFixed(2) + ' %'));
     html += row('Durée', entries.map((e) => e.state.dureeChoisie + ' ans'));
     html += row('Mensualité', summaries.map((s) => s.mensualite), { best: true, formatter: eurosPerMois });
+    html += row('Taux d’endettement', summaries.map((s) => s.tauxEndettement), {
+      best: true,
+      formatter: (v) => (v == null ? 'Revenu non renseigné' : v.toFixed(1) + ' %')
+    });
     html += row('Coût total des intérêts', summaries.map((s) => s.totalInterest), { best: true, formatter: euros });
     html += row('Quotité visée au terme', summaries.map((s) => s.isSolo ? null : pct0(s.shareA) + ' / ' + pct0(s.shareB)));
     html += row('Assurance solde restant dû (ADI)', entries.map((e) => (e.state.cout && e.state.cout.asrd) || 0), { best: true, formatter: eurosPerAn });
@@ -127,7 +136,7 @@
     html += row('Conditions particulières (remb. anticipé)', entries.map((e) => e.state.iraConditions || null));
 
     html += '</tbody></table>';
-    html += '<p class="c-annex-note">Les cases en vert repèrent, pour chaque ligne, la simulation la moins coûteuse (ou la moins pénalisante pour l’indemnité de remboursement anticipé). Le tableau d’étalement mensuel et l’onglet Placement ETF ne font pas partie de cette comparaison.</p>';
+    html += '<p class="c-annex-note">Les cases en vert repèrent, pour chaque ligne, la valeur la plus favorable (coût le plus bas, endettement le plus faible, ou indemnité de remboursement anticipé la moins pénalisante). Le tableau d’étalement mensuel et l’onglet Placement ETF ne font pas partie de cette comparaison.</p>';
 
     doc.innerHTML = html;
   }
