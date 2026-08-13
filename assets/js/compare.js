@@ -14,8 +14,6 @@
   const btnClose = document.getElementById('btn-close-compare');
   if (!overlay || !doc) return;
 
-  const pct0 = (x) => Math.round(x) + ' %';
-
   // Recalcule les grandeurs d'une simulation à partir de son état sauvegardé (captureState()).
   function computeSummary(s) {
     const isSolo = s.mode === 'solo';
@@ -30,31 +28,6 @@
     const mensualite = montant > 0 ? montant / annuityFactor : 0;
     const totalInterest = mensualite * n - montant;
 
-    const effectiveBenRatio = isSolo ? 1 : s.benRatio;
-    const apportA = s.apport * effectiveBenRatio;
-    const apportB = s.apport * (1 - effectiveBenRatio);
-
-    let payBen, payMarie;
-    if (isSolo) {
-      payBen = mensualite; payMarie = 0;
-    } else if (!s.equalizeShares || mensualite <= 0) {
-      payBen = mensualite / 2; payMarie = mensualite / 2;
-    } else {
-      const cibleEquite = (apportA + apportB + montant) / 2;
-      let pBen = (cibleEquite - apportA + 0.5 * totalInterest) / n;
-      pBen = Math.min(Math.max(pBen, 0), mensualite);
-      payBen = pBen; payMarie = mensualite - pBen;
-    }
-
-    let shareA = null, shareB = null;
-    if (!isSolo) {
-      const equityA = apportA + payBen * n - 0.5 * totalInterest;
-      const equityB = apportB + payMarie * n - 0.5 * totalInterest;
-      const totalEquity = apportA + apportB + montant;
-      shareA = totalEquity > 0 ? (equityA / totalEquity) * 100 : 0;
-      shareB = totalEquity > 0 ? (equityB / totalEquity) * 100 : 0;
-    }
-
     const c = s.cout || {};
     const anMensualite = mensualite * 12;
     const totalAn = anMensualite + (c.asrd || 0) + (c.incendie || 0) + (c.compte || 0) + (c.copro || 0) * 12 +
@@ -64,12 +37,11 @@
     const capitalMoyenAn = s.dureeChoisie > 0 ? montant / s.dureeChoisie : 0;
     const coutReelAn = totalAn - capitalMoyenAn;
 
-    // Taux d'endettement = mensualité / revenus nets combinés — null si revenus pas renseignés
-    // (évite une division par 0, comme dans rate-simulation.js/renderColonne).
-    const salaireCombine = isSolo ? (s.salaireSolo || 0) : (s.salaireBen || 0) + (s.salaireMarie || 0);
-    const tauxEndettement = salaireCombine > 0 ? (mensualite / salaireCombine) * 100 : null;
+    // Quotité empruntée = part du coût total financée par l'emprunt (même formule que
+    // "Quotité empruntée" dans l'onglet Simulation taux) — le % emprunté à la banque.
+    const quotiteEmpruntee = coutTotal > 0 ? (montant / coutTotal) * 100 : 0;
 
-    return { isSolo, coutTotal, montant, mensualite, totalInterest, payBen, payMarie, shareA, shareB, totalAn, totalMois, coutReelAn, tauxEndettement };
+    return { isSolo, coutTotal, montant, mensualite, totalInterest, totalAn, totalMois, coutReelAn, quotiteEmpruntee };
   }
 
   // Ligne de tableau : "values" sont des valeurs BRUTES (nombre ou null/chaîne), formatées via
@@ -118,12 +90,8 @@
     html += row('Taux annuel', entries.map((e) => e.state.tauxPct.toFixed(2) + ' %'));
     html += row('Durée', entries.map((e) => e.state.dureeChoisie + ' ans'));
     html += row('Mensualité', summaries.map((s) => s.mensualite), { best: true, formatter: eurosPerMois });
-    html += row('Taux d’endettement', summaries.map((s) => s.tauxEndettement), {
-      best: true,
-      formatter: (v) => (v == null ? 'Revenu non renseigné' : v.toFixed(1) + ' %')
-    });
+    html += row('Quotité empruntée', summaries.map((s) => s.quotiteEmpruntee), { formatter: (v) => v.toFixed(2) + ' %' });
     html += row('Coût total des intérêts', summaries.map((s) => s.totalInterest), { best: true, formatter: euros });
-    html += row('Quotité visée au terme', summaries.map((s) => s.isSolo ? null : pct0(s.shareA) + ' / ' + pct0(s.shareB)));
     html += row('Assurance solde restant dû (ADI)', entries.map((e) => (e.state.cout && e.state.cout.asrd) || 0), { best: true, formatter: eurosPerAn });
     html += row('Compte bancaire', entries.map((e) => (e.state.cout && e.state.cout.compte) || 0), { best: true, formatter: eurosPerAn });
     html += row('Coût annuel de possession', summaries.map((s) => s.totalAn), { best: true, formatter: eurosPerAn });
@@ -136,7 +104,7 @@
     html += row('Conditions particulières (remb. anticipé)', entries.map((e) => e.state.iraConditions || null));
 
     html += '</tbody></table>';
-    html += '<p class="c-annex-note">Les cases en vert repèrent, pour chaque ligne, la valeur la plus favorable (coût le plus bas, endettement le plus faible, ou indemnité de remboursement anticipé la moins pénalisante). Le tableau d’étalement mensuel et l’onglet Placement ETF ne font pas partie de cette comparaison.</p>';
+    html += '<p class="c-annex-note">Les cases en vert repèrent, pour chaque ligne, la valeur la plus favorable (coût le plus bas, ou indemnité de remboursement anticipé la moins pénalisante). Le tableau d’étalement mensuel et l’onglet Placement ETF ne font pas partie de cette comparaison.</p>';
 
     doc.innerHTML = html;
   }
