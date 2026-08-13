@@ -1008,9 +1008,13 @@ body.recap-open { overflow: hidden; }
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
   margin-bottom: 1rem;
 }
 .dash-list-head__title { margin: 0; }
+.dash-list-head__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-secondary:disabled { opacity: 0.45; cursor: default; }
+.btn-secondary:disabled:hover { background: var(--paper-raised); }
 
 .dash-empty {
   background: var(--moss-soft);
@@ -1064,6 +1068,13 @@ body.recap-open { overflow: hidden; }
 .dash-sim-row__name { font-size: 14.5px; font-weight: 600; margin: 0; }
 .dash-sim-row__date { font-size: 12px; color: var(--ink-muted); margin: 2px 0 0; }
 .dash-sim-row__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.dash-sim-row__check { display: flex; align-items: center; flex-shrink: 0; cursor: pointer; }
+.dash-sim-row__check input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--moss); cursor: pointer; }
+.dash-sim-row__check input[type="checkbox"]:disabled { cursor: default; opacity: 0.4; }
+
+/* Comparaison de simulations (tableau dans #compare-doc, style "document" partagé avec .contract) */
+.cmp-table th:first-child, .cmp-table td:first-child { text-align: left; font-weight: 600; background: var(--paper); }
+.cmp-best { background: var(--moss-soft); color: var(--moss); font-weight: 700; }
 
 .btn-danger {
   background: var(--brick-soft);

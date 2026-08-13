@@ -13,7 +13,9 @@
   const elName = document.getElementById('dash-name');
   const elEmail = document.getElementById('dash-email');
   const elEmpty = document.getElementById('dash-empty');
+  const elCompareHint = document.getElementById('dash-compare-hint');
   const elSimList = document.getElementById('dash-sim-list');
+  const btnCompare = document.getElementById('btn-compare-sims');
   const btnSignIn = document.getElementById('btn-google-signin');
   const btnSignOut = document.getElementById('btn-signout');
   const btnNewSim = document.getElementById('btn-new-simulation');
@@ -64,14 +66,38 @@
     elCurrentBar.hidden = false;
   }
 
+  // Comparaison de simulations (accessible uniquement ici, depuis "Mes simulations") : chaque
+  // ligne a une case à cocher, le bouton "Comparer" ouvre compare.js pour 2 à 4 sélectionnées.
+  // La sélection est conservée dans un Set indépendant du rendu, pour survivre aux rafraîchissements
+  // temps réel de la liste (onSnapshot) tant que les simulations cochées existent toujours.
+  const MAX_COMPARE = 4;
+  const selectedCompareIds = new Set();
+  let latestDocsById = new Map();
+
+  function updateCompareButton() {
+    const n = selectedCompareIds.size;
+    btnCompare.textContent = n > 0 ? 'Comparer (' + n + ')' : 'Comparer';
+    btnCompare.disabled = n < 2;
+  }
+
   function renderSimList(docs) {
     elEmpty.hidden = docs.length > 0;
+    if (elCompareHint) elCompareHint.hidden = docs.length < 2;
     elSimList.innerHTML = '';
+    latestDocsById = new Map();
+    // Une simulation supprimée/absente du nouvel instantané ne doit plus rester sélectionnée.
+    const currentIds = new Set(docs.map(d => d.id));
+    Array.from(selectedCompareIds).forEach(id => { if (!currentIds.has(id)) selectedCompareIds.delete(id); });
+
     docs.forEach((doc) => {
       const data = doc.data();
+      latestDocsById.set(doc.id, data);
       const row = document.createElement('div');
       row.className = 'dash-sim-row';
       row.innerHTML =
+        '<label class="dash-sim-row__check" title="Sélectionner pour comparer">' +
+          '<input type="checkbox" class="chk-compare">' +
+        '</label>' +
         '<div class="dash-sim-row__info">' +
           '<p class="dash-sim-row__name"></p>' +
           '<p class="dash-sim-row__date">Mis à jour le ' + formatDate(data.updatedAt) + '</p>' +
@@ -82,6 +108,18 @@
           '<button type="button" class="btn-danger" data-action="delete">Supprimer</button>' +
         '</div>';
       row.querySelector('.dash-sim-row__name').textContent = data.nom || 'Sans nom';
+
+      const chkCompare = row.querySelector('.chk-compare');
+      chkCompare.checked = selectedCompareIds.has(doc.id);
+      chkCompare.addEventListener('change', () => {
+        if (chkCompare.checked && selectedCompareIds.size >= MAX_COMPARE) {
+          chkCompare.checked = false;
+          return;
+        }
+        if (chkCompare.checked) selectedCompareIds.add(doc.id);
+        else selectedCompareIds.delete(doc.id);
+        updateCompareButton();
+      });
 
       row.querySelector('[data-action="load"]').addEventListener('click', () => {
         applyState(data.state);
@@ -123,7 +161,16 @@
 
       elSimList.appendChild(row);
     });
+    updateCompareButton();
   }
+
+  btnCompare.addEventListener('click', () => {
+    const entries = Array.from(selectedCompareIds)
+      .map(id => ({ id, nom: latestDocsById.get(id) && latestDocsById.get(id).nom, state: latestDocsById.get(id) && latestDocsById.get(id).state }))
+      .filter(e => e.state);
+    if (entries.length < 2) return;
+    if (typeof window.openCompare === 'function') window.openCompare(entries);
+  });
 
   function watchSimulations() {
     unsubscribeList = simsCollection().orderBy('updatedAt', 'desc').onSnapshot(
@@ -136,6 +183,8 @@
     elSignedOut.hidden = false;
     elSignedIn.hidden = true;
     unloadCurrentSim();
+    selectedCompareIds.clear();
+    updateCompareButton();
     if (unsubscribeList) { unsubscribeList(); unsubscribeList = null; }
   }
 
