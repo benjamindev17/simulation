@@ -28,6 +28,7 @@ const dropdownLabels = {
 };
 
 let activeTab = 'taux';
+const elDureeFloat = document.getElementById('duree-float');
 
 function switchTab(name) {
   activeTab = name;
@@ -35,6 +36,8 @@ function switchTab(name) {
     tabButtons[k].classList.toggle('active', k === name);
     tabPanels[k].classList.toggle('active', k === name);
   });
+  // Le sélecteur de durée du crédit n'a pas de sens sur "Mes simulations" (pas de simu affichée).
+  if (elDureeFloat) elDureeFloat.hidden = name === 'dashboard';
   syncDropdown();
   closeDropdown();
 }

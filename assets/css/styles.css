@@ -892,7 +892,9 @@ body.recap-open { overflow: hidden; }
 /* Onglet Coût total annuel — ligne de total du tableau */
 #cout-table .cout-total-row td { font-weight: 700; border-top: 2px solid var(--line); background: var(--paper); }
 
-/* Sélecteur de durée dans la barre d'onglets (à droite, hors du cadre des onglets) */
+/* Sélecteur de durée dans la barre d'onglets (à droite, hors du cadre des onglets) —
+   masqué sur l'onglet "Mes simulations", où il n'a pas de sens (app.js/switchTab). */
+.duree-float[hidden] { display: none; }
 .duree-float {
   display: flex;
   align-items: center;
