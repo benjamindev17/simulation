@@ -70,9 +70,9 @@ h2 { font-size: 15px; font-weight: 600; margin: 0 0 1rem; }
   align-items: center;
   gap: 16px;
   padding: 1.6rem 1.5rem;
-  background: linear-gradient(135deg, #2f5480 0%, #24405f 100%);
+  background: linear-gradient(135deg, #40614a 0%, #33503b 100%);
   color: var(--paper);
-  border-bottom: 1px solid #1c3348;
+  border-bottom: 1px solid #2c4433;
 }
 .page-header__icon {
   flex-shrink: 0;
