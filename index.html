@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=45">
+<link rel="stylesheet" href="assets/css/styles.css?v=46">
 </head>
 <body>
 
@@ -81,6 +81,8 @@
     </div>
     <!-- Fonctionnalité conservée mais masquée à la demande — retirer l'attribut "hidden" pour la réactiver -->
     <button type="button" id="btn-generate-contract" hidden title="Projet de convention pré-rempli avec ta simulation — à faire valider par le notaire">📄 Créer le contrat PDF</button>
+    <!-- Visible uniquement si connecté ET qu'aucune simulation n'est actuellement chargée (sinon current-sim-bar prend le relais) -->
+    <button type="button" id="btn-save-new-sim" class="btn-moss" hidden>Enregistrer ma simulation</button>
     <!-- Visible uniquement quand une simulation sauvegardée est chargée pour modification -->
     <div id="current-sim-bar" class="current-sim-bar" hidden>
       <span>📄 <b id="current-sim-name">-</b></span>
@@ -747,24 +749,24 @@
   </div>
 </div>
 
-<script src="assets/js/utils.js?v=45" defer></script>
-<script src="assets/js/ownership.js?v=45" defer></script>
-<script src="assets/js/rate-simulation.js?v=45" defer></script>
-<script src="assets/js/app.js?v=45" defer></script>
-<script src="assets/js/contract.js?v=45" defer></script>
-<script src="assets/js/etf.js?v=45" defer></script>
-<script src="assets/js/cost.js?v=45" defer></script>
+<script src="assets/js/utils.js?v=46" defer></script>
+<script src="assets/js/ownership.js?v=46" defer></script>
+<script src="assets/js/rate-simulation.js?v=46" defer></script>
+<script src="assets/js/app.js?v=46" defer></script>
+<script src="assets/js/contract.js?v=46" defer></script>
+<script src="assets/js/etf.js?v=46" defer></script>
+<script src="assets/js/cost.js?v=46" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=45" defer></script>
-<script src="assets/js/state.js?v=45" defer></script>
-<script src="assets/js/modal.js?v=45" defer></script>
-<script src="assets/js/recap.js?v=45" defer></script>
-<script src="assets/js/compare.js?v=45" defer></script>
-<script src="assets/js/dashboard.js?v=45" defer></script>
+<script src="assets/js/firebase-config.js?v=46" defer></script>
+<script src="assets/js/state.js?v=46" defer></script>
+<script src="assets/js/modal.js?v=46" defer></script>
+<script src="assets/js/recap.js?v=46" defer></script>
+<script src="assets/js/compare.js?v=46" defer></script>
+<script src="assets/js/dashboard.js?v=46" defer></script>
 
 </body>
 </html>

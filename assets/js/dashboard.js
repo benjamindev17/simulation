@@ -19,6 +19,7 @@
   const btnSignIn = document.getElementById('btn-google-signin');
   const btnSignOut = document.getElementById('btn-signout');
   const btnNewSim = document.getElementById('btn-new-simulation');
+  const btnSaveNewSim = document.getElementById('btn-save-new-sim');
   const elCurrentBar = document.getElementById('current-sim-bar');
   const elCurrentName = document.getElementById('current-sim-name');
   const btnSaveCurrent = document.getElementById('btn-save-current');
@@ -57,13 +58,22 @@
     return ts.toDate().toLocaleDateString('fr-BE', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
+  // Bouton "Enregistrer ma simulation" (barre d'onglets) : visible seulement si connecté ET
+  // qu'aucune simulation n'est actuellement chargée — sinon current-sim-bar prend le relais
+  // avec "Enregistrer les modifications".
+  function updateSaveNewSimVisibility() {
+    btnSaveNewSim.hidden = !currentUid || !!currentSimId;
+  }
+
   function unloadCurrentSim() {
     currentSimId = null;
     elCurrentBar.hidden = true;
+    updateSaveNewSimVisibility();
   }
 
   function loadCurrentBar() {
     elCurrentBar.hidden = false;
+    updateSaveNewSimVisibility();
   }
 
   // Comparaison de simulations (accessible uniquement ici, depuis "Mes simulations") : chaque
@@ -182,6 +192,7 @@
   function showSignedOut() {
     elSignedOut.hidden = false;
     elSignedIn.hidden = true;
+    currentUid = null;
     unloadCurrentSim();
     selectedCompareIds.clear();
     updateCompareButton();
@@ -195,6 +206,7 @@
     elName.textContent = user.displayName || 'Compte Google';
     elEmail.textContent = user.email || '';
     currentUid = user.uid;
+    updateSaveNewSimVisibility();
     watchSimulations();
   }
 
@@ -221,9 +233,12 @@
     auth.signOut();
   });
 
-  btnNewSim.addEventListener('click', async () => {
+  // Enregistre l'état courant du simulateur comme une nouvelle simulation Firestore. Utilisé à la
+  // fois par "+ Nouvelle simulation" (onglet Mes simulations) et "Enregistrer ma simulation"
+  // (bouton dans la barre d'onglets, visible dès qu'on est connecté sans simulation chargée).
+  async function createNewSimulation(promptTitle) {
     const nom = await showPrompt({
-      title: 'Nouvelle simulation',
+      title: promptTitle,
       defaultValue: 'Ma simulation',
       placeholder: 'Nom de la simulation',
       confirmText: 'Créer'
@@ -242,7 +257,10 @@
     }).catch((err) => {
       alert('Impossible d’enregistrer la simulation : ' + err.message);
     });
-  });
+  }
+
+  btnNewSim.addEventListener('click', () => createNewSimulation('Nouvelle simulation'));
+  btnSaveNewSim.addEventListener('click', () => createNewSimulation('Enregistrer ma simulation'));
 
   // Petite confirmation visuelle : le bouton passe en vert avec une coche pendant ~1,6s.
   function flashSaveSuccess() {

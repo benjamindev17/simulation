@@ -845,6 +845,7 @@ body.recap-open { overflow: hidden; }
   .tabs-groups { display: none; }
   .tabs-dropdown { display: block; width: 100%; }
   #btn-generate-contract { width: 100%; }
+#btn-save-new-sim { width: 100%; }
 
   h1 { font-size: 17px; margin: 1.4rem 0 0.9rem; }
   h2 { font-size: 14.5px; }
@@ -973,6 +974,7 @@ body.recap-open { overflow: hidden; }
   cursor: pointer;
 }
 .btn-moss:hover { background: #33503b; }
+#btn-save-new-sim { flex-shrink: 0; }
 
 .btn-secondary {
   background: var(--paper-raised);
