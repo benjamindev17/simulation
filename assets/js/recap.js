@@ -56,9 +56,11 @@
     html += '<table class="c-table c-table--kv">';
     html += isSolo
       ? '<tr><td>Emprunteur</td><td>' + nomA + '</td></tr>' +
-        '<tr><td>Revenu mensuel net</td><td>' + fmt(Math.round(salaireSolo)) + '</td></tr>'
-      : '<tr><td>Emprunteur 1</td><td>' + nomA + ' — salaire ' + fmt(Math.round(salaireBen)) + '/mois</td></tr>' +
-        '<tr><td>Emprunteur 2</td><td>' + nomB + ' — salaire ' + fmt(Math.round(salaireMarie)) + '/mois</td></tr>';
+        '<tr><td>Revenu mensuel net</td><td>' + fmt(Math.round(salaireSolo)) + '/mois</td></tr>'
+      : '<tr><td>Emprunteur 1</td><td>' + nomA + '</td></tr>' +
+        '<tr><td>Salaire ' + nomA + '</td><td>' + fmt(Math.round(salaireBen)) + '/mois</td></tr>' +
+        '<tr><td>Emprunteur 2</td><td>' + nomB + '</td></tr>' +
+        '<tr><td>Salaire ' + nomB + '</td><td>' + fmt(Math.round(salaireMarie)) + '/mois</td></tr>';
     html += '</table>';
 
     html += '<h2>Bien &amp; frais d’acquisition</h2>';

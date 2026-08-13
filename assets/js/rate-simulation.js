@@ -50,15 +50,18 @@ function syncNames() {
 
 /* --- Références DOM ------------------------------------------------------- */
 const elModeToggle = document.querySelectorAll('.mode-toggle button');
-const elFieldSalaireDuo = document.getElementById('field-salaire-duo');
-const elFieldSalaireSolo = document.getElementById('field-salaire-solo');
 const elSalaireBen = document.getElementById('in-salaire-ben');
 const elSalaireMarie = document.getElementById('in-salaire-marie');
 const elSalaireSolo = document.getElementById('in-salaire-solo');
 const elApportSplitDuo = document.getElementById('apport-split-duo');
 const elTabBtnAppart = document.getElementById('tabBtnAppart');
 const elCoutPpCard = document.getElementById('cout-pp-card');
-const elFieldNomsDuo = document.getElementById('field-noms-duo');
+// Carte "Emprunteur(s)" unifiée (nom + salaire de chaque personne dans le même bloc) :
+// en solo, on masque la colonne de la 2e personne et on bascule le sous-bloc salaire.
+const elFieldPeopleLabel = document.getElementById('field-people-label');
+const elColEmprunteur2 = document.getElementById('col-emprunteur-2');
+const elSalaireBlockDuoA = document.getElementById('salaire-block-duo-a');
+const elSalaireBlockSolo = document.getElementById('salaire-block-solo');
 const elNomA = document.getElementById('in-nom-a');
 const elNomB = document.getElementById('in-nom-b');
 const elSeuilEndettement = document.getElementById('in-seuil-endettement');
@@ -258,11 +261,16 @@ function applyMode(newMode) {
   elModeToggle.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
 
   const isSolo = mode === 'solo';
-  elFieldSalaireDuo.hidden = isSolo;
-  elFieldSalaireSolo.hidden = !isSolo;
+  elColEmprunteur2.hidden = isSolo; // masque nom + salaire de la 2e personne en solo (colonne entière)
+  elSalaireBlockDuoA.hidden = isSolo;
+  elSalaireBlockSolo.hidden = !isSolo;
   elApportSplitDuo.hidden = isSolo;
   if (elCoutPpCard) elCoutPpCard.hidden = isSolo;
-  if (elFieldNomsDuo) elFieldNomsDuo.hidden = isSolo; // un seul emprunteur en solo : pas de 2e nom à saisir
+  if (elFieldPeopleLabel) {
+    elFieldPeopleLabel.textContent = isSolo
+      ? 'Emprunteur — nom et salaire net (calcul d\'endettement)'
+      : 'Emprunteur(s) — nom et salaire net (calcul d\'endettement)';
+  }
 
   // Onglet Répartition / tableau d'étalement : garde la mécanique du prêt (toujours utile en solo),
   // masque uniquement ce qui suppose 2 personnes.

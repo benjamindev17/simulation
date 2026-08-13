@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=43">
+<link rel="stylesheet" href="assets/css/styles.css?v=44">
 </head>
 <body>
 
@@ -257,16 +257,39 @@
       <button type="button" data-mode="solo">Seul(e)</button>
     </div>
 
-    <div class="calc-field span-full" id="field-noms-duo" style="margin-bottom:1.25rem;">
-      <label>Noms</label>
+    <div class="calc-field span-full" id="field-people" style="margin-bottom:1.25rem;">
+      <label id="field-people-label">Emprunteur(s) — nom et salaire net (calcul d'endettement)</label>
       <div class="apport-split">
         <div class="apport-split__col apport-split__col--ben">
-          <label for="in-nom-a">Emprunteur 1</label>
+          <label for="in-nom-a">Nom</label>
           <div class="value-input"><input type="text" id="in-nom-a" maxlength="30" /></div>
+
+          <div id="salaire-block-duo-a" class="price-extra">
+            <label for="in-salaire-ben">Salaire net / mois</label>
+            <div class="value-input">
+              <input type="number" id="in-salaire-ben" step="50" />
+              <span class="unit">€</span>
+            </div>
+          </div>
+          <div id="salaire-block-solo" class="price-extra" hidden>
+            <label for="in-salaire-solo">Salaire net / mois</label>
+            <div class="value-input">
+              <input type="number" id="in-salaire-solo" step="50" />
+              <span class="unit">€</span>
+            </div>
+          </div>
         </div>
-        <div class="apport-split__col apport-split__col--marie">
-          <label for="in-nom-b">Emprunteur 2</label>
+        <div class="apport-split__col apport-split__col--marie" id="col-emprunteur-2">
+          <label for="in-nom-b">Nom</label>
           <div class="value-input"><input type="text" id="in-nom-b" maxlength="30" /></div>
+
+          <div class="price-extra">
+            <label for="in-salaire-marie">Salaire net / mois</label>
+            <div class="value-input">
+              <input type="number" id="in-salaire-marie" step="50" />
+              <span class="unit">€</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -409,34 +432,6 @@
           <span class="unit">%</span>
         </div>
         <input type="range" id="slider-taux" min="3.2" max="3.7" step="0.05" />
-      </div>
-
-      <div class="calc-field span-full" id="field-salaire-duo">
-        <label>Revenus mensuels nets (pour le calcul d'endettement)</label>
-        <div class="apport-split">
-          <div class="apport-split__col apport-split__col--ben">
-            <label for="in-salaire-ben">Salaire <span class="name-a">Ben</span></label>
-            <div class="value-input">
-              <input type="number" id="in-salaire-ben" step="50" />
-              <span class="unit">€</span>
-            </div>
-          </div>
-          <div class="apport-split__col apport-split__col--marie">
-            <label for="in-salaire-marie">Salaire <span class="name-b">Marie</span></label>
-            <div class="value-input">
-              <input type="number" id="in-salaire-marie" step="50" />
-              <span class="unit">€</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="calc-field span-full" id="field-salaire-solo" hidden>
-        <label>Revenu mensuel net (pour le calcul d'endettement)</label>
-        <div class="value-input">
-          <input type="number" id="in-salaire-solo" step="50" />
-          <span class="unit">€</span>
-        </div>
       </div>
 
       <div class="calc-field span-full">
@@ -752,24 +747,24 @@
   </div>
 </div>
 
-<script src="assets/js/utils.js?v=43" defer></script>
-<script src="assets/js/ownership.js?v=43" defer></script>
-<script src="assets/js/rate-simulation.js?v=43" defer></script>
-<script src="assets/js/app.js?v=43" defer></script>
-<script src="assets/js/contract.js?v=43" defer></script>
-<script src="assets/js/etf.js?v=43" defer></script>
-<script src="assets/js/cost.js?v=43" defer></script>
+<script src="assets/js/utils.js?v=44" defer></script>
+<script src="assets/js/ownership.js?v=44" defer></script>
+<script src="assets/js/rate-simulation.js?v=44" defer></script>
+<script src="assets/js/app.js?v=44" defer></script>
+<script src="assets/js/contract.js?v=44" defer></script>
+<script src="assets/js/etf.js?v=44" defer></script>
+<script src="assets/js/cost.js?v=44" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=43" defer></script>
-<script src="assets/js/state.js?v=43" defer></script>
-<script src="assets/js/modal.js?v=43" defer></script>
-<script src="assets/js/recap.js?v=43" defer></script>
-<script src="assets/js/compare.js?v=43" defer></script>
-<script src="assets/js/dashboard.js?v=43" defer></script>
+<script src="assets/js/firebase-config.js?v=44" defer></script>
+<script src="assets/js/state.js?v=44" defer></script>
+<script src="assets/js/modal.js?v=44" defer></script>
+<script src="assets/js/recap.js?v=44" defer></script>
+<script src="assets/js/compare.js?v=44" defer></script>
+<script src="assets/js/dashboard.js?v=44" defer></script>
 
 </body>
 </html>
