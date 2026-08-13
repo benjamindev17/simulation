@@ -89,6 +89,20 @@ const elMontant = document.getElementById('in-montant');
 const elTaux = document.getElementById('in-taux');
 const elSliderTaux = document.getElementById('slider-taux');
 
+// Colonnes du tableau d'étalement retirées/réinsérées selon le mode solo/duo (cf. applyMode).
+const elAmortColgroup = document.querySelector('#amort-table colgroup');
+const elAmortTheadRow = document.querySelector('#amort-table thead tr');
+const elColCapMarie = document.getElementById('col-5');
+const elColCapBen = document.getElementById('col-6');
+const elColSolde = document.getElementById('col-7');
+const elColPartBen = document.getElementById('col-8');
+const elColPartMarie = document.getElementById('col-9');
+const elThCapMarie = document.getElementById('th-col-5');
+const elThCapBen = document.getElementById('th-col-6');
+const elThSolde = document.getElementById('th-col-7');
+const elThPartBen = document.getElementById('th-col-8');
+const elThPartMarie = document.getElementById('th-col-9');
+
 /* --- Calculs dérivés ----------------------------------------------------- */
 function fraisEnregCalc() {
   return prixAppart * (TAUX_ENREGISTREMENT / 100);
@@ -253,8 +267,20 @@ function applyMode(newMode) {
     const el = document.getElementById(id);
     if (el) el.hidden = isSolo;
   });
-  const amortTable = document.getElementById('amort-table');
-  if (amortTable) amortTable.classList.toggle('solo-mode', isSolo);
+  // Colonnes Capital Marie/Ben + Part Ben/Marie : retirées du DOM (pas juste masquées en CSS) en
+  // solo — display:none/visibility:collapse sur des <col> non contiguës perturbait le calcul de
+  // table-layout:fixed (vide résiduel, voire une colonne voisine qui disparaissait). Les <td>
+  // correspondants sont eux gérés directement dans ownership.js (renderAmortizationFull), qui
+  // reconstruit chaque ligne du tableau de toute façon.
+  if (isSolo) {
+    [elColCapMarie, elColCapBen, elColPartBen, elColPartMarie].forEach(el => el.remove());
+    [elThCapMarie, elThCapBen, elThPartBen, elThPartMarie].forEach(el => el.remove());
+  } else {
+    elColSolde.before(elColCapMarie, elColCapBen);
+    elAmortColgroup.append(elColPartBen, elColPartMarie);
+    elThSolde.before(elThCapMarie, elThCapBen);
+    elAmortTheadRow.append(elThPartBen, elThPartMarie);
+  }
 
   renderCalc();
 }

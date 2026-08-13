@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=40">
+<link rel="stylesheet" href="assets/css/styles.css?v=41">
 </head>
 <body>
 
@@ -232,11 +232,11 @@
             <th>Mensualité<span class="col-resizer" data-col="2"></span></th>
             <th>Intérêts<span class="col-resizer" data-col="3"></span></th>
             <th>Capital remboursé<span class="col-resizer" data-col="4"></span></th>
-            <th class="partner">Capital <span class="name-b">Marie</span><span class="col-resizer" data-col="5"></span></th>
-            <th class="you">Capital <span class="name-a">Ben</span><span class="col-resizer" data-col="6"></span></th>
-            <th>Solde restant dû<span class="col-resizer" data-col="7"></span></th>
-            <th>Part <span class="name-a">Ben</span><span class="col-resizer" data-col="8"></span></th>
-            <th>Part <span class="name-b">Marie</span><span class="col-resizer" data-col="9"></span></th>
+            <th id="th-col-5" class="partner">Capital <span class="name-b">Marie</span><span class="col-resizer" data-col="5"></span></th>
+            <th id="th-col-6" class="you">Capital <span class="name-a">Ben</span><span class="col-resizer" data-col="6"></span></th>
+            <th id="th-col-7">Solde restant dû<span class="col-resizer" data-col="7"></span></th>
+            <th id="th-col-8">Part <span class="name-a">Ben</span><span class="col-resizer" data-col="8"></span></th>
+            <th id="th-col-9">Part <span class="name-b">Marie</span><span class="col-resizer" data-col="9"></span></th>
           </tr>
         </thead>
         <tbody id="amort-tbody"></tbody>
@@ -668,7 +668,7 @@
       </div>
 
       <div id="dash-empty" class="dash-empty" hidden>
-        Aucune simulation enregistrée pour l'instant. La sauvegarde arrive dans une prochaine étape — pour l'instant, cet écran confirme juste que ta connexion fonctionne.
+        Aucune simulation enregistrée pour l'instant. Clique sur « + Nouvelle simulation » pour créer et sauvegarder ta première simulation.
       </div>
 
       <div id="dash-sim-list" class="dash-sim-list"></div>
@@ -716,23 +716,23 @@
   </div>
 </div>
 
-<script src="assets/js/utils.js?v=40" defer></script>
-<script src="assets/js/ownership.js?v=40" defer></script>
-<script src="assets/js/rate-simulation.js?v=40" defer></script>
-<script src="assets/js/app.js?v=40" defer></script>
-<script src="assets/js/contract.js?v=40" defer></script>
-<script src="assets/js/etf.js?v=40" defer></script>
-<script src="assets/js/cost.js?v=40" defer></script>
+<script src="assets/js/utils.js?v=41" defer></script>
+<script src="assets/js/ownership.js?v=41" defer></script>
+<script src="assets/js/rate-simulation.js?v=41" defer></script>
+<script src="assets/js/app.js?v=41" defer></script>
+<script src="assets/js/contract.js?v=41" defer></script>
+<script src="assets/js/etf.js?v=41" defer></script>
+<script src="assets/js/cost.js?v=41" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=40" defer></script>
-<script src="assets/js/state.js?v=40" defer></script>
-<script src="assets/js/modal.js?v=40" defer></script>
-<script src="assets/js/recap.js?v=40" defer></script>
-<script src="assets/js/dashboard.js?v=40" defer></script>
+<script src="assets/js/firebase-config.js?v=41" defer></script>
+<script src="assets/js/state.js?v=41" defer></script>
+<script src="assets/js/modal.js?v=41" defer></script>
+<script src="assets/js/recap.js?v=41" defer></script>
+<script src="assets/js/dashboard.js?v=41" defer></script>
 
 </body>
 </html>

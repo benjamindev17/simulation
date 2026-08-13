@@ -97,6 +97,10 @@ function renderAmortizationFull(scheduleData) {
   const tbody = document.getElementById('amort-tbody');
   tbody.innerHTML = '';
   const { schedule, mensualite, breakEvenMonth } = scheduleData;
+  // En solo, le tableau n'a plus que 6 colonnes (les <th>/<col> "Capital Marie/Ben" et "Part
+  // Ben/Marie" sont retirées du DOM par rate-simulation.js/applyMode) : les lignes générées ici
+  // doivent avoir exactement le même nombre de <td>, sans quoi les colonnes seraient décalées.
+  const isSolo = typeof mode !== 'undefined' && mode === 'solo';
   for (let m = 1; m < schedule.length; m++) {
     const row = schedule[m];
     const { shareA, shareB } = shareAtRow(row);
@@ -107,17 +111,24 @@ function renderAmortizationFull(scheduleData) {
     const tr = document.createElement('tr');
     tr.dataset.month = m;
     if (m === breakEvenMonth) tr.classList.add('plus-value-row');
-    tr.innerHTML =
+    let rowHtml =
       '<td>' + m + (m === breakEvenMonth ? ' ★' : '') + '</td>' +
       '<td>' + fmt(Math.round(appartValue)) + '</td>' +
       '<td>' + fmt(Math.round(mensualite)) + '</td>' +
       '<td>' + fmt(Math.round(row.interest)) + '</td>' +
-      '<td>' + fmt(Math.round(row.principal)) + '</td>' +
-      '<td class="partner">' + fmt(Math.round(capMarie)) + '</td>' +
-      '<td class="you">' + fmt(Math.round(capBen)) + '</td>' +
-      '<td>' + fmt(Math.round(row.balance)) + '</td>' +
-      '<td class="you">' + fmtPct(shareA) + '</td>' +
-      '<td class="partner">' + fmtPct(shareB) + '</td>';
+      '<td>' + fmt(Math.round(row.principal)) + '</td>';
+    if (!isSolo) {
+      rowHtml +=
+        '<td class="partner">' + fmt(Math.round(capMarie)) + '</td>' +
+        '<td class="you">' + fmt(Math.round(capBen)) + '</td>';
+    }
+    rowHtml += '<td>' + fmt(Math.round(row.balance)) + '</td>';
+    if (!isSolo) {
+      rowHtml +=
+        '<td class="you">' + fmtPct(shareA) + '</td>' +
+        '<td class="partner">' + fmtPct(shareB) + '</td>';
+    }
+    tr.innerHTML = rowHtml;
     tbody.appendChild(tr);
   }
 

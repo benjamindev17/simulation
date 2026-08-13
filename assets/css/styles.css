@@ -1194,14 +1194,8 @@ body.recap-open { overflow: hidden; }
   to { transform: scale(1); opacity: 1; }
 }
 
-/* Mode solo : masque les colonnes liées à la répartition entre 2 personnes
-   (Capital Marie/Ben, Part Ben/Marie = 6e/7e/9e/10e colonnes) dans le tableau
-   d'étalement, qui reste sinon affiché (mensualité, intérêts, capital, solde). */
-#amort-table.solo-mode th:nth-child(6), #amort-table.solo-mode td:nth-child(6),
-#amort-table.solo-mode th:nth-child(7), #amort-table.solo-mode td:nth-child(7),
-#amort-table.solo-mode th:nth-child(9), #amort-table.solo-mode td:nth-child(9),
-#amort-table.solo-mode th:nth-child(10), #amort-table.solo-mode td:nth-child(10) {
-  display: none;
-}
-/* Les colonnes restantes reprennent l'espace libéré par les colonnes masquées, au lieu de laisser un vide à droite. */
-#amort-table.solo-mode { table-layout: auto; }
+/* Mode solo : les colonnes liées à la répartition entre 2 personnes (Capital Marie/Ben,
+   Part Ben/Marie) sont retirées du DOM par rate-simulation.js (applyMode), pas juste masquées
+   en CSS — display:none / visibility:collapse sur des <col> non contiguës laissait un vide
+   résiduel ou faisait disparaître une colonne voisine avec table-layout:fixed. Le tableau
+   d'étalement reste sinon affiché (mensualité, intérêts, capital, solde), utile même seul(e). */
