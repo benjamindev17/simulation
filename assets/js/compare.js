@@ -64,12 +64,11 @@
 
   function build(entries) {
     const summaries = entries.map(e => computeSummary(e.state));
-    const today = new Date().toLocaleDateString('fr-BE');
 
     let html =
       '<div class="c-head">' +
         '<h1>Comparaison de simulations</h1>' +
-        '<p class="c-sub">' + entries.length + ' simulations — générée le ' + today + '</p>' +
+        '<p class="c-sub">' + entries.length + ' simulations</p>' +
       '</div>';
 
     html += '<table class="c-table c-table--data cmp-table"><thead><tr><th>Critère</th>' +
@@ -104,7 +103,6 @@
     html += row('Conditions particulières (remb. anticipé)', entries.map((e) => e.state.iraConditions || null));
 
     html += '</tbody></table>';
-    html += '<p class="c-annex-note">Les cases en vert repèrent, pour chaque ligne, la valeur la plus favorable (coût le plus bas, ou indemnité de remboursement anticipé la moins pénalisante). Le tableau d’étalement mensuel et l’onglet Placement ETF ne font pas partie de cette comparaison.</p>';
 
     doc.innerHTML = html;
   }
