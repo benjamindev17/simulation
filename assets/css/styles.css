@@ -466,12 +466,16 @@ input[type="range"] { flex: 1; width: 100%; accent-color: var(--violet); }
 .calc-field.readonly label { color: var(--violet); }
 
 /* L'aplat plein est réservé à UNE valeur pivot par écran — sans quoi il perd sa force. */
-.calc-field--hero { background: var(--violet); border-color: var(--violet); }
-.calc-field--hero label { color: rgba(255, 255, 255, 0.72); }
-.calc-field--hero .detail-value,
-.calc-field--hero .value-input span { color: var(--apricot); }
-.calc-field--hero .note { color: rgba(255, 255, 255, 0.8); }
-.calc-field--hero .note b { color: #fff; }
+/* Sélecteur doublé volontairement : la carte pivot porte aussi .readonly, et la règle
+   `.calc-field.readonly` (deux classes) l'emporterait sur un simple `.calc-field--hero`.
+   Sans ça le bloc garde le lavis clair, la valeur apricot tombe à 1,2:1 de contraste
+   et la note blanche devient invisible. */
+.calc-field.calc-field--hero { background: var(--violet); border-color: var(--violet); }
+.calc-field.calc-field--hero label { color: rgba(255, 255, 255, 0.72); }
+.calc-field.calc-field--hero .detail-value,
+.calc-field.calc-field--hero .value-input span { color: var(--apricot); }
+.calc-field.calc-field--hero .note { color: rgba(255, 255, 255, 0.8); }
+.calc-field.calc-field--hero .note b { color: #fff; }
 
 .calc-field.computed { background: var(--apricot-wash); border-color: var(--apricot-line); }
 .calc-field--moss > label { color: var(--violet); }
