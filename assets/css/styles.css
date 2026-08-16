@@ -1006,8 +1006,9 @@ body.contract-open, body.recap-open { overflow: hidden; }
   .header-account-btn { padding: 9px; }
   .header-account-btn__label { display: none; }
 
-  /* La barre d'onglets cède la place au menu déroulant */
-  .tabs-row { gap: 8px; border-bottom: none; padding-bottom: 0; }
+  /* La barre d'onglets cède la place au menu déroulant. Marge haute nécessaire :
+     sans elle le sélecteur vient se coller au bandeau d'en-tête. */
+  .tabs-row { gap: 8px; border-bottom: none; padding-bottom: 0; margin-top: 1.25rem; }
   .tabs-groups { display: none; }
   .tabs-dropdown { display: block; width: 100%; }
   #btn-generate-contract, #btn-save-new-sim { width: 100%; }
