@@ -12,12 +12,11 @@
 <meta name="apple-mobile-web-app-title" content="Simulation prêt">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#3c5b43">
+<meta name="theme-color" content="#6a00f4">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/styles.css?v=53">
+<!-- Aucune webfont : la typographie s'appuie sur Helvetica/Arial, présentes sur tous
+     les systèmes. Une requête réseau de moins et aucun texte invisible au chargement. -->
+<link rel="stylesheet" href="assets/css/styles.css?v=54">
 </head>
 <body>
 
@@ -368,7 +367,7 @@
         </div>
       </div>
 
-      <div class="calc-field readonly span-full">
+      <div class="calc-field readonly calc-field--hero span-full">
         <label id="label-cout-total">Coût total du projet (prix + frais, calculé)</label>
         <div class="value-input">
           <span id="out-cout" class="detail-value">-</span>
@@ -853,25 +852,25 @@
   </div>
 </div>
 
-<script src="assets/js/utils.js?v=53" defer></script>
-<script src="assets/js/ownership.js?v=53" defer></script>
-<script src="assets/js/rate-simulation.js?v=53" defer></script>
-<script src="assets/js/app.js?v=53" defer></script>
-<script src="assets/js/contract.js?v=53" defer></script>
-<script src="assets/js/etf.js?v=53" defer></script>
-<script src="assets/js/cost.js?v=53" defer></script>
+<script src="assets/js/utils.js?v=54" defer></script>
+<script src="assets/js/ownership.js?v=54" defer></script>
+<script src="assets/js/rate-simulation.js?v=54" defer></script>
+<script src="assets/js/app.js?v=54" defer></script>
+<script src="assets/js/contract.js?v=54" defer></script>
+<script src="assets/js/etf.js?v=54" defer></script>
+<script src="assets/js/cost.js?v=54" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=53" defer></script>
-<script src="assets/js/state.js?v=53" defer></script>
-<script src="assets/js/budget.js?v=53" defer></script>
-<script src="assets/js/modal.js?v=53" defer></script>
-<script src="assets/js/recap.js?v=53" defer></script>
-<script src="assets/js/compare.js?v=53" defer></script>
-<script src="assets/js/dashboard.js?v=53" defer></script>
+<script src="assets/js/firebase-config.js?v=54" defer></script>
+<script src="assets/js/state.js?v=54" defer></script>
+<script src="assets/js/budget.js?v=54" defer></script>
+<script src="assets/js/modal.js?v=54" defer></script>
+<script src="assets/js/recap.js?v=54" defer></script>
+<script src="assets/js/compare.js?v=54" defer></script>
+<script src="assets/js/dashboard.js?v=54" defer></script>
 
 </body>
 </html>

@@ -147,18 +147,19 @@ function mensualitePour(years) {
   return r === 0 ? L / n : L * r / (1 - Math.pow(1 + r, -n));
 }
 
+// Teinte de fond d'une colonne de durée selon le taux d'endettement. Volontairement
+// très pâle : c'est un signal de lecture, pas un aplat de couleur — il ne doit pas
+// concurrencer le violet/apricot de l'interface ni écraser le contour de sélection.
 function couleurEndettement(pct) {
   const EPSILON = 0.05; // tolérance pour les imprécisions flottantes : pile sur le seuil reste vert
   if (pct > SEUIL_ENDETTEMENT + EPSILON) {
-    // zone rouge : de rouge clair juste au-dessus du seuil à rouge plus soutenu (+20 points au-delà)
+    // au-dessus du seuil : lavis rosé, d'autant plus marqué qu'on s'en éloigne (+20 points)
     const t = Math.min((pct - SEUIL_ENDETTEMENT) / 20, 1);
-    const lightness = 85 - t * 30;
-    return 'hsl(0, 70%, ' + lightness + '%)';
+    return 'hsl(4, 70%, ' + (97 - t * 8) + '%)';
   }
-  // zone verte : quasi blanc à 0%, vert plus soutenu en approchant le seuil (jusqu'au seuil inclus)
+  // sous le seuil : lavis vert très pâle, quasi blanc à 0%
   const t = Math.min(Math.max(pct, 0) / SEUIL_ENDETTEMENT, 1);
-  const lightness = 96 - t * 26;
-  return 'hsl(140, 55%, ' + lightness + '%)';
+  return 'hsl(145, 35%, ' + (99 - t * 7) + '%)';
 }
 
 // Intérêts totaux payés sur toute la durée = somme des mensualités − montant emprunté.
