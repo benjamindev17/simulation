@@ -422,12 +422,15 @@ elMontant.addEventListener('change', () => {
   renderCalc();
 });
 
+// Bornes du taux — doivent rester alignées sur min/max du curseur #slider-taux (index.html).
+const TAUX_MIN = 3.3;
+const TAUX_MAX = 4;
 function applyTaux(val) {
-  tauxPct = Math.min(Math.max(3.2, val), 3.7);
+  tauxPct = Math.min(Math.max(TAUX_MIN, val), TAUX_MAX);
   renderCalc();
 }
-elTaux.addEventListener('change', () => applyTaux(parseFloat(elTaux.value) || 3.7));
-elSliderTaux.addEventListener('input', () => applyTaux(parseFloat(elSliderTaux.value) || 3.7));
+elTaux.addEventListener('change', () => applyTaux(parseFloat(elTaux.value) || tauxPct));
+elSliderTaux.addEventListener('input', () => applyTaux(parseFloat(elSliderTaux.value) || tauxPct));
 
 /* --- Amorçage ------------------------------------------------------------ */
 applyMode(mode); // synchronise l'affichage Solo/Duo (et appelle renderCalc())
