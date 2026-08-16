@@ -20,13 +20,20 @@
   let depensesA = [
     { label: 'Nourriture', montant: 0 },
     { label: 'Loisirs', montant: 0 },
+    { label: 'Sport', montant: 0 },
     { label: 'Transport', montant: 0 }
   ];
   let depensesB = [
     { label: 'Nourriture', montant: 0 },
     { label: 'Loisirs', montant: 0 },
+    { label: 'Sport', montant: 0 },
     { label: 'Transport', montant: 0 }
   ];
+
+  // Belgique : le salaire net mensuel ne représente qu'une partie du revenu annuel réel —
+  // s'y ajoutent le double pécule de vacances et la prime de fin d'année (13e mois), soit
+  // l'équivalent d'environ 13,6 mois de salaire net sur l'année (plutôt que 12).
+  const MOIS_SALAIRE_PAR_AN = 13.6;
 
   function sumDepenses(depenses) {
     return depenses.reduce((s, d) => s + (d.montant || 0), 0);
@@ -88,20 +95,27 @@
     const depensesTotalA = logementA + sumDepenses(depensesA);
     const depensesTotalB = logementB + sumDepenses(depensesB);
 
+    const epargneA = revenuA - depensesTotalA;
+    const epargneB = revenuB - depensesTotalB;
+
     document.getElementById('budget-revenu-a').textContent = fmt(Math.round(revenuA));
     document.getElementById('budget-logement-a').textContent = fmt(Math.round(logementA)) + '/mois';
     document.getElementById('budget-total-a').textContent = fmt(Math.round(depensesTotalA));
-    document.getElementById('budget-epargne-a').textContent = fmt(Math.round(revenuA - depensesTotalA));
+    document.getElementById('budget-epargne-a').textContent = fmt(Math.round(epargneA));
+    document.getElementById('budget-epargne-annuelle-a').textContent = fmt(Math.round(epargneA * MOIS_SALAIRE_PAR_AN));
 
     if (!isSolo) {
       document.getElementById('budget-revenu-b').textContent = fmt(Math.round(revenuB));
       document.getElementById('budget-logement-b').textContent = fmt(Math.round(logementB)) + '/mois';
       document.getElementById('budget-total-b').textContent = fmt(Math.round(depensesTotalB));
-      document.getElementById('budget-epargne-b').textContent = fmt(Math.round(revenuB - depensesTotalB));
+      document.getElementById('budget-epargne-b').textContent = fmt(Math.round(epargneB));
+      document.getElementById('budget-epargne-annuelle-b').textContent = fmt(Math.round(epargneB * MOIS_SALAIRE_PAR_AN));
 
+      const epargneCombine = epargneA + epargneB;
       document.getElementById('budget-revenu-combine').textContent = fmt(Math.round(revenuA + revenuB));
       document.getElementById('budget-total-combine').textContent = fmt(Math.round(depensesTotalA + depensesTotalB));
-      document.getElementById('budget-epargne-combine').textContent = fmt(Math.round((revenuA + revenuB) - (depensesTotalA + depensesTotalB)));
+      document.getElementById('budget-epargne-combine').textContent = fmt(Math.round(epargneCombine));
+      document.getElementById('budget-epargne-annuelle-combine').textContent = fmt(Math.round(epargneCombine * MOIS_SALAIRE_PAR_AN));
     }
 
     renderRows(elTbodyA, depensesA);
