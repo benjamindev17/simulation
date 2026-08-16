@@ -892,6 +892,56 @@ body.recap-open { overflow: hidden; }
 /* Onglet Coût total annuel — ligne de total du tableau */
 #cout-table .cout-total-row td { font-weight: 700; border-top: 2px solid var(--line); background: var(--paper); }
 
+/* Onglet Coût de la vie — dépenses éditables (ajout/suppression libre) */
+.budget-person, .budget-combined { margin-bottom: 1.75rem; }
+.budget-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.budget-table th {
+  text-align: left;
+  font-size: 11.5px;
+  color: var(--ink-muted);
+  font-weight: 600;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line-strong);
+}
+.budget-table th:nth-child(2) { text-align: right; }
+.budget-table td { padding: 2px 8px; border-bottom: 1px solid var(--line-soft); vertical-align: middle; }
+.budget-table td:last-child { width: 32px; text-align: center; }
+.budget-table input[type="text"] {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  padding: 6px 2px;
+  color: var(--ink);
+}
+.budget-table input[type="number"] {
+  width: 100px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  text-align: right;
+  padding: 6px 2px;
+  color: var(--ink);
+}
+.budget-table input[type="text"]:focus, .budget-table input[type="number"]:focus {
+  outline: 1px solid var(--moss);
+  border-radius: 4px;
+}
+.budget-remove {
+  background: transparent;
+  border: none;
+  color: var(--brick);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+.budget-remove:hover { background: var(--brick-soft); }
+.budget-add { margin-top: 4px; }
+
 /* Sélecteur de durée dans la barre d'onglets (à droite, hors du cadre des onglets) —
    masqué sur l'onglet "Mes simulations", où il n'a pas de sens (app.js/switchTab). */
 .duree-float[hidden] { display: none; }

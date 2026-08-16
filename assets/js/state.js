@@ -54,7 +54,9 @@ function captureState() {
       dechets: numVal('in-cout-dechets'),
       charges: numVal('in-cout-charges'),
       energie: numVal('in-cout-energie')
-    }
+    },
+    // --- Coût de la vie (dépenses libres par personne, encapsulées dans budget.js) ---
+    budget: (typeof window.getBudgetState === 'function') ? window.getBudgetState() : null
   };
 }
 
@@ -101,4 +103,8 @@ function applyState(s) {
   // selon le mode sauvegardé, puis rafraîchit tout une dernière fois.
   // (Simulations sauvegardées avant l'ajout du mode Solo/Duo → "duo" par défaut.)
   applyMode(s.mode || 'duo');
+
+  // Restaure les dépenses de l'onglet Coût de la vie après applyMode (setBudgetState
+  // relit le mode courant pour son propre rendu) — absent des simulations plus anciennes.
+  if (typeof window.setBudgetState === 'function') window.setBudgetState(s.budget);
 }

@@ -7,6 +7,7 @@ const tabButtons = {
   appart: document.getElementById('tabBtnAppart'),
   taux: document.getElementById('tabBtnTaux'),
   cout: document.getElementById('tabBtnCout'),
+  budget: document.getElementById('tabBtnBudget'),
   etf: document.getElementById('tabBtnEtf'),
   dashboard: document.getElementById('tabBtnDashboard')
 };
@@ -14,6 +15,7 @@ const tabPanels = {
   appart: document.getElementById('tab-appart'),
   taux: document.getElementById('tab-taux'),
   cout: document.getElementById('tab-cout'),
+  budget: document.getElementById('tab-budget'),
   etf: document.getElementById('tab-etf'),
   dashboard: document.getElementById('tab-dashboard')
 };
@@ -24,6 +26,7 @@ const dropdownLabels = {
   taux: 'Simulation taux',
   appart: 'Répartition appartement',
   cout: 'Coût total annuel',
+  budget: 'Coût de la vie',
   etf: 'Placement ETF'
 };
 
