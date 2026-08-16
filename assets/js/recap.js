@@ -15,8 +15,10 @@
   let onEdit = null; // callback fourni par dashboard.js au moment de l'ouverture
 
   const pct0 = (x) => Math.round(x) + ' %';
+  // Le récapitulatif ne montre que le mensuel : une simple ligne poste → montant,
+  // dans le même style clé/valeur que le reste du document (pas un tableau de données).
   const row = (poste, an) =>
-    '<tr><td>' + poste + '</td><td>' + fmt(Math.round(an)) + '</td><td>' + fmt(Math.round(an / 12)) + '</td></tr>';
+    '<tr><td>' + poste + '</td><td>' + fmt(Math.round(an / 12)) + '/mois</td></tr>';
 
   function build(nom, updatedAtLabel) {
     const loan = (typeof lastLoanData !== 'undefined' && lastLoanData) ? lastLoanData : buildLoanSchedule();
@@ -109,8 +111,8 @@
         '</table>';
     }
 
-    html += '<h2>Coût total annuel de possession</h2>';
-    html += '<table class="c-table c-table--data"><thead><tr><th>Poste</th><th>Par an</th><th>Par mois</th></tr></thead><tbody>' +
+    html += '<h2>Coût mensuel de possession</h2>';
+    html += '<table class="c-table c-table--kv"><tbody>' +
       row('Mensualité du prêt (capital + intérêts)', anMensualite) +
       row('Assurance solde restant dû (ADI)', asrd) +
       row('Assurance habitation', incendie) +
@@ -121,11 +123,10 @@
       row('Taxe déchets', dechets) +
       row('Charges appartement', anCharges) +
       (energie > 0 ? row('Énergie &amp; eau', anEnergie) : '') +
-      '<tr class="c-total"><td>Total</td><td>' + fmt(Math.round(totalAn)) + '</td><td>' + fmt(Math.round(totalAn / 12)) + '</td></tr>' +
+      '<tr class="c-total"><td>Total</td><td>' + fmt(Math.round(totalAn / 12)) + '/mois</td></tr>' +
       '</tbody></table>';
-    html += '<p class="c-annex-note">Charges mensualisées hors prêt : ' + fmt(Math.round(chargesMois)) + '/mois · Total prêt + charges : ' +
-      fmt(Math.round(totalMois)) + '/mois' + (!isSolo ? ' (' + fmt(Math.round(totalMois / 2)) + '/mois chacun)' : '') +
-      ' · Coût réel hors capital : ' + fmt(Math.round(coutReelAn)) + '/an.</p>';
+    html += '<p class="c-annex-note">Charges mensualisées hors prêt : ' + fmt(Math.round(chargesMois)) +
+      '/mois · Coût réel hors capital : ' + fmt(Math.round(coutReelAn / 12)) + '/mois.</p>';
 
     html += '<p class="c-annex-note">Récapitulatif généré le ' + today + '. Le tableau d’étalement mensuel complet reste disponible dans l’onglet « ' +
       (isSolo ? 'Tableau d’étalement' : 'Répartition appartement') + ' » après passage en mode modification.</p>';

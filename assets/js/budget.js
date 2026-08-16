@@ -39,9 +39,11 @@
     return depenses.reduce((s, d) => s + (d.montant || 0), 0);
   }
 
-  // Coût logement mensuel total (mensualité + charges) — même formule que cost.js/refreshCout,
+  // Coût logement mensuel, séparé en deux parts — même formule que cost.js/refreshCout,
   // recalculée ici plutôt que lue depuis son état interne (encapsulé dans son IIFE).
-  function coutLogementTotal() {
+  // La mensualité est rendue à part car elle ne se partage pas forcément en deux :
+  // chacun porte la sienne (cf. renderBudget).
+  function coutLogement() {
     const loan = (typeof lastLoanData !== 'undefined' && lastLoanData) ? lastLoanData : buildLoanSchedule();
     const mensualite = loan.mensualite;
     const asrd = numVal('in-cout-asrd');
@@ -55,8 +57,7 @@
     const energie = numVal('in-cout-energie');
     const anMensualite = mensualite * 12;
     const totalAn = anMensualite + asrd + incendie + compte + copro * 12 + reserve * 12 + precompte + dechets + charges * 12 + energie * 12;
-    const chargesMois = (totalAn - anMensualite) / 12;
-    return mensualite + chargesMois;
+    return { mensualite, chargesMois: (totalAn - anMensualite) / 12 };
   }
 
   function renderRows(tbody, depenses) {
@@ -88,9 +89,15 @@
 
     const revenuA = isSolo ? salaireSolo : salaireBen;
     const revenuB = salaireMarie;
-    const logementTotal = coutLogementTotal();
-    const logementA = isSolo ? logementTotal : logementTotal / 2;
-    const logementB = logementTotal / 2;
+
+    // Part logement de chacun = SA mensualité réelle (payBen/payMarie, calculés dans
+    // ownership.js et qui tiennent compte du mode « équilibré ») + sa part des charges.
+    // Diviser le tout par deux masquerait l'écart quand l'un rembourse davantage.
+    const { mensualite, chargesMois } = coutLogement();
+    const mensA = (typeof payBen !== 'undefined') ? payBen : (isSolo ? mensualite : mensualite / 2);
+    const mensB = (typeof payMarie !== 'undefined') ? payMarie : mensualite / 2;
+    const logementA = mensA + (isSolo ? chargesMois : chargesMois / 2);
+    const logementB = mensB + chargesMois / 2;
 
     const depensesTotalA = logementA + sumDepenses(depensesA);
     const depensesTotalB = logementB + sumDepenses(depensesB);

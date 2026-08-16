@@ -23,7 +23,7 @@
   let incendie = 300;    // €/an
   let compte = 0;        // €/an — compte à vue souvent imposé par la banque ; 0 si gratuit
   let copro = 125;       // €/mois
-  let reserve = 100;     // €/mois total (50 € par personne)
+  let reserve = 100;     // €/mois, montant total pour le bien (librement modifiable)
   let precompte = 1250;  // €/an
   let dechets = 100;     // €/an
   let charges = 50;      // €/mois (entretien privatif)
