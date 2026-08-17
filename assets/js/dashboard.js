@@ -51,6 +51,12 @@
   // Instantané JSON de captureState() au moment du chargement/dernier enregistrement — sert
   // de référence pour savoir si quelque chose a changé depuis (cf. updateDirtyState).
   let baselineStateJson = null;
+  // Deuxième verrou, indépendant du premier : passe à true uniquement quand l'utilisateur
+  // touche réellement une donnée (champ de saisie, curseur, bouton d'un outil). Sans lui, la
+  // barre reposerait sur la seule comparaison d'états — et le moindre écart involontaire
+  // (arrondi, valeur normalisée par le navigateur, restauration incomplète) la ferait
+  // apparaître alors que l'utilisateur n'a rien modifié. Les deux conditions sont exigées.
+  let userEdited = false;
 
   function simsCollection() {
     return db.collection('users').doc(currentUid).collection('simulations');
@@ -89,6 +95,7 @@
   function unloadCurrentSim() {
     currentSimId = null;
     baselineStateJson = null;
+    userEdited = false;
     elCurrentBar.hidden = true;
     updateSaveNewSimVisibility();
   }
@@ -109,12 +116,29 @@
   let suppressAutoHide = false;
   function updateDirtyState() {
     if (suppressAutoHide) return;
-    if (!currentSimId || baselineStateJson === null) {
+    if (!currentSimId || baselineStateJson === null || !userEdited) {
       elCurrentBar.hidden = true;
       return;
     }
-    const dirty = JSON.stringify(captureState()) !== baselineStateJson;
-    elCurrentBar.hidden = !dirty;
+    elCurrentBar.hidden = JSON.stringify(captureState()) === baselineStateJson;
+  }
+
+  // Repère une vraie interaction avec une DONNÉE, par opposition à la simple navigation.
+  // Sont exclus : le tableau de bord (Consulter/Renommer/Dupliquer/Supprimer), les documents
+  // en surimpression (récapitulatif, comparaison, modale), les onglets et le menu déroulant.
+  // Sont inclus : tout champ de saisie, et les boutons des outils eux-mêmes (bascule
+  // solo/duo, ajout/suppression de dépense…) ainsi que le sélecteur de durée du crédit, qui
+  // vit dans l'en-tête mais modifie bel et bien la simulation.
+  function estInteractionDonnee(e) {
+    const t = e.target;
+    if (!t || typeof t.closest !== 'function') return false;
+    if (t.closest('#tab-dashboard, #modal-overlay, #recap-overlay, #compare-overlay, #contract-overlay, .tabs, .tabs-dropdown')) {
+      return false;
+    }
+    if (e.type === 'input' || e.type === 'change') {
+      return t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA';
+    }
+    return !!t.closest('.panel button, #duree-float button');
   }
 
   // Écoute déléguée plutôt qu'un hook par champ : ce simulateur a trop de points de
@@ -122,14 +146,16 @@
   // intercepter individuellement sans risquer d'en oublier un. Le léger débounce absorbe
   // la frappe rapide et le glissement du curseur de taux (événements "input").
   let dirtyCheckTimer = null;
-  function scheduleDirtyCheck() {
+  function onInteraction(e) {
     if (!currentSimId) return;
+    if (!estInteractionDonnee(e)) return;
+    userEdited = true;
     clearTimeout(dirtyCheckTimer);
     dirtyCheckTimer = setTimeout(updateDirtyState, 150);
   }
-  document.addEventListener('input', scheduleDirtyCheck);
-  document.addEventListener('change', scheduleDirtyCheck);
-  document.addEventListener('click', scheduleDirtyCheck);
+  document.addEventListener('input', onInteraction);
+  document.addEventListener('change', onInteraction);
+  document.addEventListener('click', onInteraction);
 
   // Comparaison de simulations (accessible uniquement ici, depuis "Mes simulations") : chaque
   // ligne a une case à cocher, le bouton "Comparer" ouvre compare.js pour 2 à 4 sélectionnées.
@@ -196,6 +222,10 @@
         // anciennes n'ont pas tous les champs récents (chèques-repas…), applyState() leur
         // donne une valeur par défaut, il faut comparer sur la même forme normalisée.
         baselineStateJson = JSON.stringify(captureState());
+        // applyState() ci-dessus déclenche des événements "change" sur les champs de coût :
+        // ils ont pu lever le drapeau alors que l'utilisateur n'a rien fait. On le remet à
+        // zéro ici, une fois la restauration terminée.
+        userEdited = false;
         elCurrentName.textContent = data.nom || 'Sans nom';
         loadCurrentBar();
         // Consultation d'abord : récapitulatif en lecture seule, façon document.
@@ -342,6 +372,7 @@
     }).then((docRef) => {
       currentSimId = docRef.id;
       baselineStateJson = JSON.stringify(snapshot);
+      userEdited = false;
       elCurrentName.textContent = nom;
       loadCurrentBar();
     }).catch((err) => {
@@ -380,6 +411,7 @@
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(() => {
       baselineStateJson = JSON.stringify(snapshot);
+      userEdited = false;
       flashSaveSuccess();
     }).catch((err) => {
       alert('Impossible d’enregistrer les modifications : ' + err.message);
