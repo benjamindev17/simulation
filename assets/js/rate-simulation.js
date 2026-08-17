@@ -192,7 +192,7 @@ function renderColonne(years, elCol, elMensualite, elEndettement, elInteret) {
   // Salaire pas encore renseigné : pas de pourcentage à afficher (division par 0 → NaN/Infinity sinon).
   const pct = salaire > 0 ? (m / salaire) * 100 : null;
   elMensualite.textContent = fmt(Math.round(m)) + '/mois';
-  elEndettement.textContent = pct === null ? 'Revenu non renseigné' : pct.toFixed(1) + '% du salaire';
+  elEndettement.textContent = pct === null ? 'Revenu non renseigné' : pct.toFixed(1) + '% des revenus';
   elInteret.textContent = fmt(Math.round(interetTotalPour(years)));
   elCol.style.backgroundColor = pct === null ? '' : couleurEndettement(pct);
 }
