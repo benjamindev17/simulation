@@ -962,18 +962,26 @@ body.contract-open, body.recap-open { overflow: hidden; }
 .dash-sim-row__check { display: flex; align-items: center; flex-shrink: 0; cursor: pointer; }
 .dash-sim-row__check input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--violet); cursor: pointer; }
 
-/* Barre « simulation chargée » */
+/* Barre « simulation chargée » — collée en haut de l'écran (position: sticky) pour
+   qu'on sache en permanence laquelle est ouverte, même après avoir défilé sous le
+   bandeau violet. Passe devant tout le reste (z-index), y compris le sélecteur de
+   durée qui, lui, ne fait que suivre la barre d'onglets. */
 .current-sim-bar[hidden] { display: none; }
 .current-sim-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
   display: flex;
   align-items: center;
   gap: 12px;
   background: var(--apricot);
-  border: 1px solid var(--apricot);
-  padding: 8px 8px 8px 16px;
+  border-bottom: 1px solid var(--apricot-line);
+  padding: 10px 1.5rem;
   font-size: var(--fs-md);
   color: var(--amber-on-fill);
+  box-shadow: 0 2px 8px rgba(26, 11, 46, 0.08);
 }
+.current-sim-bar span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .current-sim-bar b { font-weight: 700; color: var(--ink); }
 .current-sim-bar button {
   border: none;
@@ -982,8 +990,9 @@ body.contract-open, body.recap-open { overflow: hidden; }
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
-#btn-save-current { background: var(--violet); color: #fff; padding: 9px 16px; font-size: var(--fs-micro); }
+#btn-save-current { background: var(--violet); color: #fff; padding: 9px 16px; font-size: var(--fs-micro); margin-left: auto; }
 #btn-save-current:hover { background: var(--violet-deep); }
 #btn-unload-current { background: none; color: var(--amber-on-fill); padding: 7px 9px; font-size: var(--fs-lg); line-height: 1; }
 #btn-unload-current:hover { background: rgba(122, 62, 5, 0.14); }
@@ -1090,7 +1099,9 @@ body.contract-open, body.recap-open { overflow: hidden; }
   .c-table--kv td:first-child { flex: 1 1 auto; min-width: 0; }
   .c-table--kv td:last-child { flex: 0 0 auto; }
 
-  .current-sim-bar { width: 100%; margin-top: 4px; }
+  .current-sim-bar { flex-wrap: wrap; padding: 8px 1rem; row-gap: 6px; }
+  .current-sim-bar span { flex: 1 1 100%; }
+  #btn-save-current { margin-left: 0; }
   .dash-sim-row { flex-direction: column; align-items: stretch; }
 }
 

@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Simule ton prêt</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=62">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=63">
 
 <!-- Icône et nom pour l'ajout à l'écran d'accueil (iPhone/Safari + Android/Chrome) -->
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=62">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=63">
 <meta name="apple-mobile-web-app-title" content="Simulation prêt">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -16,7 +16,7 @@
 
 <!-- Aucune webfont : la typographie s'appuie sur Helvetica/Arial, présentes sur tous
      les systèmes. Une requête réseau de moins et aucun texte invisible au chargement. -->
-<link rel="stylesheet" href="assets/css/styles.css?v=62">
+<link rel="stylesheet" href="assets/css/styles.css?v=63">
 </head>
 <body>
 
@@ -40,6 +40,16 @@
     <span class="header-account-btn__label">Mes simulations</span>
   </button>
 </header>
+
+<!-- Visible uniquement quand une simulation sauvegardée est chargée pour modification.
+     Placée hors de .content (donc hors du flux normal) et collée en haut de l'écran :
+     une fois le bandeau violet défilé, elle reste affichée pour qu'on sache toujours
+     laquelle est ouverte, où qu'on soit dans la page. -->
+<div id="current-sim-bar" class="current-sim-bar" hidden>
+  <span>📄 <b id="current-sim-name">-</b></span>
+  <button type="button" id="btn-save-current">Enregistrer les modifications</button>
+  <button type="button" id="btn-unload-current" title="Revenir à une simulation libre, non liée">✕</button>
+</div>
 
 <main class="content">
 
@@ -82,14 +92,8 @@
     </div>
     <!-- Fonctionnalité conservée mais masquée à la demande — retirer l'attribut "hidden" pour la réactiver -->
     <button type="button" id="btn-generate-contract" hidden title="Projet de convention pré-rempli avec ta simulation — à faire valider par le notaire">📄 Créer le contrat PDF</button>
-    <!-- Visible uniquement si connecté ET qu'aucune simulation n'est actuellement chargée (sinon current-sim-bar prend le relais) -->
+    <!-- Visible uniquement si connecté ET qu'aucune simulation n'est actuellement chargée (sinon current-sim-bar, désormais hors de .tabs-row, prend le relais) -->
     <button type="button" id="btn-save-new-sim" class="btn-moss" hidden>Enregistrer ma simulation</button>
-    <!-- Visible uniquement quand une simulation sauvegardée est chargée pour modification -->
-    <div id="current-sim-bar" class="current-sim-bar" hidden>
-      <span>📄 <b id="current-sim-name">-</b></span>
-      <button type="button" id="btn-save-current">Enregistrer les modifications</button>
-      <button type="button" id="btn-unload-current" title="Revenir à une simulation libre, non liée">✕</button>
-    </div>
   </div>
 
   <!-- ===================== TAB : APPARTEMENT ===================== -->
@@ -887,26 +891,26 @@
   </div>
 </div>
 
-<script src="assets/js/utils.js?v=62" defer></script>
-<script src="assets/js/ownership.js?v=62" defer></script>
-<script src="assets/js/rate-simulation.js?v=62" defer></script>
-<script src="assets/js/app.js?v=62" defer></script>
-<script src="assets/js/contract.js?v=62" defer></script>
-<script src="assets/js/etf.js?v=62" defer></script>
-<script src="assets/js/cost.js?v=62" defer></script>
+<script src="assets/js/utils.js?v=63" defer></script>
+<script src="assets/js/ownership.js?v=63" defer></script>
+<script src="assets/js/rate-simulation.js?v=63" defer></script>
+<script src="assets/js/app.js?v=63" defer></script>
+<script src="assets/js/contract.js?v=63" defer></script>
+<script src="assets/js/etf.js?v=63" defer></script>
+<script src="assets/js/cost.js?v=63" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=62" defer></script>
-<script src="assets/js/state.js?v=62" defer></script>
-<script src="assets/js/sankey.js?v=62" defer></script>
-<script src="assets/js/budget.js?v=62" defer></script>
-<script src="assets/js/modal.js?v=62" defer></script>
-<script src="assets/js/recap.js?v=62" defer></script>
-<script src="assets/js/compare.js?v=62" defer></script>
-<script src="assets/js/dashboard.js?v=62" defer></script>
+<script src="assets/js/firebase-config.js?v=63" defer></script>
+<script src="assets/js/state.js?v=63" defer></script>
+<script src="assets/js/sankey.js?v=63" defer></script>
+<script src="assets/js/budget.js?v=63" defer></script>
+<script src="assets/js/modal.js?v=63" defer></script>
+<script src="assets/js/recap.js?v=63" defer></script>
+<script src="assets/js/compare.js?v=63" defer></script>
+<script src="assets/js/dashboard.js?v=63" defer></script>
 
 </body>
 </html>

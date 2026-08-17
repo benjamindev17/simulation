@@ -115,6 +115,7 @@
         '<div class="dash-sim-row__actions">' +
           '<button type="button" class="btn-secondary" data-action="load">Consulter</button>' +
           '<button type="button" class="btn-secondary" data-action="rename">Renommer</button>' +
+          '<button type="button" class="btn-secondary" data-action="duplicate">Dupliquer</button>' +
           '<button type="button" class="btn-danger" data-action="delete">Supprimer</button>' +
         '</div>';
       row.querySelector('.dash-sim-row__name').textContent = data.nom || 'Sans nom';
@@ -155,6 +156,29 @@
         if (nouveauNom === null || nouveauNom === '') return;
         simsCollection().doc(doc.id).update({ nom: nouveauNom });
         if (currentSimId === doc.id) elCurrentName.textContent = nouveauNom;
+      });
+
+      // Duplique la simulation : nouveau document Firestore avec le même state (donc
+      // toutes les données déjà remplies), pour repartir d'une base au lieu de tout
+      // ressaisir. Ne charge pas la copie automatiquement — elle apparaît juste en tête
+      // de liste (updatedAt le plus récent), l'original reste ouvert si c'est lui qui l'était.
+      row.querySelector('[data-action="duplicate"]').addEventListener('click', async () => {
+        const nomCopie = await showPrompt({
+          title: 'Dupliquer la simulation',
+          defaultValue: (data.nom || 'Sans nom') + ' (copie)',
+          placeholder: 'Nom de la copie',
+          confirmText: 'Dupliquer'
+        });
+        if (nomCopie === null || nomCopie === '') return;
+        const now = firebase.firestore.FieldValue.serverTimestamp();
+        simsCollection().add({
+          nom: nomCopie,
+          state: data.state,
+          createdAt: now,
+          updatedAt: now
+        }).catch((err) => {
+          alert('Impossible de dupliquer la simulation : ' + err.message);
+        });
       });
 
       row.querySelector('[data-action="delete"]').addEventListener('click', async () => {
