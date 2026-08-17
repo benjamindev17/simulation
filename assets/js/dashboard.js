@@ -77,8 +77,11 @@
   }
 
   // Bouton "Enregistrer ma simulation" (barre d'onglets) : visible seulement si connecté ET
-  // qu'aucune simulation n'est actuellement chargée — sinon current-sim-bar prend le relais
-  // avec "Enregistrer les modifications".
+  // qu'aucune simulation n'est actuellement chargée. Dès qu'on est attaché à une simulation,
+  // c'est current-sim-bar qui prend le relais avec "Enregistrer les modifications" — barre
+  // qui n'apparaît elle-même qu'en cas de modification (cf. updateDirtyState). Consulter une
+  // simulation sans y toucher n'affiche donc aucun bouton d'enregistrement : il n'y a rien à
+  // enregistrer, et "+ Nouvelle simulation" reste disponible dans l'onglet Mes simulations.
   function updateSaveNewSimVisibility() {
     btnSaveNewSim.hidden = !currentUid || !!currentSimId;
   }
@@ -90,23 +93,28 @@
     updateSaveNewSimVisibility();
   }
 
+  // On reste attaché à currentSimId dès le chargement (pour savoir où enregistrer), mais
+  // la barre elle-même — nom, bouton, ✕, tout le bloc — ne doit apparaître que si quelque
+  // chose a réellement changé depuis. Une simple consultation sans y toucher ne doit rien
+  // afficher de plus qu'une simulation libre.
   function loadCurrentBar() {
-    elCurrentBar.hidden = false;
     updateDirtyState();
     updateSaveNewSimVisibility();
   }
 
-  // "Enregistrer les modifications" ne doit apparaître que si quelque chose a réellement
-  // changé depuis le chargement (ou le dernier enregistrement) — pas dès qu'une simulation
-  // est ouverte pour consultation. baselineStateJson est fixé par l'appelant (avant l'écriture
-  // Firestore, pas après : sinon une modification pendant l'aller-retour réseau du save serait
-  // ignorée).
+  // baselineStateJson est fixé par l'appelant (avant l'écriture Firestore, pas après : sinon
+  // une modification pendant l'aller-retour réseau du chargement/enregistrement serait ignorée).
+  // suppressAutoHide : le temps de la confirmation "✓ Enregistré" (cf. flashSaveSuccess), la
+  // barre reste affichée de force même si l'état est déjà propre.
+  let suppressAutoHide = false;
   function updateDirtyState() {
+    if (suppressAutoHide) return;
     if (!currentSimId || baselineStateJson === null) {
-      btnSaveCurrent.hidden = true;
+      elCurrentBar.hidden = true;
       return;
     }
-    btnSaveCurrent.hidden = JSON.stringify(captureState()) === baselineStateJson;
+    const dirty = JSON.stringify(captureState()) !== baselineStateJson;
+    elCurrentBar.hidden = !dirty;
   }
 
   // Écoute déléguée plutôt qu'un hook par champ : ce simulateur a trop de points de
@@ -345,7 +353,13 @@
   btnSaveNewSim.addEventListener('click', () => createNewSimulation('Enregistrer ma simulation'));
 
   // Petite confirmation visuelle : le bouton passe en vert avec une coche pendant ~1,6s.
+  // Pendant ce délai, la barre reste visible de force (suppressAutoHide) — sinon le clic
+  // sur "Enregistrer" lui-même déclenche scheduleDirtyCheck (délégué sur tout "click"), qui
+  // masquerait aussitôt toute la barre puisque l'état redevient propre, et on ne verrait
+  // jamais la confirmation.
   function flashSaveSuccess() {
+    suppressAutoHide = true;
+    elCurrentBar.hidden = false;
     const original = btnSaveCurrent.innerHTML;
     btnSaveCurrent.classList.add('btn-save--success');
     btnSaveCurrent.innerHTML =
@@ -353,6 +367,8 @@
     setTimeout(() => {
       btnSaveCurrent.classList.remove('btn-save--success');
       btnSaveCurrent.innerHTML = original;
+      suppressAutoHide = false;
+      updateDirtyState();
     }, 1600);
   }
 
@@ -364,7 +380,6 @@
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(() => {
       baselineStateJson = JSON.stringify(snapshot);
-      updateDirtyState();
       flashSaveSuccess();
     }).catch((err) => {
       alert('Impossible d’enregistrer les modifications : ' + err.message);
