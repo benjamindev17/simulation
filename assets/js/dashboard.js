@@ -58,6 +58,21 @@
     return ts.toDate().toLocaleDateString('fr-BE', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
+  // Résumé bref sous le nom : emprunteur(s), durée, taux — pour reconnaître une
+  // simulation dans la liste sans avoir à l'ouvrir.
+  function simSummary(state) {
+    if (!state) return '';
+    const isSolo = state.mode === 'solo';
+    const noms = isSolo
+      ? (state.nomA || 'Emprunteur')
+      : [state.nomA, state.nomB].filter(Boolean).join(' & ');
+    const parts = [];
+    if (noms) parts.push(noms);
+    if (state.dureeChoisie) parts.push(state.dureeChoisie + ' ans');
+    if (typeof state.tauxPct === 'number') parts.push(state.tauxPct.toFixed(2) + ' %');
+    return parts.join(' · ');
+  }
+
   // Bouton "Enregistrer ma simulation" (barre d'onglets) : visible seulement si connecté ET
   // qu'aucune simulation n'est actuellement chargée — sinon current-sim-bar prend le relais
   // avec "Enregistrer les modifications".
@@ -110,6 +125,7 @@
         '</label>' +
         '<div class="dash-sim-row__info">' +
           '<p class="dash-sim-row__name"></p>' +
+          '<p class="dash-sim-row__meta"></p>' +
           '<p class="dash-sim-row__date">Mis à jour le ' + formatDate(data.updatedAt) + '</p>' +
         '</div>' +
         '<div class="dash-sim-row__actions">' +
@@ -119,6 +135,7 @@
           '<button type="button" class="btn-danger" data-action="delete">Supprimer</button>' +
         '</div>';
       row.querySelector('.dash-sim-row__name').textContent = data.nom || 'Sans nom';
+      row.querySelector('.dash-sim-row__meta').textContent = simSummary(data.state);
 
       const chkCompare = row.querySelector('.chk-compare');
       chkCompare.checked = selectedCompareIds.has(doc.id);

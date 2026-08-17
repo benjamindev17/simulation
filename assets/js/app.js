@@ -121,3 +121,17 @@ if (elChkPrefEtf) {
 
 syncDropdown();
 applyEtfVisibility();
+
+// Au chargement (donc aussi à chaque rechargement de la page), on arrive directement
+// sur "Mes simulations" plutôt que sur le premier outil — c'est le point d'entrée
+// naturel pour reprendre une simulation en cours ou consulter la liste.
+switchTab('dashboard');
+
+// Logo du bandeau : raccourci vers "Mes simulations" depuis n'importe quel onglet.
+const elLogoHome = document.getElementById('btn-logo-home');
+if (elLogoHome) {
+  elLogoHome.addEventListener('click', () => {
+    switchTab('dashboard');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}

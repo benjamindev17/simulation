@@ -136,7 +136,12 @@ h2 {
   display: grid;
   place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.4);
+  background: none;
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--transition);
 }
+.page-header__icon:hover { background: rgba(255, 255, 255, 0.12); }
 .page-header__icon svg { width: 24px; height: 24px; }
 .page-header .eyebrow {
   font-size: var(--fs-micro);
@@ -957,6 +962,8 @@ body.contract-open, body.recap-open { overflow: hidden; }
 }
 .dash-sim-row__info { flex: 1; min-width: 0; }
 .dash-sim-row__name { font-size: var(--fs-xl); font-weight: 700; margin: 0; }
+.dash-sim-row__meta { font-size: var(--fs-sm); color: var(--violet); font-weight: 700; margin: 3px 0 0; }
+.dash-sim-row__meta:empty { display: none; }
 .dash-sim-row__date { font-size: var(--fs-sm); color: var(--ink-mid); margin: 2px 0 0; }
 .dash-sim-row__actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .dash-sim-row__check { display: flex; align-items: center; flex-shrink: 0; cursor: pointer; }
