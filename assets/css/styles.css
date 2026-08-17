@@ -791,8 +791,17 @@ tbody tr:last-child td { border-bottom: none; }
 }
 .flow-chart svg { display: block; }
 .flow-chart:empty { display: none; }
-/* Le diagramme est plus large que l'écran sur mobile : on le dit. */
-.flow-hint { display: none; }
+/* Invite affichée uniquement quand le diagramme déborde réellement de son cadre —
+   la visibilité est pilotée par budget.js (majIndiceScroll), pas par un point de
+   rupture : le débordement dépend de la largeur du SVG autant que de l'écran. */
+.flow-hint[hidden] { display: none; }
+.flow-hint {
+  margin: 8px 0 0;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
 
 /* 9. Boutons ---------------------------------------------------------------- */
 .btn-moss, .btn-secondary, .btn-danger, .btn-google,
@@ -1062,14 +1071,6 @@ body.contract-open, body.recap-open { overflow: hidden; }
   .duree-compare { flex-direction: column; }
   .apport-split { gap: 12px; }
 
-  .flow-hint {
-    display: block;
-    margin: 8px 0 0;
-    font-size: var(--fs-micro);
-    letter-spacing: var(--track-label);
-    text-transform: uppercase;
-    color: var(--ink-faint);
-  }
   .seg-toggle { width: 100%; }
   .seg-toggle button { flex: 1; padding: 9px 6px; }
 

@@ -43,17 +43,14 @@ function salaireCombineCalc() {
    le budget réellement disponible chaque mois, mais les banques ne les retiennent
    PAS comme revenu pour le taux d'endettement (ils ne sont ni garantis dans la
    durée ni librement utilisables). D'où deux notions distinctes :
-   - salaireCombineCalc() : ce que la banque regarde (endettement, quotité) ;
-   - revenuMensuelA/B()   : ce dont on dispose vraiment (onglet Coût de la vie). */
+   - salaireCombineCalc() : ce que la banque regarde (endettement, quotité) — les
+     chèques-repas n'y entrent jamais ;
+   - le revenu disponible, salaire + chèques, reconstitué par budget.js qui a besoin
+     des deux parts séparées (détail affiché, et 13,6 mois pour le salaire contre 12
+     pour les chèques). chequesA() lui évite de dupliquer l'aiguillage solo/duo. */
 let chequesBen = 0;
 let chequesMarie = 0;
 let chequesSolo = 0;
-function revenuMensuelA() {
-  return mode === 'solo' ? salaireSolo + chequesSolo : salaireBen + chequesBen;
-}
-function revenuMensuelB() {
-  return salaireMarie + chequesMarie;
-}
 function chequesA() { return mode === 'solo' ? chequesSolo : chequesBen; }
 
 /* Noms des deux emprunteurs — éditables, utilisés partout où le nom apparaît

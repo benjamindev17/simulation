@@ -99,16 +99,21 @@
     const chargesA = isSolo ? chargesMois : chargesMois / 2;
     const chargesB = chargesMois / 2;
 
-    // Le revenu disponible inclut les chèques-repas (revenuMensuelA/B), contrairement
-    // au revenu retenu par la banque pour l'endettement — cf. rate-simulation.js.
+    // Le revenu disponible inclut les chèques-repas, contrairement au revenu retenu
+    // par la banque pour l'endettement — cf. chequesA() dans rate-simulation.js.
     const person = (nom, salaire, cheques, pret, charges, depenses) => {
       const revenu = salaire + cheques;
       const total = pret + charges + sumDepenses(depenses);
+      const epargne = revenu - total;
       return {
         nom: nom, revenu: revenu, salaire: salaire, cheques: cheques,
         pret: pret, charges: charges,
         logement: pret + charges, depenses: depenses,
-        total: total, epargne: revenu - total
+        total: total, epargne: epargne,
+        // Les 13,6 mois ne valent que pour le salaire : les chèques-repas suivent les
+        // jours prestés, il n'y en a ni au double pécule ni à la prime de fin d'année.
+        // Les compter 13,6 fois surestimerait l'épargne de 1,6 mois de chèques.
+        epargneAn: (salaire - total) * MOIS_SALAIRE_PAR_AN + cheques * 12
       };
     };
 
@@ -140,7 +145,7 @@
     document.getElementById('budget-logement-a').textContent = fmt(Math.round(b.a.logement)) + '/mois';
     document.getElementById('budget-total-a').textContent = fmt(Math.round(b.a.total));
     document.getElementById('budget-epargne-a').textContent = fmt(Math.round(b.a.epargne));
-    document.getElementById('budget-epargne-annuelle-a').textContent = fmt(Math.round(b.a.epargne * MOIS_SALAIRE_PAR_AN));
+    document.getElementById('budget-epargne-annuelle-a').textContent = fmt(Math.round(b.a.epargneAn));
 
     if (!isSolo) {
       document.getElementById('budget-revenu-b').textContent = fmt(Math.round(b.b.revenu));
@@ -148,13 +153,13 @@
       document.getElementById('budget-logement-b').textContent = fmt(Math.round(b.b.logement)) + '/mois';
       document.getElementById('budget-total-b').textContent = fmt(Math.round(b.b.total));
       document.getElementById('budget-epargne-b').textContent = fmt(Math.round(b.b.epargne));
-      document.getElementById('budget-epargne-annuelle-b').textContent = fmt(Math.round(b.b.epargne * MOIS_SALAIRE_PAR_AN));
+      document.getElementById('budget-epargne-annuelle-b').textContent = fmt(Math.round(b.b.epargneAn));
 
       const epargneCombine = b.a.epargne + b.b.epargne;
       document.getElementById('budget-revenu-combine').textContent = fmt(Math.round(b.a.revenu + b.b.revenu));
       document.getElementById('budget-total-combine').textContent = fmt(Math.round(b.a.total + b.b.total));
       document.getElementById('budget-epargne-combine').textContent = fmt(Math.round(epargneCombine));
-      document.getElementById('budget-epargne-annuelle-combine').textContent = fmt(Math.round(epargneCombine * MOIS_SALAIRE_PAR_AN));
+      document.getElementById('budget-epargne-annuelle-combine').textContent = fmt(Math.round(b.a.epargneAn + b.b.epargneAn));
     }
 
     renderRows(elTbodyA, depensesA);
@@ -275,7 +280,7 @@
   }
 
   function renderFlow(b) {
-    if (!elFlowChart) return;
+    if (!elFlowChart || !elFlowToggle || !elFlowSummary) return;
     // En solo il n'y a qu'une personne : le sélecteur n'a plus de sens.
     elFlowToggle.hidden = b.isSolo;
     if (b.isSolo) flowWho = 'a';
@@ -283,31 +288,58 @@
       btn.classList.toggle('active', btn.dataset.flow === flowWho);
     });
 
+
     const sources = flowWho === 'combine' ? [b.a, b.b] : [flowWho === 'a' ? b.a : b.b];
     const built = buildFlowData(sources);
 
     if (built.agg.revenu <= 0) {
       elFlowSummary.innerHTML = 'Renseigne les salaires dans <b>Simulation taux</b> pour voir la répartition du revenu.';
       elFlowChart.innerHTML = '';
+      majIndiceScroll();
       return;
     }
     elFlowSummary.innerHTML = flowSentence(built.agg, sources.length > 1);
     // Sur petit écran on resserre le corps du diagramme : la marge des libellés
     // est incompressible, autant réduire ce qui peut l'être pour limiter le scroll.
+    // Le palier suit celui de la feuille de style (max-width: 640px).
     elFlowChart.innerHTML = buildSankeySvg(built.data, {
-      width: window.innerWidth < 700 ? 300 : 700,
+      width: window.innerWidth <= 640 ? 300 : 700,
       padRight: 200,
       fmt: (v) => fmt(Math.round(v)),
       title: 'Répartition du revenu mensuel'
     });
+    majIndiceScroll();
   }
 
-  elFlowToggle.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      flowWho = btn.dataset.flow;
-      renderFlow(computeBudget());
+  // L'invite « fais glisser » ne dépend pas du mobile mais du fait que le
+  // diagramme déborde réellement : entre 640px et ~950px il déborde aussi.
+  // On mesure ; si l'onglet est masqué (largeur nulle), on retombe sur la fenêtre.
+  function majIndiceScroll() {
+    const hint = document.querySelector('.flow-hint');
+    if (!hint) return;
+    const vide = !elFlowChart.firstChild;
+    const mesurable = elFlowChart.clientWidth > 0;
+    const deborde = mesurable
+      ? elFlowChart.scrollWidth > elFlowChart.clientWidth + 1
+      : window.innerWidth < 1000;
+    hint.hidden = vide || !deborde;
+  }
+
+  // Le cadre passe de 0 à sa vraie largeur quand l'onglet devient visible : c'est à
+  // ce moment-là qu'on sait enfin si le diagramme déborde. Un observateur évite de
+  // dépendre du mécanisme d'onglets.
+  if (window.ResizeObserver && elFlowChart) {
+    new ResizeObserver(() => majIndiceScroll()).observe(elFlowChart);
+  }
+
+  if (elFlowToggle) {
+    elFlowToggle.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        flowWho = btn.dataset.flow;
+        renderFlow(computeBudget());
+      });
     });
-  });
+  }
 
   // La largeur du diagramme dépend du palier mobile/desktop : on le retrace au
   // changement de gabarit (rotation de l'écran, redimensionnement).
