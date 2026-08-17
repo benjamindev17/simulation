@@ -37,6 +37,9 @@ function captureState() {
     salaireBen,
     salaireMarie,
     salaireSolo,
+    chequesBen,
+    chequesMarie,
+    chequesSolo,
     nomA,
     nomB,
     iraMois,
@@ -75,6 +78,10 @@ function applyState(s) {
   salaireBen = s.salaireBen != null ? s.salaireBen : salaireBen;
   salaireMarie = s.salaireMarie != null ? s.salaireMarie : salaireMarie;
   salaireSolo = s.salaireSolo != null ? s.salaireSolo : salaireSolo;
+  // Simulations enregistrées avant l'ajout des chèques-repas : champ absent → 0.
+  chequesBen = s.chequesBen != null ? s.chequesBen : 0;
+  chequesMarie = s.chequesMarie != null ? s.chequesMarie : 0;
+  chequesSolo = s.chequesSolo != null ? s.chequesSolo : 0;
   nomA = s.nomA || nomA;
   nomB = s.nomB || nomB;
   iraMois = s.iraMois != null ? s.iraMois : iraMois;

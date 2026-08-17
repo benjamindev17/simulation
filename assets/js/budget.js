@@ -99,10 +99,14 @@
     const chargesA = isSolo ? chargesMois : chargesMois / 2;
     const chargesB = chargesMois / 2;
 
-    const person = (nom, revenu, pret, charges, depenses) => {
+    // Le revenu disponible inclut les chèques-repas (revenuMensuelA/B), contrairement
+    // au revenu retenu par la banque pour l'endettement — cf. rate-simulation.js.
+    const person = (nom, salaire, cheques, pret, charges, depenses) => {
+      const revenu = salaire + cheques;
       const total = pret + charges + sumDepenses(depenses);
       return {
-        nom: nom, revenu: revenu, pret: pret, charges: charges,
+        nom: nom, revenu: revenu, salaire: salaire, cheques: cheques,
+        pret: pret, charges: charges,
         logement: pret + charges, depenses: depenses,
         total: total, epargne: revenu - total
       };
@@ -110,8 +114,8 @@
 
     return {
       isSolo: isSolo,
-      a: person(nomA, isSolo ? salaireSolo : salaireBen, mensA, chargesA, depensesA),
-      b: person(nomB, salaireMarie, mensB, chargesB, depensesB)
+      a: person(nomA, isSolo ? salaireSolo : salaireBen, chequesA(), mensA, chargesA, depensesA),
+      b: person(nomB, salaireMarie, chequesMarie, mensB, chargesB, depensesB)
     };
   }
 
@@ -121,7 +125,18 @@
     elPersonB.hidden = isSolo;
     elCombined.hidden = isSolo;
 
+    // Le détail salaire / chèques-repas n'a d'intérêt que s'il y a des chèques-repas.
+    const detailRevenu = (suffixe, p) => {
+      const wrap = document.getElementById('budget-revenu-detail-' + suffixe);
+      wrap.hidden = p.cheques <= 0;
+      if (p.cheques > 0) {
+        document.getElementById('budget-salaire-' + suffixe).textContent = fmt(Math.round(p.salaire));
+        document.getElementById('budget-cheques-' + suffixe).textContent = fmt(Math.round(p.cheques));
+      }
+    };
+
     document.getElementById('budget-revenu-a').textContent = fmt(Math.round(b.a.revenu));
+    detailRevenu('a', b.a);
     document.getElementById('budget-logement-a').textContent = fmt(Math.round(b.a.logement)) + '/mois';
     document.getElementById('budget-total-a').textContent = fmt(Math.round(b.a.total));
     document.getElementById('budget-epargne-a').textContent = fmt(Math.round(b.a.epargne));
@@ -129,6 +144,7 @@
 
     if (!isSolo) {
       document.getElementById('budget-revenu-b').textContent = fmt(Math.round(b.b.revenu));
+      detailRevenu('b', b.b);
       document.getElementById('budget-logement-b').textContent = fmt(Math.round(b.b.logement)) + '/mois';
       document.getElementById('budget-total-b').textContent = fmt(Math.round(b.b.total));
       document.getElementById('budget-epargne-b').textContent = fmt(Math.round(b.b.epargne));
@@ -157,6 +173,7 @@
   const C_LOGEMENT = '#6a00f4'; // violet — l'engagement immobilier
   const C_VIE = '#b05e0d';      // ambre — la consommation courante
   const C_EPARGNE = '#2f7d52';  // vert — ce qui reste
+  const C_CHEQUES = '#8e4ff5';  // violet clair — les chèques-repas, revenu à part
   const C_DECOUVERT = '#c0261f';
 
   let flowWho = 'a';
@@ -182,22 +199,33 @@
     const agg = aggregate(sources);
     const multi = sources.length > 1;
     const deficit = Math.max(0, -agg.epargne);
+
+    // Chaque entrée d'argent a son propre nœud : salaire et chèques-repas sont
+    // deux ressources distinctes, on veut voir ce que chacune finance.
+    const incomes = [];
+    sources.forEach((p, i) => {
+      const teinte = i === 0 ? C_REVENU : sankeyLighten(C_REVENU, 0.34);
+      incomes.push({ label: multi ? p.nom : 'Salaire net', value: p.salaire, color: teinte });
+      if (p.cheques > 0) {
+        incomes.push({
+          label: multi ? 'Chèques-repas ' + p.nom : 'Chèques-repas',
+          value: p.cheques,
+          color: C_CHEQUES
+        });
+      }
+    });
+
     // Un nœud « Budget » distinct est nécessaire dès qu'il y a plusieurs entrées :
-    // deux salaires, ou un salaire complété par un découvert.
-    const useHub = multi || deficit > 0;
+    // deux salaires, des chèques-repas, ou un revenu complété par un découvert.
+    const useHub = incomes.length > 1 || deficit > 0;
     const hub = useHub ? 'hub' : 'src0';
     const catCol = useHub ? 2 : 1;
     const leafCol = catCol + 1;
 
     const nodes = [], links = [];
-    sources.forEach((p, i) => {
-      nodes.push({
-        id: 'src' + i,
-        label: multi ? p.nom : 'Revenu net',
-        col: 0,
-        color: i === 0 ? C_REVENU : sankeyLighten(C_REVENU, 0.34)
-      });
-      if (useHub) links.push({ source: 'src' + i, target: 'hub', value: p.revenu, color: C_REVENU });
+    incomes.forEach((inc, i) => {
+      nodes.push({ id: 'src' + i, label: inc.label, col: 0, color: inc.color });
+      if (useHub) links.push({ source: 'src' + i, target: 'hub', value: inc.value, color: inc.color });
     });
     if (deficit > 0) {
       nodes.push({ id: 'decouvert', label: 'Manque à financer', col: 0, color: C_DECOUVERT });

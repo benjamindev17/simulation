@@ -39,6 +39,23 @@ function salaireCombineCalc() {
   return mode === 'solo' ? salaireSolo : salaireBen + salaireMarie;
 }
 
+/* Chèques-repas : avantage extra-légal versé en plus du salaire net. Ils gonflent
+   le budget réellement disponible chaque mois, mais les banques ne les retiennent
+   PAS comme revenu pour le taux d'endettement (ils ne sont ni garantis dans la
+   durée ni librement utilisables). D'où deux notions distinctes :
+   - salaireCombineCalc() : ce que la banque regarde (endettement, quotité) ;
+   - revenuMensuelA/B()   : ce dont on dispose vraiment (onglet Coût de la vie). */
+let chequesBen = 0;
+let chequesMarie = 0;
+let chequesSolo = 0;
+function revenuMensuelA() {
+  return mode === 'solo' ? salaireSolo + chequesSolo : salaireBen + chequesBen;
+}
+function revenuMensuelB() {
+  return salaireMarie + chequesMarie;
+}
+function chequesA() { return mode === 'solo' ? chequesSolo : chequesBen; }
+
 /* Noms des deux emprunteurs — éditables, utilisés partout où le nom apparaît
    (libellés, tableau de répartition, contrat). Neutres par défaut. */
 let nomA = 'Personne 1';
@@ -53,6 +70,9 @@ const elModeToggle = document.querySelectorAll('.mode-toggle button');
 const elSalaireBen = document.getElementById('in-salaire-ben');
 const elSalaireMarie = document.getElementById('in-salaire-marie');
 const elSalaireSolo = document.getElementById('in-salaire-solo');
+const elChequesBen = document.getElementById('in-cheques-ben');
+const elChequesMarie = document.getElementById('in-cheques-marie');
+const elChequesSolo = document.getElementById('in-cheques-solo');
 const elApportSplitDuo = document.getElementById('apport-split-duo');
 const elTabBtnAppart = document.getElementById('tabBtnAppart');
 const elCoutPpCard = document.getElementById('cout-pp-card');
@@ -229,6 +249,10 @@ function renderCalc() {
   elSalaireMarie.value = Math.round(salaireMarie);
   elSalaireSolo.value = Math.round(salaireSolo);
 
+  elChequesBen.value = Math.round(chequesBen);
+  elChequesMarie.value = Math.round(chequesMarie);
+  elChequesSolo.value = Math.round(chequesSolo);
+
   elNomA.value = nomA;
   elNomB.value = nomB;
   syncNames();
@@ -272,8 +296,8 @@ function applyMode(newMode) {
   if (elCoutPpCard) elCoutPpCard.hidden = isSolo;
   if (elFieldPeopleLabel) {
     elFieldPeopleLabel.textContent = isSolo
-      ? 'Emprunteur — nom et salaire net (calcul d\'endettement)'
-      : 'Emprunteur(s) — nom et salaire net (calcul d\'endettement)';
+      ? 'Emprunteur — nom, salaire net et chèques-repas'
+      : 'Emprunteur(s) — nom, salaire net et chèques-repas';
   }
 
   // Onglet Répartition / tableau d'étalement : garde la mécanique du prêt (toujours utile en solo),
@@ -315,6 +339,9 @@ elModeToggle.forEach(btn => {
 elSalaireBen.addEventListener('change', () => { salaireBen = Math.max(0, parseFloat(elSalaireBen.value) || 0); renderCalc(); });
 elSalaireMarie.addEventListener('change', () => { salaireMarie = Math.max(0, parseFloat(elSalaireMarie.value) || 0); renderCalc(); });
 elSalaireSolo.addEventListener('change', () => { salaireSolo = Math.max(0, parseFloat(elSalaireSolo.value) || 0); renderCalc(); });
+elChequesBen.addEventListener('change', () => { chequesBen = Math.max(0, parseFloat(elChequesBen.value) || 0); renderCalc(); });
+elChequesMarie.addEventListener('change', () => { chequesMarie = Math.max(0, parseFloat(elChequesMarie.value) || 0); renderCalc(); });
+elChequesSolo.addEventListener('change', () => { chequesSolo = Math.max(0, parseFloat(elChequesSolo.value) || 0); renderCalc(); });
 
 elNomA.addEventListener('change', () => { nomA = elNomA.value.trim() || 'Personne 1'; renderCalc(); });
 elNomB.addEventListener('change', () => { nomB = elNomB.value.trim() || 'Personne 2'; renderCalc(); });

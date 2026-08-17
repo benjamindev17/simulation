@@ -56,13 +56,19 @@
 
     html += '<h2>Emprunteur' + (isSolo ? '' : 's') + '</h2>';
     html += '<table class="c-table c-table--kv">';
+    // Les chèques-repas ne s'affichent que s'il y en a : une ligne à 0 € n'apprend rien.
+    const ligneCheques = (label, v) =>
+      v > 0 ? '<tr><td>Chèques-repas ' + label + '</td><td>' + fmt(Math.round(v)) + '/mois</td></tr>' : '';
     html += isSolo
       ? '<tr><td>Emprunteur</td><td>' + nomA + '</td></tr>' +
-        '<tr><td>Revenu mensuel net</td><td>' + fmt(Math.round(salaireSolo)) + '/mois</td></tr>'
+        '<tr><td>Salaire net</td><td>' + fmt(Math.round(salaireSolo)) + '/mois</td></tr>' +
+        ligneCheques('', chequesSolo)
       : '<tr><td>Emprunteur 1</td><td>' + nomA + '</td></tr>' +
         '<tr><td>Salaire ' + nomA + '</td><td>' + fmt(Math.round(salaireBen)) + '/mois</td></tr>' +
+        ligneCheques(nomA, chequesBen) +
         '<tr><td>Emprunteur 2</td><td>' + nomB + '</td></tr>' +
-        '<tr><td>Salaire ' + nomB + '</td><td>' + fmt(Math.round(salaireMarie)) + '/mois</td></tr>';
+        '<tr><td>Salaire ' + nomB + '</td><td>' + fmt(Math.round(salaireMarie)) + '/mois</td></tr>' +
+        ligneCheques(nomB, chequesMarie);
     html += '</table>';
 
     html += '<h2>Bien &amp; frais d’acquisition</h2>';
