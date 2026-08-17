@@ -48,6 +48,9 @@
   let unsubscribeList = null; // écouteur Firestore temps réel, à couper à la déconnexion
   let currentSimId = null;    // simulation actuellement chargée pour modification (ou null)
   let currentUid = null;
+  // Instantané JSON de captureState() au moment du chargement/dernier enregistrement — sert
+  // de référence pour savoir si quelque chose a changé depuis (cf. updateDirtyState).
+  let baselineStateJson = null;
 
   function simsCollection() {
     return db.collection('users').doc(currentUid).collection('simulations');
@@ -82,14 +85,43 @@
 
   function unloadCurrentSim() {
     currentSimId = null;
+    baselineStateJson = null;
     elCurrentBar.hidden = true;
     updateSaveNewSimVisibility();
   }
 
   function loadCurrentBar() {
     elCurrentBar.hidden = false;
+    updateDirtyState();
     updateSaveNewSimVisibility();
   }
+
+  // "Enregistrer les modifications" ne doit apparaître que si quelque chose a réellement
+  // changé depuis le chargement (ou le dernier enregistrement) — pas dès qu'une simulation
+  // est ouverte pour consultation. baselineStateJson est fixé par l'appelant (avant l'écriture
+  // Firestore, pas après : sinon une modification pendant l'aller-retour réseau du save serait
+  // ignorée).
+  function updateDirtyState() {
+    if (!currentSimId || baselineStateJson === null) {
+      btnSaveCurrent.hidden = true;
+      return;
+    }
+    btnSaveCurrent.hidden = JSON.stringify(captureState()) === baselineStateJson;
+  }
+
+  // Écoute déléguée plutôt qu'un hook par champ : ce simulateur a trop de points de
+  // mutation (rate-simulation.js, budget.js, ownership.js, cost.js…) pour tous les
+  // intercepter individuellement sans risquer d'en oublier un. Le léger débounce absorbe
+  // la frappe rapide et le glissement du curseur de taux (événements "input").
+  let dirtyCheckTimer = null;
+  function scheduleDirtyCheck() {
+    if (!currentSimId) return;
+    clearTimeout(dirtyCheckTimer);
+    dirtyCheckTimer = setTimeout(updateDirtyState, 150);
+  }
+  document.addEventListener('input', scheduleDirtyCheck);
+  document.addEventListener('change', scheduleDirtyCheck);
+  document.addEventListener('click', scheduleDirtyCheck);
 
   // Comparaison de simulations (accessible uniquement ici, depuis "Mes simulations") : chaque
   // ligne a une case à cocher, le bouton "Comparer" ouvre compare.js pour 2 à 4 sélectionnées.
@@ -152,6 +184,10 @@
       row.querySelector('[data-action="load"]').addEventListener('click', () => {
         applyState(data.state);
         currentSimId = doc.id;
+        // Repris via captureState() (pas data.state telle quelle) : les simulations plus
+        // anciennes n'ont pas tous les champs récents (chèques-repas…), applyState() leur
+        // donne une valeur par défaut, il faut comparer sur la même forme normalisée.
+        baselineStateJson = JSON.stringify(captureState());
         elCurrentName.textContent = data.nom || 'Sans nom';
         loadCurrentBar();
         // Consultation d'abord : récapitulatif en lecture seule, façon document.
@@ -285,14 +321,19 @@
       confirmText: 'Créer'
     });
     if (nom === null || nom === '') return;
+    // Figé avant l'écriture Firestore : si l'utilisateur modifie un champ pendant l'aller-retour
+    // réseau, la comparaison doit se faire contre ce qui a vraiment été enregistré, pas contre
+    // un instantané repris après coup qui inclurait ce changement à tort.
+    const snapshot = captureState();
     const now = firebase.firestore.FieldValue.serverTimestamp();
     simsCollection().add({
       nom: nom,
-      state: captureState(),
+      state: snapshot,
       createdAt: now,
       updatedAt: now
     }).then((docRef) => {
       currentSimId = docRef.id;
+      baselineStateJson = JSON.stringify(snapshot);
       elCurrentName.textContent = nom;
       loadCurrentBar();
     }).catch((err) => {
@@ -317,10 +358,13 @@
 
   btnSaveCurrent.addEventListener('click', () => {
     if (!currentSimId) return;
+    const snapshot = captureState();
     simsCollection().doc(currentSimId).update({
-      state: captureState(),
+      state: snapshot,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(() => {
+      baselineStateJson = JSON.stringify(snapshot);
+      updateDirtyState();
       flashSaveSuccess();
     }).catch((err) => {
       alert('Impossible d’enregistrer les modifications : ' + err.message);

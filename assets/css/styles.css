@@ -1050,6 +1050,10 @@ body.contract-open, body.recap-open { overflow: hidden; }
 
 /* Confirmation visuelle « Enregistré » */
 #btn-save-current { display: inline-flex; align-items: center; gap: 7px; }
+/* Sélecteur ID + [hidden] : la règle du dessus (display: inline-flex, spécificité 1,0,0)
+   l'emporterait sinon sur le [hidden] par défaut du navigateur (0,1,0) et le bouton
+   resterait visible tant qu'aucune modification n'a été détectée (cf. dashboard.js). */
+#btn-save-current[hidden] { display: none; }
 .btn-save--success { background: var(--violet) !important; color: #fff !important; }
 .btn-save__check { animation: check-pop 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2); }
 @keyframes check-pop {
