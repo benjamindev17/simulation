@@ -190,6 +190,9 @@ h2 {
   flex-wrap: wrap;
   border-bottom: 1px solid var(--rule);
   margin: 0 0 1.75rem;
+  /* Compense la sortie de .content (qui apportait ce padding) : le bloc sticky
+     .app-header est hors de .content, donc chacun de ses enfants gère le sien. */
+  padding: 0 1.5rem;
 }
 .tabs-groups { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .tabs { display: inline-flex; gap: 24px; margin: 0; padding: 0; }
@@ -969,15 +972,18 @@ body.contract-open, body.recap-open { overflow: hidden; }
 .dash-sim-row__check { display: flex; align-items: center; flex-shrink: 0; cursor: pointer; }
 .dash-sim-row__check input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--violet); cursor: pointer; }
 
-/* Barre « simulation chargée » — collée en haut de l'écran (position: sticky) pour
-   qu'on sache en permanence laquelle est ouverte, même après avoir défilé sous le
-   bandeau violet. Passe devant tout le reste (z-index), y compris le sélecteur de
-   durée qui, lui, ne fait que suivre la barre d'onglets. */
-.current-sim-bar[hidden] { display: none; }
-.current-sim-bar {
+/* Bandeau + barre "simulation chargée" + barre d'onglets : un seul bloc sticky, pour
+   qu'ils défilent ensemble et restent collés en haut comme un tout au lieu de se
+   détacher les uns des autres. Passe devant le reste de la page (z-index). */
+.app-header {
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: 45;
+  background: var(--paper);
+  box-shadow: 0 4px 10px rgba(26, 11, 46, 0.08);
+}
+.current-sim-bar[hidden] { display: none; }
+.current-sim-bar {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -986,7 +992,6 @@ body.contract-open, body.recap-open { overflow: hidden; }
   padding: 10px 1.5rem;
   font-size: var(--fs-md);
   color: var(--amber-on-fill);
-  box-shadow: 0 2px 8px rgba(26, 11, 46, 0.08);
 }
 .current-sim-bar span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .current-sim-bar b { font-weight: 700; color: var(--ink); }
@@ -1069,7 +1074,7 @@ body.contract-open, body.recap-open { overflow: hidden; }
 
   /* La barre d'onglets cède la place au menu déroulant. Marge haute nécessaire :
      sans elle le sélecteur vient se coller au bandeau d'en-tête. */
-  .tabs-row { gap: 8px; border-bottom: none; padding-bottom: 0; margin-top: 1.25rem; }
+  .tabs-row { gap: 8px; border-bottom: none; padding: 0 0.9rem; margin-top: 1.25rem; }
   .tabs-groups { display: none; }
   .tabs-dropdown { display: block; width: 100%; }
   #btn-generate-contract, #btn-save-new-sim { width: 100%; }

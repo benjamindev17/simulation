@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Simule ton prêt</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=64">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=65">
 
 <!-- Icône et nom pour l'ajout à l'écran d'accueil (iPhone/Safari + Android/Chrome) -->
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=64">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=65">
 <meta name="apple-mobile-web-app-title" content="Simulation prêt">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -16,42 +16,41 @@
 
 <!-- Aucune webfont : la typographie s'appuie sur Helvetica/Arial, présentes sur tous
      les systèmes. Une requête réseau de moins et aucun texte invisible au chargement. -->
-<link rel="stylesheet" href="assets/css/styles.css?v=64">
+<link rel="stylesheet" href="assets/css/styles.css?v=65">
 </head>
 <body>
 
-<header class="page-header">
-  <button type="button" id="btn-logo-home" class="page-header__icon" title="Mes simulations">
-    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M3.5 11.5 12 4l8.5 7.5"/>
-      <path d="M5.5 10.2V20h13v-9.8"/>
-      <path d="M10 20v-5h4v5"/>
-    </svg>
-  </button>
-  <div class="page-header__text">
-    <p class="eyebrow">Simulation patrimoine</p>
-    <h1 class="page-title">Simule ton prêt</h1>
+<!-- Bandeau + barre "simulation chargée" + barre d'onglets regroupés dans un seul bloc
+     sticky : les trois défilent ensemble et restent collés en haut de l'écran comme un
+     tout, plutôt que de se détacher les uns des autres au défilement. -->
+<div class="app-header" id="app-header">
+  <header class="page-header">
+    <button type="button" id="btn-logo-home" class="page-header__icon" title="Mes simulations">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3.5 11.5 12 4l8.5 7.5"/>
+        <path d="M5.5 10.2V20h13v-9.8"/>
+        <path d="M10 20v-5h4v5"/>
+      </svg>
+    </button>
+    <div class="page-header__text">
+      <p class="eyebrow">Simulation patrimoine</p>
+      <h1 class="page-title">Simule ton prêt</h1>
+    </div>
+    <button type="button" id="tabBtnDashboard" class="header-account-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="8" r="3.2"/>
+        <path d="M5 20c0-3.9 3.13-7 7-7s7 3.1 7 7"/>
+      </svg>
+      <span class="header-account-btn__label">Mes simulations</span>
+    </button>
+  </header>
+
+  <!-- Visible uniquement quand une simulation sauvegardée est chargée pour modification. -->
+  <div id="current-sim-bar" class="current-sim-bar" hidden>
+    <span>📄 <b id="current-sim-name">-</b></span>
+    <button type="button" id="btn-save-current">Enregistrer les modifications</button>
+    <button type="button" id="btn-unload-current" title="Revenir à une simulation libre, non liée">✕</button>
   </div>
-  <button type="button" id="tabBtnDashboard" class="header-account-btn">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <circle cx="12" cy="8" r="3.2"/>
-      <path d="M5 20c0-3.9 3.13-7 7-7s7 3.1 7 7"/>
-    </svg>
-    <span class="header-account-btn__label">Mes simulations</span>
-  </button>
-</header>
-
-<!-- Visible uniquement quand une simulation sauvegardée est chargée pour modification.
-     Placée hors de .content (donc hors du flux normal) et collée en haut de l'écran :
-     une fois le bandeau violet défilé, elle reste affichée pour qu'on sache toujours
-     laquelle est ouverte, où qu'on soit dans la page. -->
-<div id="current-sim-bar" class="current-sim-bar" hidden>
-  <span>📄 <b id="current-sim-name">-</b></span>
-  <button type="button" id="btn-save-current">Enregistrer les modifications</button>
-  <button type="button" id="btn-unload-current" title="Revenir à une simulation libre, non liée">✕</button>
-</div>
-
-<main class="content">
 
   <div class="tabs-row">
     <div class="tabs-groups">
@@ -92,9 +91,12 @@
     </div>
     <!-- Fonctionnalité conservée mais masquée à la demande — retirer l'attribut "hidden" pour la réactiver -->
     <button type="button" id="btn-generate-contract" hidden title="Projet de convention pré-rempli avec ta simulation — à faire valider par le notaire">📄 Créer le contrat PDF</button>
-    <!-- Visible uniquement si connecté ET qu'aucune simulation n'est actuellement chargée (sinon current-sim-bar, désormais hors de .tabs-row, prend le relais) -->
+    <!-- Visible uniquement si connecté ET qu'aucune simulation n'est actuellement chargée (sinon current-sim-bar prend le relais) -->
     <button type="button" id="btn-save-new-sim" class="btn-moss" hidden>Enregistrer ma simulation</button>
   </div>
+</div>
+
+<main class="content">
 
   <!-- ===================== TAB : APPARTEMENT ===================== -->
   <section id="tab-appart" class="panel">
@@ -891,26 +893,26 @@
   </div>
 </div>
 
-<script src="assets/js/utils.js?v=64" defer></script>
-<script src="assets/js/ownership.js?v=64" defer></script>
-<script src="assets/js/rate-simulation.js?v=64" defer></script>
-<script src="assets/js/app.js?v=64" defer></script>
-<script src="assets/js/contract.js?v=64" defer></script>
-<script src="assets/js/etf.js?v=64" defer></script>
-<script src="assets/js/cost.js?v=64" defer></script>
+<script src="assets/js/utils.js?v=65" defer></script>
+<script src="assets/js/ownership.js?v=65" defer></script>
+<script src="assets/js/rate-simulation.js?v=65" defer></script>
+<script src="assets/js/app.js?v=65" defer></script>
+<script src="assets/js/contract.js?v=65" defer></script>
+<script src="assets/js/etf.js?v=65" defer></script>
+<script src="assets/js/cost.js?v=65" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=64" defer></script>
-<script src="assets/js/state.js?v=64" defer></script>
-<script src="assets/js/sankey.js?v=64" defer></script>
-<script src="assets/js/budget.js?v=64" defer></script>
-<script src="assets/js/modal.js?v=64" defer></script>
-<script src="assets/js/recap.js?v=64" defer></script>
-<script src="assets/js/compare.js?v=64" defer></script>
-<script src="assets/js/dashboard.js?v=64" defer></script>
+<script src="assets/js/firebase-config.js?v=65" defer></script>
+<script src="assets/js/state.js?v=65" defer></script>
+<script src="assets/js/sankey.js?v=65" defer></script>
+<script src="assets/js/budget.js?v=65" defer></script>
+<script src="assets/js/modal.js?v=65" defer></script>
+<script src="assets/js/recap.js?v=65" defer></script>
+<script src="assets/js/compare.js?v=65" defer></script>
+<script src="assets/js/dashboard.js?v=65" defer></script>
 
 </body>
 </html>
