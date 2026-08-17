@@ -4,19 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Simule ton prêt</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=67">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=68">
 
 <!-- Icône et nom pour l'ajout à l'écran d'accueil (iPhone/Safari + Android/Chrome) -->
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=67">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=68">
 <meta name="apple-mobile-web-app-title" content="Simulation prêt">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#6a00f4">
 
+<!-- Les paramètres ?v=N qui invalident le cache des scripts/styles sont écrits DANS ce
+     fichier : si le navigateur sert un index.html périmé, il sert aussi les anciennes
+     versions de tous les assets et aucune mise à jour ne passe jamais. C'est
+     particulièrement vrai une fois l'app ajoutée à l'écran d'accueil iPhone, qui garde
+     le document en cache très longtemps. On demande donc explicitement à ne pas le
+     mettre en cache — les assets, eux, restent cachables grâce à leur ?v=N. -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
 <!-- Aucune webfont : la typographie s'appuie sur Helvetica/Arial, présentes sur tous
      les systèmes. Une requête réseau de moins et aucun texte invisible au chargement. -->
-<link rel="stylesheet" href="assets/css/styles.css?v=67">
+<link rel="stylesheet" href="assets/css/styles.css?v=68">
 </head>
 <body>
 
@@ -843,6 +853,11 @@
       <div id="dash-sim-list" class="dash-sim-list"></div>
     </div>
 
+    <!-- Numéro de version affiché : permet de vérifier d'un coup d'œil quelle version est
+         réellement servie, plutôt que de confondre "le correctif ne marche pas" avec
+         "le navigateur sert encore l'ancienne page". Doit être tenu à jour avec les ?v=N. -->
+    <p class="dash-build">Version 68</p>
+
   </section>
 
 </main>
@@ -895,26 +910,26 @@
   </div>
 </div>
 
-<script src="assets/js/utils.js?v=67" defer></script>
-<script src="assets/js/ownership.js?v=67" defer></script>
-<script src="assets/js/rate-simulation.js?v=67" defer></script>
-<script src="assets/js/app.js?v=67" defer></script>
-<script src="assets/js/contract.js?v=67" defer></script>
-<script src="assets/js/etf.js?v=67" defer></script>
-<script src="assets/js/cost.js?v=67" defer></script>
+<script src="assets/js/utils.js?v=68" defer></script>
+<script src="assets/js/ownership.js?v=68" defer></script>
+<script src="assets/js/rate-simulation.js?v=68" defer></script>
+<script src="assets/js/app.js?v=68" defer></script>
+<script src="assets/js/contract.js?v=68" defer></script>
+<script src="assets/js/etf.js?v=68" defer></script>
+<script src="assets/js/cost.js?v=68" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=67" defer></script>
-<script src="assets/js/state.js?v=67" defer></script>
-<script src="assets/js/sankey.js?v=67" defer></script>
-<script src="assets/js/budget.js?v=67" defer></script>
-<script src="assets/js/modal.js?v=67" defer></script>
-<script src="assets/js/recap.js?v=67" defer></script>
-<script src="assets/js/compare.js?v=67" defer></script>
-<script src="assets/js/dashboard.js?v=67" defer></script>
+<script src="assets/js/firebase-config.js?v=68" defer></script>
+<script src="assets/js/state.js?v=68" defer></script>
+<script src="assets/js/sankey.js?v=68" defer></script>
+<script src="assets/js/budget.js?v=68" defer></script>
+<script src="assets/js/modal.js?v=68" defer></script>
+<script src="assets/js/recap.js?v=68" defer></script>
+<script src="assets/js/compare.js?v=68" defer></script>
+<script src="assets/js/dashboard.js?v=68" defer></script>
 
 </body>
 </html>

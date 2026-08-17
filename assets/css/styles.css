@@ -972,6 +972,15 @@ body.contract-open, body.recap-open { overflow: hidden; }
 .dash-sim-row__check { display: flex; align-items: center; flex-shrink: 0; cursor: pointer; }
 .dash-sim-row__check input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--violet); cursor: pointer; }
 
+/* Repère de version, discret : sert à confirmer quelle version est réellement servie. */
+.dash-build {
+  margin: 2.5rem 0 0;
+  font-size: var(--fs-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
 /* Bandeau + barre "simulation chargée" + barre d'onglets : un seul bloc sticky, pour
    qu'ils défilent ensemble et restent collés en haut comme un tout au lieu de se
    détacher les uns des autres. Passe devant le reste de la page (z-index). */
