@@ -279,6 +279,7 @@ h2 {
 /* Trois contrôles partageaient la même forme avec trois paddings différents :
    ils sont désormais réellement identiques. */
 .mode-toggle,
+.seg-toggle,
 .duree-float__btns,
 .duration-toggle {
   display: inline-flex;
@@ -287,7 +288,9 @@ h2 {
   background: var(--sheet);
 }
 .mode-toggle { margin: 0 0 1.5rem; }
+.seg-toggle[hidden] { display: none; }
 .mode-toggle button,
+.seg-toggle button,
 .duree-float__btns button,
 .duration-toggle button {
   background: none;
@@ -304,12 +307,15 @@ h2 {
   transition: background var(--transition), color var(--transition);
 }
 .mode-toggle button:last-child,
+.seg-toggle button:last-child,
 .duree-float__btns button:last-child,
 .duration-toggle button:last-child { border-right: none; }
 .mode-toggle button:hover:not(.active),
+.seg-toggle button:hover:not(.active),
 .duree-float__btns button:hover:not(.active),
 .duration-toggle button:hover:not(.active) { background: var(--violet-wash); }
 .mode-toggle button.active,
+.seg-toggle button.active,
 .duree-float__btns button.active,
 .duration-toggle button.active { background: var(--violet); color: #fff; }
 
@@ -758,6 +764,29 @@ tbody tr:last-child td { border-bottom: none; }
 .budget-remove:hover { background: var(--brick-soft); }
 .budget-add { margin-top: 6px; }
 
+/* Diagramme de flux (Sankey) */
+.budget-flow { margin-top: 2.5rem; padding-top: 1.75rem; border-top: 1px solid var(--rule); }
+.budget-flow .seg-toggle { margin-bottom: 1rem; }
+.flow-summary {
+  font-size: var(--fs-md);
+  line-height: 1.55;
+  color: var(--ink-mid);
+  max-width: 62ch;
+  margin: 0 0 1.25rem;
+}
+.flow-summary b { color: var(--ink); font-weight: 700; }
+.flow-chart {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  padding: 12px 0;
+}
+.flow-chart svg { display: block; }
+.flow-chart:empty { display: none; }
+/* Le diagramme est plus large que l'écran sur mobile : on le dit. */
+.flow-hint { display: none; }
+
 /* 9. Boutons ---------------------------------------------------------------- */
 .btn-moss, .btn-secondary, .btn-danger, .btn-google,
 #btn-generate-contract, #btn-save-new-sim,
@@ -1025,6 +1054,17 @@ body.contract-open, body.recap-open { overflow: hidden; }
   .detail-interets-rows .kv { justify-content: space-between; }
   .duree-compare { flex-direction: column; }
   .apport-split { gap: 12px; }
+
+  .flow-hint {
+    display: block;
+    margin: 8px 0 0;
+    font-size: var(--fs-micro);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .seg-toggle { width: 100%; }
+  .seg-toggle button { flex: 1; padding: 9px 6px; }
 
   .table-scroll { overflow: auto; -webkit-overflow-scrolling: touch; }
   #amort-table { min-width: 780px; }
