@@ -447,7 +447,7 @@ elMontant.addEventListener('change', () => {
 });
 
 // Bornes du taux — doivent rester alignées sur min/max du curseur #slider-taux (index.html).
-const TAUX_MIN = 3.3;
+const TAUX_MIN = 3;
 const TAUX_MAX = 4;
 function applyTaux(val) {
   tauxPct = Math.min(Math.max(TAUX_MIN, val), TAUX_MAX);
