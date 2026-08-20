@@ -24,7 +24,6 @@
     const loan = (typeof lastLoanData !== 'undefined' && lastLoanData) ? lastLoanData : buildLoanSchedule();
     const isSolo = mode === 'solo';
     const totalInterest = loan.schedule[loan.nTotal].cumInterest;
-    const finShares = !isSolo ? shareAtRow(loan.schedule[loan.nTotal]) : null;
     const benPct = Math.round(benRatio * 100);
     const mariePct = 100 - benPct;
     const horsEmprunt = typeof elChkFraisHorsEmprunt !== 'undefined' && elChkFraisHorsEmprunt && elChkFraisHorsEmprunt.checked;
@@ -104,18 +103,9 @@
       ? 'Conditions particulières : ' + iraConditions + '.'
       : 'Aucune condition particulière renseignée — plafond légal en Belgique : 3 mois d’intérêts sur le capital remboursé par anticipation.') + '</p>';
 
-    if (!isSolo) {
-      html += '<h2>Répartition de la propriété</h2>';
-      html += '<p>Modèle : ' + (equalizeShares
-        ? '<b>équilibré</b> — intérêts partagés 50/50, propriété visée à 50/50 au terme du prêt.'
-        : 'chacun rembourse la moitié de la mensualité.') + '</p>';
-      html += '<table class="c-table c-table--kv">' +
-        '<tr><td>' + nomA + ' paie</td><td>' + fmt(Math.round(payBen)) + '/mois</td></tr>' +
-        '<tr><td>' + nomB + ' paie</td><td>' + fmt(Math.round(payMarie)) + '/mois</td></tr>' +
-        '<tr><td>Quotité à l’achat (selon les apports)</td><td>' + nomA + ' ' + pct0(benPct) + ' · ' + nomB + ' ' + pct0(mariePct) + '</td></tr>' +
-        '<tr><td>Quotité visée au terme du prêt</td><td>' + nomA + ' ' + fmtPct(finShares.shareA) + ' · ' + nomB + ' ' + fmtPct(finShares.shareB) + '</td></tr>' +
-        '</table>';
-    }
+    // Bloc « Répartition de la propriété » volontairement absent du récapitulatif :
+    // il reste consultable dans l'onglet Répartition appartement, qui l'expose avec
+    // sa méthode de calcul et ses réserves.
 
     html += '<h2>Coût mensuel de possession</h2>';
     html += '<table class="c-table c-table--kv"><tbody>' +
