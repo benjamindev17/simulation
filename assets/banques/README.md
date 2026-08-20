@@ -1,29 +1,32 @@
 # Logos des banques
 
-Déposer ici le logo de chaque banque, **exactement sous ces noms** :
+Logos actuellement en place :
 
-| Fichier attendu | Banque |
+| Fichier | Banque |
 | --- | --- |
-| `crelan.svg` | Crelan |
-| `kbc.svg` | KBC |
-| `cph.svg` | CPH |
-| `belfius.svg` | Belfius |
-| `beobank.svg` | Beobank |
+| `crelan.png` | Crelan |
+| `kbc.png` | KBC |
+| `cph.png` | CPH |
+| `belfius.png` | Belfius |
+| `beobank.png` | Beobank |
 
-Rien d'autre à faire : le fichier est repris automatiquement au chargement suivant.
-Tant qu'un fichier manque, l'application retombe sur une pastille aux initiales
-dans la couleur de l'enseigne — aucune image cassée n'apparaît.
+Le chemin de chaque fichier est déclaré dans le champ `logo` du registre, en haut
+de `assets/js/banques.js`. Si un fichier est absent ou illisible, l'application
+retombe d'elle-même sur une pastille aux initiales dans la couleur de l'enseigne —
+aucune image cassée n'apparaît.
+
+## Remplacer un logo
+
+Déposer le nouveau fichier sous le même nom : rien d'autre à changer. Pour passer
+d'un PNG à un SVG (plus net à l'agrandissement), adapter aussi l'extension dans le
+champ `logo` du registre.
 
 ## Format
 
-- **SVG de préférence** (net à toutes les tailles). Le logo est affiché dans un
-  carré d'environ 30 px de côté, sur fond blanc, en `object-fit: contain` :
-  il n'est jamais déformé, seulement mis à l'échelle.
-- **PNG accepté** : dans ce cas, renommer l'extension dans le champ `logo` du
-  registre, en haut de `assets/js/banques.js`.
-- Préférer la version compacte du logo (le symbole ou le monogramme) plutôt que le
-  logo long avec la signature : dans un carré, un wordmark très horizontal devient
-  minuscule.
+Le logo est affiché dans un rectangle d'environ 58 × 34 px, sur fond blanc, en
+`object-fit: contain` : jamais déformé, seulement mis à l'échelle. Un rectangle
+plutôt qu'un carré parce que la plupart de ces logos placent le nom sous ou à côté
+du symbole — dans un carré, ils deviennent illisibles.
 
 ## Ajouter les fichiers depuis GitHub (fonctionne aussi depuis un téléphone)
 

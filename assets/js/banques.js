@@ -9,11 +9,11 @@
    ========================================================================== */
 (function () {
   const BANQUES = [
-    { id: 'crelan',  nom: 'Crelan',  couleur: '#00953a', initiales: 'CR',  logo: 'assets/banques/crelan.svg' },
-    { id: 'kbc',     nom: 'KBC',     couleur: '#004b93', initiales: 'KBC', logo: 'assets/banques/kbc.svg' },
-    { id: 'cph',     nom: 'CPH',     couleur: '#0f7baa', initiales: 'CPH', logo: 'assets/banques/cph.svg' },
-    { id: 'belfius', nom: 'Belfius', couleur: '#c4161c', initiales: 'BF',  logo: 'assets/banques/belfius.svg' },
-    { id: 'beobank', nom: 'Beobank', couleur: '#e2001a', initiales: 'BEO', logo: 'assets/banques/beobank.svg' }
+    { id: 'crelan',  nom: 'Crelan',  couleur: '#00953a', initiales: 'CR',  logo: 'assets/banques/crelan.png' },
+    { id: 'kbc',     nom: 'KBC',     couleur: '#004b93', initiales: 'KBC', logo: 'assets/banques/kbc.png' },
+    { id: 'cph',     nom: 'CPH',     couleur: '#0f7baa', initiales: 'CPH', logo: 'assets/banques/cph.png' },
+    { id: 'belfius', nom: 'Belfius', couleur: '#c4161c', initiales: 'BF',  logo: 'assets/banques/belfius.png' },
+    { id: 'beobank', nom: 'Beobank', couleur: '#e2001a', initiales: 'BEO', logo: 'assets/banques/beobank.png' }
   ];
   const parId = new Map(BANQUES.map(b => [b.id, b]));
 

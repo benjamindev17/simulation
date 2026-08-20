@@ -608,22 +608,26 @@ input[type="range"] { flex: 1; width: 100%; accent-color: var(--violet); }
   text-transform: uppercase;
   color: var(--ink);
 }
+/* Emplacement rectangulaire plutôt que carré : la plupart des logos bancaires placent
+   le nom sous ou à côté du symbole. Dans un carré de 30 px ils deviennent illisibles ;
+   un rectangle leur laisse la largeur dont ils ont besoin (object-fit: contain, donc
+   jamais déformés). La pastille de repli, elle, se centre indifféremment. */
 .bank-badge {
   position: relative;
   overflow: hidden;
   flex-shrink: 0;
   display: inline-grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 58px;
+  height: 34px;
   border-radius: 3px;
   color: #fff;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.02em;
   line-height: 1;
 }
-.bank-badge--sm { width: 22px; height: 22px; font-size: 8px; border-radius: 2px; }
+.bank-badge--sm { width: 46px; height: 28px; font-size: 9px; border-radius: 2px; }
 .bank-badge--vide { background: var(--rule-strong); color: var(--ink-mid); }
 /* Le vrai logo recouvre entièrement la pastille — fond blanc, car la plupart des
    logos bancaires sont dessinés pour être posés sur du blanc. S'il est absent,
@@ -635,6 +639,7 @@ input[type="range"] { flex: 1; width: 100%; accent-color: var(--violet); }
   height: 100%;
   object-fit: contain;
   background: #fff;
+  padding: 2px;
 }
 
 /* Répartition de l'apport */
