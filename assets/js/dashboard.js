@@ -67,8 +67,8 @@
     return ts.toDate().toLocaleDateString('fr-BE', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
-  // Résumé bref sous le nom : emprunteur(s), durée, taux — pour reconnaître une
-  // simulation dans la liste sans avoir à l'ouvrir.
+  // Résumé bref sous le titre : emprunteur(s) et durée. Le taux et le montant ne sont
+  // pas repris ici — ils figurent déjà dans le titre (cf. titreSimulation).
   function simSummary(state) {
     if (!state) return '';
     const isSolo = state.mode === 'solo';
@@ -78,7 +78,6 @@
     const parts = [];
     if (noms) parts.push(noms);
     if (state.dureeChoisie) parts.push(state.dureeChoisie + ' ans');
-    if (typeof state.tauxPct === 'number') parts.push(state.tauxPct.toFixed(2) + ' %');
     return parts.join(' · ');
   }
 
@@ -189,6 +188,7 @@
         '<label class="dash-sim-row__check" title="Sélectionner pour comparer">' +
           '<input type="checkbox" class="chk-compare">' +
         '</label>' +
+        '<span class="dash-sim-row__logo"></span>' +
         '<div class="dash-sim-row__info">' +
           '<p class="dash-sim-row__name"></p>' +
           '<p class="dash-sim-row__meta"></p>' +
@@ -196,11 +196,14 @@
         '</div>' +
         '<div class="dash-sim-row__actions">' +
           '<button type="button" class="btn-secondary" data-action="load">Consulter</button>' +
-          '<button type="button" class="btn-secondary" data-action="rename">Renommer</button>' +
           '<button type="button" class="btn-secondary" data-action="duplicate">Dupliquer</button>' +
           '<button type="button" class="btn-danger" data-action="delete">Supprimer</button>' +
         '</div>';
-      row.querySelector('.dash-sim-row__name').textContent = data.nom || 'Sans nom';
+      // Titre recalculé depuis l'état plutôt que lu dans data.nom : il reste juste même si
+      // la banque, le montant ou le taux ont changé depuis l'enregistrement du document.
+      row.querySelector('.dash-sim-row__logo').innerHTML =
+        banqueBadge(data.state && data.state.banqueId);
+      row.querySelector('.dash-sim-row__name').textContent = titreSimulation(data.state);
       row.querySelector('.dash-sim-row__meta').textContent = simSummary(data.state);
 
       const chkCompare = row.querySelector('.chk-compare');
@@ -226,44 +229,27 @@
         // ils ont pu lever le drapeau alors que l'utilisateur n'a rien fait. On le remet à
         // zéro ici, une fois la restauration terminée.
         userEdited = false;
-        elCurrentName.textContent = data.nom || 'Sans nom';
+        const titre = titreSimulation(data.state);
+        elCurrentName.textContent = titre;
         loadCurrentBar();
         // Consultation d'abord : récapitulatif en lecture seule, façon document.
         // Le crayon dans sa barre d'outils bascule vers l'édition complète (switchTab).
         if (typeof window.openRecap === 'function') {
-          window.openRecap(data.nom, formatDate(data.updatedAt), () => switchTab('taux'));
+          window.openRecap(titre, formatDate(data.updatedAt), () => switchTab('taux'));
         } else {
           switchTab('taux');
         }
       });
 
-      row.querySelector('[data-action="rename"]').addEventListener('click', async () => {
-        const nouveauNom = await showPrompt({
-          title: 'Renommer la simulation',
-          defaultValue: data.nom || '',
-          placeholder: 'Nom de la simulation',
-          confirmText: 'Renommer'
-        });
-        if (nouveauNom === null || nouveauNom === '') return;
-        simsCollection().doc(doc.id).update({ nom: nouveauNom });
-        if (currentSimId === doc.id) elCurrentName.textContent = nouveauNom;
-      });
-
       // Duplique la simulation : nouveau document Firestore avec le même state (donc
       // toutes les données déjà remplies), pour repartir d'une base au lieu de tout
-      // ressaisir. Ne charge pas la copie automatiquement — elle apparaît juste en tête
-      // de liste (updatedAt le plus récent), l'original reste ouvert si c'est lui qui l'était.
-      row.querySelector('[data-action="duplicate"]').addEventListener('click', async () => {
-        const nomCopie = await showPrompt({
-          title: 'Dupliquer la simulation',
-          defaultValue: (data.nom || 'Sans nom') + ' (copie)',
-          placeholder: 'Nom de la copie',
-          confirmText: 'Dupliquer'
-        });
-        if (nomCopie === null || nomCopie === '') return;
+      // ressaisir. Aucun nom à saisir — le titre découle de l'état, et la copie prendra
+      // le sien dès qu'on y changera la banque, le montant ou le taux. Ne charge pas la
+      // copie automatiquement : elle apparaît en tête de liste (updatedAt le plus récent).
+      row.querySelector('[data-action="duplicate"]').addEventListener('click', () => {
         const now = firebase.firestore.FieldValue.serverTimestamp();
         simsCollection().add({
-          nom: nomCopie,
+          nom: titreSimulation(data.state),
           state: data.state,
           createdAt: now,
           updatedAt: now
@@ -275,7 +261,7 @@
       row.querySelector('[data-action="delete"]').addEventListener('click', async () => {
         const ok = await showConfirm({
           title: 'Supprimer cette simulation ?',
-          message: '« ' + (data.nom || 'Cette simulation') + ' » sera définitivement supprimée. Cette action est irréversible.',
+          message: '« ' + titreSimulation(data.state) + ' » sera définitivement supprimée. Cette action est irréversible.',
           confirmText: 'Supprimer',
           danger: true
         });
@@ -291,7 +277,8 @@
 
   btnCompare.addEventListener('click', () => {
     const entries = Array.from(selectedCompareIds)
-      .map(id => ({ id, nom: latestDocsById.get(id) && latestDocsById.get(id).nom, state: latestDocsById.get(id) && latestDocsById.get(id).state }))
+      .map(id => ({ id, state: latestDocsById.get(id) && latestDocsById.get(id).state }))
+      .map(e => ({ id: e.id, state: e.state, nom: titreSimulation(e.state) }))
       .filter(e => e.state);
     if (entries.length < 2) return;
     if (typeof window.openCompare === 'function') window.openCompare(entries);
@@ -351,21 +338,16 @@
   // Enregistre l'état courant du simulateur comme une nouvelle simulation Firestore. Utilisé à la
   // fois par "+ Nouvelle simulation" (onglet Mes simulations) et "Enregistrer ma simulation"
   // (bouton dans la barre d'onglets, visible dès qu'on est connecté sans simulation chargée).
-  async function createNewSimulation(promptTitle) {
-    const nom = await showPrompt({
-      title: promptTitle,
-      defaultValue: 'Ma simulation',
-      placeholder: 'Nom de la simulation',
-      confirmText: 'Créer'
-    });
-    if (nom === null || nom === '') return;
+  // Aucun nom n'est demandé : le titre découle de l'état (banque · montant · taux).
+  function createNewSimulation() {
     // Figé avant l'écriture Firestore : si l'utilisateur modifie un champ pendant l'aller-retour
     // réseau, la comparaison doit se faire contre ce qui a vraiment été enregistré, pas contre
     // un instantané repris après coup qui inclurait ce changement à tort.
     const snapshot = captureState();
+    const titre = titreSimulation(snapshot);
     const now = firebase.firestore.FieldValue.serverTimestamp();
     simsCollection().add({
-      nom: nom,
+      nom: titre,
       state: snapshot,
       createdAt: now,
       updatedAt: now
@@ -373,15 +355,15 @@
       currentSimId = docRef.id;
       baselineStateJson = JSON.stringify(snapshot);
       userEdited = false;
-      elCurrentName.textContent = nom;
+      elCurrentName.textContent = titre;
       loadCurrentBar();
     }).catch((err) => {
       alert('Impossible d’enregistrer la simulation : ' + err.message);
     });
   }
 
-  btnNewSim.addEventListener('click', () => createNewSimulation('Nouvelle simulation'));
-  btnSaveNewSim.addEventListener('click', () => createNewSimulation('Enregistrer ma simulation'));
+  btnNewSim.addEventListener('click', createNewSimulation);
+  btnSaveNewSim.addEventListener('click', createNewSimulation);
 
   // Petite confirmation visuelle : le bouton passe en vert avec une coche pendant ~1,6s.
   // Pendant ce délai, la barre reste visible de force (suppressAutoHide) — sinon le clic
@@ -406,12 +388,16 @@
   btnSaveCurrent.addEventListener('click', () => {
     if (!currentSimId) return;
     const snapshot = captureState();
+    const titre = titreSimulation(snapshot);
     simsCollection().doc(currentSimId).update({
+      // Le titre suit l'état : changer de banque, de montant ou de taux le renomme.
+      nom: titre,
       state: snapshot,
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(() => {
       baselineStateJson = JSON.stringify(snapshot);
       userEdited = false;
+      elCurrentName.textContent = titre;
       flashSaveSuccess();
     }).catch((err) => {
       alert('Impossible d’enregistrer les modifications : ' + err.message);

@@ -53,6 +53,10 @@ let chequesMarie = 0;
 let chequesSolo = 0;
 function chequesA() { return mode === 'solo' ? chequesSolo : chequesBen; }
 
+/* Banque à l'origine de l'offre simulée (id du registre de banques.js, ou null tant
+   qu'aucune n'est choisie). Sert au titre de la simulation enregistrée. */
+let banqueId = null;
+
 /* Noms des deux emprunteurs — éditables, utilisés partout où le nom apparaît
    (libellés, tableau de répartition, contrat). Neutres par défaut. */
 let nomA = 'Personne 1';
@@ -62,11 +66,39 @@ function syncNames() {
   document.querySelectorAll('.name-b').forEach(el => { el.textContent = nomB; });
 }
 
+/* Sélecteur de banque — construit une seule fois depuis le registre (banques.js), puis
+   seulement resynchronisé. Recliquer la banque déjà retenue la désélectionne, pour
+   pouvoir revenir à « aucune banque précisée ». */
+function buildBankPicker() {
+  if (!elBankPicker || typeof BANQUES === 'undefined') return;
+  elBankPicker.innerHTML = BANQUES.map(b =>
+    '<button type="button" class="bank-option" data-banque="' + b.id + '" aria-pressed="false">' +
+      banqueBadge(b.id) + '<span class="bank-option__nom">' + b.nom + '</span>' +
+    '</button>'
+  ).join('');
+  elBankPicker.querySelectorAll('.bank-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      banqueId = (banqueId === btn.dataset.banque) ? null : btn.dataset.banque;
+      renderCalc();
+    });
+  });
+}
+
+function syncBankPicker() {
+  if (!elBankPicker) return;
+  elBankPicker.querySelectorAll('.bank-option').forEach(btn => {
+    const actif = btn.dataset.banque === banqueId;
+    btn.classList.toggle('active', actif);
+    btn.setAttribute('aria-pressed', actif ? 'true' : 'false');
+  });
+}
+
 /* --- Références DOM ------------------------------------------------------- */
 const elModeToggle = document.querySelectorAll('.mode-toggle button');
 const elSalaireBen = document.getElementById('in-salaire-ben');
 const elSalaireMarie = document.getElementById('in-salaire-marie');
 const elSalaireSolo = document.getElementById('in-salaire-solo');
+const elBankPicker = document.getElementById('bank-picker');
 const elChequesBen = document.getElementById('in-cheques-ben');
 const elChequesMarie = document.getElementById('in-cheques-marie');
 const elChequesSolo = document.getElementById('in-cheques-solo');
@@ -253,6 +285,7 @@ function renderCalc() {
   elNomA.value = nomA;
   elNomB.value = nomB;
   syncNames();
+  syncBankPicker();
 
   elIraMois.value = iraMois;
   elIraConditions.value = iraConditions;
@@ -457,4 +490,5 @@ elTaux.addEventListener('change', () => applyTaux(parseFloat(elTaux.value) || ta
 elSliderTaux.addEventListener('input', () => applyTaux(parseFloat(elSliderTaux.value) || tauxPct));
 
 /* --- Amorçage ------------------------------------------------------------ */
+buildBankPicker(); // avant renderCalc(), qui synchronise l'état sélectionné
 applyMode(mode); // synchronise l'affichage Solo/Duo (et appelle renderCalc())

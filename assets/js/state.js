@@ -19,6 +19,20 @@ function setValAndFire(id, val) {
   el.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
+// Recalcule coût total et montant emprunté à partir d'un état SÉRIALISÉ, sans toucher à la
+// simulation courante — utilisé par la comparaison et par le titre d'une simulation, qui
+// portent sur des états enregistrés. Même formule que coutTotalCalc()/montantEmprunte(),
+// qui eux lisent les variables globales de la simulation affichée.
+function coutsDeState(s) {
+  if (!s) return { coutTotal: 0, montant: 0 };
+  const prix = s.prixAppart || 0;
+  const travauxS = s.travaux || 0;
+  const fraisEnreg = prix * (TAUX_ENREGISTREMENT / 100);
+  const fraisTotal = fraisEnreg + (s.fraisNotaire || 0) + (s.fraisBancaires || 0);
+  const coutTotal = s.fraisHorsEmprunt ? prix + travauxS : prix + travauxS + fraisTotal;
+  return { coutTotal, montant: Math.max(0, coutTotal - (s.apport || 0)) };
+}
+
 // Capture l'état courant en un objet simple, sérialisable en JSON (Firestore).
 function captureState() {
   return {
@@ -34,6 +48,7 @@ function captureState() {
     seuilEndettement: SEUIL_ENDETTEMENT,
     dureeChoisie,
     mode,
+    banqueId,
     salaireBen,
     salaireMarie,
     salaireSolo,
@@ -84,6 +99,8 @@ function applyState(s) {
   chequesSolo = s.chequesSolo != null ? s.chequesSolo : 0;
   nomA = s.nomA || nomA;
   nomB = s.nomB || nomB;
+  // Simulations enregistrées avant le choix de la banque : aucune banque retenue.
+  banqueId = s.banqueId || null;
   iraMois = s.iraMois != null ? s.iraMois : iraMois;
   iraConditions = s.iraConditions || '';
   equalizeShares = s.equalizeShares;

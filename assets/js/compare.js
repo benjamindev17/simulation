@@ -17,10 +17,9 @@
   // Recalcule les grandeurs d'une simulation à partir de son état sauvegardé (captureState()).
   function computeSummary(s) {
     const isSolo = s.mode === 'solo';
-    const fraisEnreg = s.prixAppart * 0.03;
-    const fraisTotal = fraisEnreg + s.fraisNotaire + s.fraisBancaires;
-    const coutTotal = s.fraisHorsEmprunt ? (s.prixAppart + s.travaux) : (s.prixAppart + s.travaux + fraisTotal);
-    const montant = Math.max(0, coutTotal - s.apport);
+    // Coût total et montant emprunté : formule partagée (state.js), pour qu'elle ne
+    // puisse pas diverger de celle de l'onglet Simulation taux ni de celle du titre.
+    const { coutTotal, montant } = coutsDeState(s);
 
     const r = s.tauxPct / 100 / 12;
     const n = s.dureeChoisie * 12;
