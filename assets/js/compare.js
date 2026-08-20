@@ -40,7 +40,22 @@
     // "Quotité empruntée" dans l'onglet Simulation taux) — le % emprunté à la banque.
     const quotiteEmpruntee = coutTotal > 0 ? (montant / coutTotal) * 100 : 0;
 
-    return { isSolo, coutTotal, montant, mensualite, totalInterest, totalAn, totalMois, coutReelAn, quotiteEmpruntee };
+    // Ce que le crédit coûte réellement sur toute sa durée, une fois le capital mis de côté :
+    // intérêts + frais de dossier + assurance solde restant dû + compte imposé par la banque.
+    // C'est le seul agrégat qui permette de départager deux offres sur autre chose que le
+    // taux affiché — une banque au taux plus bas peut coûter davantage via l'ADI ou ses frais.
+    // Volontairement exclus : le capital (remboursé quelle que soit la banque), les charges
+    // du bien (précompte, copropriété, énergie, déchets, assurance habitation) qui ne
+    // dépendent pas du prêteur, et l'indemnité de remboursement anticipé, qui n'est due
+    // qu'en cas de remboursement anticipé — elle reste affichée à part, en ligne.
+    const dureeAns = s.dureeChoisie || 0;
+    const coutCredit = totalInterest
+      + (s.fraisBancaires || 0)
+      + (c.asrd || 0) * dureeAns
+      + (c.compte || 0) * dureeAns;
+
+    return { isSolo, coutTotal, montant, mensualite, totalInterest, totalAn, totalMois,
+      coutReelAn, quotiteEmpruntee, coutCredit };
   }
 
   // Ligne de tableau : "values" sont des valeurs BRUTES (nombre ou null/chaîne), formatées via
@@ -58,11 +73,26 @@
       const isBest = opts.best && !allTied && nums[i] !== null && nums[i] === min;
       return '<td' + (isBest ? ' class="cmp-best"' : '') + '>' + formatter(v) + '</td>';
     }).join('');
-    return '<tr><td>' + label + '</td>' + tds + '</tr>';
+    // opts.total : ligne de synthèse, détachée du reste par un filet et mise en gras.
+    return '<tr' + (opts.total ? ' class="cmp-total"' : '') + '><td>' + label + '</td>' + tds + '</tr>';
   }
 
   function build(entries) {
     const summaries = entries.map(e => computeSummary(e.state));
+
+    // Meilleure offre = coût du crédit le plus faible. En cas d'égalité parfaite, on ne
+    // désigne personne : mettre l'une des deux en avant serait arbitraire.
+    const couts = summaries.map(s => s.coutCredit);
+    const minCout = Math.min(...couts);
+    const exAequo = couts.filter(v => v === minCout).length > 1;
+    const gagnant = exAequo ? -1 : couts.indexOf(minCout);
+
+    // Le classement ne vaut que si les simulations portent sur le même emprunt : à montant
+    // ou durée différents, le moins cher est simplement celui qui emprunte moins ou moins
+    // longtemps, pas celui qui propose la meilleure offre. On le dit plutôt que de laisser
+    // croire à une comparaison d'offres bancaires.
+    const memeMontant = summaries.every(s => Math.round(s.montant) === Math.round(summaries[0].montant));
+    const memeDuree = entries.every(e => e.state.dureeChoisie === entries[0].state.dureeChoisie);
 
     let html =
       '<div class="c-head">' +
@@ -71,7 +101,9 @@
       '</div>';
 
     html += '<table class="c-table c-table--data cmp-table"><thead><tr><th>Critère</th>' +
-      entries.map(e => '<th>' + (e.nom || 'Sans nom') + '</th>').join('') + '</tr></thead><tbody>';
+      entries.map((e, i) => '<th' + (i === gagnant ? ' class="cmp-winner"' : '') + '>' +
+        (e.nom || 'Sans nom') + (i === gagnant ? '<span class="cmp-winner__tag">Meilleure offre</span>' : '') +
+        '</th>').join('') + '</tr></thead><tbody>';
 
     const euros = (v) => (v == null ? '—' : fmt(Math.round(v)));
     const eurosPerMois = (v) => (v == null ? '—' : fmt(Math.round(v)) + '/mois');
@@ -100,8 +132,25 @@
       formatter: (v) => (v == null ? '—' : (v.toFixed(1).replace(/\.0$/, '') + ' mois'))
     });
     html += row('Conditions particulières (remb. anticipé)', entries.map((e) => e.state.iraConditions || null));
+    html += row('Coût total du crédit', summaries.map((s) => s.coutCredit), { best: true, formatter: euros, total: true });
 
     html += '</tbody></table>';
+
+    html += '<p class="c-annex-note"><b>Meilleure offre</b> = coût total du crédit le plus bas : ' +
+      'intérêts + frais de dossier + assurance solde restant dû + compte imposé, sur toute la durée. ' +
+      'Le capital emprunté en est exclu (il se rembourse quelle que soit la banque), ainsi que les ' +
+      'charges du bien (précompte, copropriété, énergie, assurance habitation), qui ne dépendent pas ' +
+      'du prêteur. L’indemnité de remboursement anticipé n’y entre pas non plus : elle n’est due que ' +
+      'si tu rembourses par anticipation — à comparer à part, sur sa ligne.</p>';
+
+    if (!memeMontant || !memeDuree) {
+      const cause = !memeMontant && !memeDuree ? 'le montant emprunté et la durée diffèrent'
+        : (!memeMontant ? 'le montant emprunté diffère' : 'la durée diffère');
+      html += '<p class="c-annex-note cmp-warn"><b>Attention</b> — ' + cause +
+        ' d’une simulation à l’autre. Le classement reflète alors autant le scénario ' +
+        '(emprunter moins, ou moins longtemps, coûte mécaniquement moins cher) que la qualité de ' +
+        'l’offre bancaire. Pour comparer réellement des banques, garde le même montant et la même durée.</p>';
+    }
 
     doc.innerHTML = html;
   }

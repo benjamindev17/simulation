@@ -977,6 +977,30 @@ body.contract-open, body.recap-open { overflow: hidden; }
 .c-table--data th { background: none; border-bottom: 2px solid var(--violet); font-size: var(--fs-micro); }
 .cmp-table td:first-child { font-weight: 700; color: var(--ink); }
 .cmp-best { background: var(--apricot-wash); color: var(--amber); font-weight: 700; }
+
+/* Colonne de la meilleure offre : vert doux sur le seul titre, pour la repérer d'un coup
+   d'œil sans écraser le apricot des "meilleures valeurs" ligne par ligne. Le vert est
+   assez désaturé pour rester lisible en noir dessus (contraste > 12:1). */
+/* Sélecteur porté à (0,2,1) volontairement : `.c-table--data th` déclare `background: none`
+   avec une spécificité (0,1,1) et l'emporterait sur un simple `.cmp-winner` (0,1,0) — le
+   fond vert ne s'appliquerait jamais. */
+.c-table--data th.cmp-winner {
+  background: #e7f4ec;
+  border-bottom-color: #2f7d52;
+  color: var(--ink);
+}
+.cmp-winner__tag {
+  display: block;
+  margin-top: 3px;
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: #2f7d52;
+}
+/* Ligne de synthèse du coût du crédit : détachée du corps du tableau. */
+.cmp-total td { border-top: 2px solid var(--ink); font-weight: 700; padding-top: 10px; }
+.cmp-warn { border-left: 3px solid var(--amber); padding-left: 12px; }
 .c-sign { display: flex; gap: 40px; margin-top: 20px; }
 .c-sign > div { flex: 1; }
 .c-annex-note { font-size: var(--fs-sm); color: var(--ink-mid); margin-top: 10px; }
