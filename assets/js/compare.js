@@ -29,7 +29,17 @@
 
     const c = s.cout || {};
     const anMensualite = mensualite * 12;
-    const totalAn = anMensualite + (c.asrd || 0) + (c.incendie || 0) + (c.compte || 0) + (c.copro || 0) * 12 +
+
+    // Assurance habitation souscrite hors banque : elle sort du coût annuel de possession,
+    // qui ne retient alors que ce qui passe par l'offre bancaire. Elle reste affichée sur sa
+    // propre ligne, donc rien n'est masqué — c'est une ré-attribution, pas une disparition.
+    // Attention : ce choix ne vaut QUE pour le comparateur, où l'on met des offres de banques
+    // en regard. L'outil, le récapitulatif et l'onglet Coût de la vie continuent d'afficher
+    // le coût réellement déboursé, assurance comprise — sinon le budget serait sous-estimé.
+    const incendieExterne = !!c.incendieExterne;
+    const incendieDansTotal = incendieExterne ? 0 : (c.incendie || 0);
+
+    const totalAn = anMensualite + (c.asrd || 0) + incendieDansTotal + (c.compte || 0) + (c.copro || 0) * 12 +
       (c.reserve || 0) * 12 + (c.precompte || 0) + (c.dechets || 0) + (c.charges || 0) * 12 + (c.energie || 0) * 12;
     const chargesMois = (totalAn - anMensualite) / 12;
     const totalMois = mensualite + chargesMois;
@@ -56,7 +66,7 @@
       + (c.compte || 0) * dureeAns;
 
     return { isSolo, coutTotal, montant, mensualite, totalInterest, totalAn, totalMois,
-      coutReelAn, quotiteEmpruntee, coutCredit };
+      coutReelAn, quotiteEmpruntee, coutCredit, incendieExterne };
   }
 
   // Ligne de tableau : "values" sont des valeurs BRUTES (nombre ou null/chaîne), formatées via
@@ -95,6 +105,13 @@
     const memeMontant = summaries.every(s => Math.round(s.montant) === Math.round(summaries[0].montant));
     const memeDuree = entries.every(e => e.state.dureeChoisie === entries[0].state.dureeChoisie);
 
+    // Si l'assurance habitation est externe ici et bancaire là, les totaux de possession ne
+    // portent plus sur le même périmètre : désigner un « meilleur » reviendrait à récompenser
+    // celui qui a simplement sorti une dépense du total. On retire alors le surlignage de ces
+    // trois lignes — les montants restent affichés, seule la comparaison directe est suspendue.
+    const memeSourceAssurance = summaries.every(s => s.incendieExterne === summaries[0].incendieExterne);
+    const bestPossession = memeSourceAssurance;
+
     let html =
       '<div class="c-head">' +
         '<h1>Comparaison de simulations</h1>' +
@@ -125,12 +142,12 @@
     html += row('Coût total des intérêts', summaries.map((s) => s.totalInterest), { best: true, formatter: euros });
     html += row('Assurance solde restant dû (ADI)', entries.map((e) => (e.state.cout && e.state.cout.asrd) || 0), { best: true, formatter: eurosPerAn });
     html += row('Assurance habitation (incendie + RC)', entries.map((e) => (e.state.cout && e.state.cout.incendie) || 0), { best: true, formatter: eurosPerAn });
-    html += row('— souscription', entries.map((e) => (e.state.cout && e.state.cout.incendieExterne)
-      ? 'Chez un assureur' : 'Proposée par la banque'));
+    html += row('— souscription', summaries.map((s) => s.incendieExterne
+      ? 'Chez un assureur (hors total)' : 'Proposée par la banque'));
     html += row('Compte bancaire', entries.map((e) => (e.state.cout && e.state.cout.compte) || 0), { best: true, formatter: eurosPerAn });
-    html += row('Coût annuel de possession', summaries.map((s) => s.totalAn), { best: true, formatter: eurosPerAn });
-    html += row('Total prêt + charges', summaries.map((s) => s.totalMois), { best: true, formatter: eurosPerMois });
-    html += row('Coût réel hors capital', summaries.map((s) => s.coutReelAn), { best: true, formatter: eurosPerAn });
+    html += row('Coût annuel de possession', summaries.map((s) => s.totalAn), { best: bestPossession, formatter: eurosPerAn });
+    html += row('Total prêt + charges', summaries.map((s) => s.totalMois), { best: bestPossession, formatter: eurosPerMois });
+    html += row('Coût réel hors capital', summaries.map((s) => s.coutReelAn), { best: bestPossession, formatter: eurosPerAn });
     html += row('Indemnité de remboursement anticipé', entries.map((e) => e.state.iraMois != null ? e.state.iraMois : 3), {
       best: true,
       formatter: (v) => (v == null ? '—' : (v.toFixed(1).replace(/\.0$/, '') + ' mois'))
@@ -146,6 +163,17 @@
       'charges du bien (précompte, copropriété, énergie, assurance habitation), qui ne dépendent pas ' +
       'du prêteur. L’indemnité de remboursement anticipé n’y entre pas non plus : elle n’est due que ' +
       'si tu rembourses par anticipation — à comparer à part, sur sa ligne.</p>';
+
+    if (summaries.some(s => s.incendieExterne)) {
+      html += '<p class="c-annex-note">Quand l’assurance habitation est <b>prise chez un assureur</b>, ' +
+        'sa prime sort du <b>coût annuel de possession</b> : ce total ne retient alors que ce qui passe ' +
+        'par l’offre bancaire. Le montant reste affiché sur sa ligne — il est ré-attribué, pas supprimé, ' +
+        'et tu continues bien sûr à le payer. L’outil et le récapitulatif, eux, affichent le coût réellement ' +
+        'déboursé, assurance comprise.' +
+        (memeSourceAssurance ? '' : ' Les simulations comparées ne souscrivant pas toutes au même endroit, ' +
+          'le repérage du montant le plus bas est désactivé sur les trois lignes de possession : ' +
+          'elles ne portent pas sur le même périmètre.') + '</p>';
+    }
 
     if (!memeMontant || !memeDuree) {
       const cause = !memeMontant && !memeDuree ? 'le montant emprunté et la durée diffèrent'
