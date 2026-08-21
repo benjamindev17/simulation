@@ -580,7 +580,8 @@ input[type="range"] { flex: 1; width: 100%; accent-color: var(--violet); }
 /* Champ secondaire dans un bloc .price-extra (chèques-repas sous le salaire) :
    même colonne, mais visuellement subordonné au montant principal. */
 .sub-label { display: block; margin-top: 14px; }
-.sub-label .hint { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink-faint); }
+/* Précision discrète accolée à un libellé (unité, définition courte). */
+.hint { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink-faint); }
 .sub-label + .value-input input[type="number"],
 .apport-split__col .sub-label + .value-input input[type="number"] { font-size: var(--fs-xl); }
 

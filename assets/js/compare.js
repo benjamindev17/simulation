@@ -36,9 +36,10 @@
     const capitalMoyenAn = s.dureeChoisie > 0 ? montant / s.dureeChoisie : 0;
     const coutReelAn = totalAn - capitalMoyenAn;
 
-    // Quotité empruntée = part du coût total financée par l'emprunt (même formule que
-    // "Quotité empruntée" dans l'onglet Simulation taux) — le % emprunté à la banque.
-    const quotiteEmpruntee = coutTotal > 0 ? (montant / coutTotal) * 100 : 0;
+    // Quotité (loan-to-value) : montant emprunté rapporté au PRIX du bien, comme la
+    // calculent les banques belges — cf. quotiteCalc() dans rate-simulation.js. Ni les
+    // frais ni l'aménagement au dénominateur : ils ne font pas partie de la garantie.
+    const quotiteEmpruntee = s.prixAppart > 0 ? (montant / s.prixAppart) * 100 : 0;
 
     // Ce que le crédit coûte réellement sur toute sa durée, une fois le capital mis de côté :
     // intérêts + frais de dossier + assurance solde restant dû + compte imposé par la banque.

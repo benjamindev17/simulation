@@ -187,6 +187,18 @@ function montantEmprunte() {
   return Math.max(0, coutTotalCalc() - apport);
 }
 
+/* Quotité (loan-to-value) telle que la calculent les banques belges : le montant emprunté
+   rapporté à la VALEUR DU BIEN, c'est-à-dire au prix d'achat seul.
+   Ni les frais d'acquisition ni l'aménagement n'entrent au dénominateur : la banque prend
+   une hypothèque sur le bien, et la quotité mesure la part de cette garantie qui est
+   engagée. Les droits d'enregistrement et les frais de notaire, eux, sont perdus dès qu'ils
+   sont payés — si la banque doit revendre, elle ne les récupère pas. Un aménagement financé
+   augmente donc bien la quotité, puisqu'il gonfle le crédit sans gonfler la garantie.
+   C'est cette quotité qui détermine le palier de taux (≤ 80 %, ≤ 90 %, > 90 %). */
+function quotiteCalc() {
+  return prixAppart > 0 ? (montantEmprunte() / prixAppart) * 100 : 0;
+}
+
 // Mensualité pour une durée donnée (en années), à montant et taux fixés.
 function mensualitePour(years) {
   const L = montantEmprunte();
@@ -267,8 +279,7 @@ function renderCalc() {
   elOutRatioMarie.textContent = mariePct + '%';
 
   const L = montantEmprunte();
-  const q = coutTotal > 0 ? (L / coutTotal) * 100 : 0;
-  elQuotite.value = q.toFixed(2);
+  elQuotite.value = quotiteCalc().toFixed(2);
   elMontant.value = Math.round(L);
 
   elTaux.value = tauxPct.toFixed(2);
@@ -466,9 +477,14 @@ elSeuilEndettement.addEventListener('change', () => {
   renderCalc();
 });
 
+// Sens inverse : la quotité visée fixe le montant emprunté (q % du PRIX), et l'apport est
+// ce qu'il reste à couvrir du coût total — frais et aménagement compris. Au-delà de 100 %
+// on emprunte plus que la valeur du bien : c'est possible dans le modèle (aménagement
+// financé) même si les banques ne l'accordent qu'exceptionnellement, d'où la borne à 125.
 elQuotite.addEventListener('change', () => {
-  const q = Math.min(Math.max(0, parseFloat(elQuotite.value) || 0), 100);
-  apport = coutTotalCalc() * (1 - q / 100);
+  const q = Math.min(Math.max(0, parseFloat(elQuotite.value) || 0), 125);
+  const coutTotal = coutTotalCalc();
+  apport = Math.min(Math.max(0, coutTotal - prixAppart * (q / 100)), coutTotal);
   renderCalc();
 });
 
