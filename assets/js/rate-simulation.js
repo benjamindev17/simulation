@@ -13,7 +13,11 @@
 // indicatives généralistes (cf. cost.js), comme demandé.
 let prixAppart = 0;
 let travaux = 0; // enveloppe travaux — financée, mais non soumise aux droits d'enregistrement ni au notaire
-const TAUX_ENREGISTREMENT = 3; // % fixe
+// Droits d'enregistrement — 3 % : taux wallon de l'habitation propre et unique depuis le
+// 1er janvier 2025 (il remplace l'ancien 12,5 % assorti d'un abattement). Un second bien ou
+// un achat locatif relèverait du taux plein de 12,5 %. Cette constante est la seule source :
+// l'affichage la reprend (#out-taux-enreg), tout comme le récapitulatif.
+const TAUX_ENREGISTREMENT = 3;
 let fraisNotaire = 0;
 let fraisBancaires = 0; // frais de crédit éventuellement imposés par la banque (saisis à la main)
 const APPORT_BUDGET = 71000; // enveloppe cash de départ si la case « frais hors emprunt » est (re)cochée manuellement
@@ -128,6 +132,10 @@ const elOutInteret20 = document.getElementById('out-interet-20');
 const elOutInteret25 = document.getElementById('out-interet-25');
 const elPrix = document.getElementById('in-prix');
 const elFraisEnreg = document.getElementById('out-frais-enreg');
+// Le taux affiché dans le libellé est écrit une fois depuis la constante, pour qu'il ne
+// puisse pas rester figé sur une ancienne valeur si le taux d'enregistrement change.
+const elTauxEnreg = document.getElementById('out-taux-enreg');
+if (elTauxEnreg) elTauxEnreg.textContent = TAUX_ENREGISTREMENT;
 const elFraisNotaire = document.getElementById('in-frais-notaire');
 const elFraisBancaires = document.getElementById('in-frais-bancaires');
 const elFraisTotal = document.getElementById('out-frais-total');

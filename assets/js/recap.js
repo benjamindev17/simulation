@@ -74,7 +74,7 @@
     html += '<table class="c-table c-table--kv">' +
       '<tr><td>Prix de l’appartement</td><td>' + fmt(Math.round(prixAppart)) + '</td></tr>' +
       (travaux > 0 ? '<tr><td>Aménagement</td><td>' + fmt(Math.round(travaux)) + '</td></tr>' : '') +
-      '<tr><td>Frais d’enregistrement (3 %)</td><td>' + fmt(Math.round(fraisEnregCalc())) + '</td></tr>' +
+      '<tr><td>Frais d’enregistrement (' + TAUX_ENREGISTREMENT + ' %)</td><td>' + fmt(Math.round(fraisEnregCalc())) + '</td></tr>' +
       '<tr><td>Frais de notaire</td><td>' + fmt(Math.round(fraisNotaire)) + '</td></tr>' +
       '<tr><td>Frais bancaires</td><td>' + fmt(Math.round(fraisBancaires)) + '</td></tr>' +
       '<tr class="c-total"><td>Coût total du projet</td><td>' + fmt(Math.round(coutTotalCalc())) + '</td></tr>' +
