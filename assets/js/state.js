@@ -10,6 +10,11 @@ function numVal(id) {
   return el ? (parseFloat(el.value) || 0) : 0;
 }
 
+function chkVal(id) {
+  const el = document.getElementById(id);
+  return !!(el && el.checked);
+}
+
 // Fixe la valeur d'un champ puis déclenche son événement "change" — réutilise
 // les écouteurs déjà en place (cost.js) plutôt que de dupliquer leur logique.
 function setValAndFire(id, val) {
@@ -71,7 +76,11 @@ function captureState() {
       precompte: numVal('in-cout-precompte'),
       dechets: numVal('in-cout-dechets'),
       charges: numVal('in-cout-charges'),
-      energie: numVal('in-cout-energie')
+      energie: numVal('in-cout-energie'),
+      // Assurance habitation à souscrire hors banque : n'entre dans aucun calcul (la prime
+      // se paie de toute façon), mais distingue les offres — toutes les banques ne la
+      // proposent pas. Reprise dans la comparaison et le récapitulatif.
+      incendieExterne: chkVal('chk-incendie-externe')
     },
     // --- Coût de la vie (dépenses libres par personne, encapsulées dans budget.js) ---
     budget: (typeof window.getBudgetState === 'function') ? window.getBudgetState() : null
@@ -116,6 +125,10 @@ function applyState(s) {
     setValAndFire('in-cout-dechets', s.cout.dechets);
     setValAndFire('in-cout-charges', s.cout.charges);
     setValAndFire('in-cout-energie', s.cout.energie);
+    // Simulations enregistrées avant cette option : assurance considérée comme proposée
+    // par la banque (case décochée), comportement identique à celui d'avant.
+    const elIncExt = document.getElementById('chk-incendie-externe');
+    if (elIncExt) elIncExt.checked = !!s.cout.incendieExterne;
   }
 
   // selectDuree() coche le bon radio ET déclenche renderCalc(), qui recalcule

@@ -124,6 +124,9 @@
     html += row('Quotité empruntée', summaries.map((s) => s.quotiteEmpruntee), { formatter: (v) => v.toFixed(2) + ' %' });
     html += row('Coût total des intérêts', summaries.map((s) => s.totalInterest), { best: true, formatter: euros });
     html += row('Assurance solde restant dû (ADI)', entries.map((e) => (e.state.cout && e.state.cout.asrd) || 0), { best: true, formatter: eurosPerAn });
+    html += row('Assurance habitation (incendie + RC)', entries.map((e) => (e.state.cout && e.state.cout.incendie) || 0), { best: true, formatter: eurosPerAn });
+    html += row('— souscription', entries.map((e) => (e.state.cout && e.state.cout.incendieExterne)
+      ? 'Chez un assureur' : 'Proposée par la banque'));
     html += row('Compte bancaire', entries.map((e) => (e.state.cout && e.state.cout.compte) || 0), { best: true, formatter: eurosPerAn });
     html += row('Coût annuel de possession', summaries.map((s) => s.totalAn), { best: true, formatter: eurosPerAn });
     html += row('Total prêt + charges', summaries.map((s) => s.totalMois), { best: true, formatter: eurosPerMois });

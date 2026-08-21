@@ -32,6 +32,7 @@
     // Coût total annuel — mêmes valeurs que l'onglet dédié (les champs sont tenus à jour par cost.js).
     const asrd = numVal('in-cout-asrd');
     const incendie = numVal('in-cout-incendie');
+    const incendieExterne = chkVal('chk-incendie-externe');
     const compte = numVal('in-cout-compte');
     const copro = numVal('in-cout-copro');
     const reserve = numVal('in-cout-reserve');
@@ -111,7 +112,7 @@
     html += '<table class="c-table c-table--kv"><tbody>' +
       row('Mensualité du prêt (capital + intérêts)', anMensualite) +
       row('Assurance solde restant dû (ADI)', asrd) +
-      row('Assurance habitation', incendie) +
+      row('Assurance habitation' + (incendieExterne ? ' (chez un assureur)' : ''), incendie) +
       (compte > 0 ? row('Compte bancaire (imposé par la banque)', compte) : '') +
       row('Charges de copropriété', anCopro) +
       row('Fonds de réserve', anReserve) +
