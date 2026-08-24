@@ -965,6 +965,11 @@ body.contract-open, body.recap-open { overflow: hidden; }
   font-size: var(--fs-md);
   line-height: 1.6;
 }
+/* Comparaison : document au format A4 paysage plutôt que la largeur "page" des
+   deux autres documents (récap, contrat) — avec plusieurs simulations en colonnes,
+   la table déborderait sans arrêt d'un cadre pensé pour du texte en une colonne. */
+.contract-toolbar--wide { max-width: 297mm; }
+.contract--wide { max-width: 297mm; padding: 32px 40px; }
 .contract .c-head { border-bottom: 2px solid var(--violet); padding-bottom: 16px; margin-bottom: 24px; }
 .contract h1 { font-size: var(--fs-4xl); font-weight: 700; letter-spacing: -0.02em; margin: 0; }
 .contract .c-sub {
@@ -995,8 +1000,41 @@ body.contract-open, body.recap-open { overflow: hidden; }
 .c-table--data th, .c-table--data td { border-bottom: 1px solid var(--rule); padding: 8px 10px; text-align: right; font-variant-numeric: tabular-nums; }
 .c-table--data th:first-child, .c-table--data td:first-child { text-align: left; }
 .c-table--data th { background: none; border-bottom: 2px solid var(--violet); font-size: var(--fs-micro); }
-.cmp-table td:first-child { font-weight: 700; color: var(--ink); }
 .cmp-best { background: var(--apricot-wash); color: var(--amber); font-weight: 700; }
+
+/* Tableau transposé : une ligne par simulation (banques en ordonnée, à gauche), une colonne
+   par critère (en abscisse, en haut) — plus lisible avec 3+ simulations qu'une colonne par
+   simulation, qui débordait sans fin. Défilement horizontal en filet de sécurité si le
+   nombre de critères dépasse quand même la largeur de l'écran. */
+.cmp-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.cmp-table--transposed { width: max-content; min-width: 100%; }
+.cmp-table--transposed thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--sheet);
+  white-space: normal;
+  max-width: 140px;
+  vertical-align: bottom;
+}
+/* Sélecteur (0,2,1) : l'emporte sur `.c-table--data th` (0,1,1), qui donnerait au nom de
+   banque le filet violet et la casse micro/majuscule réservés aux vrais en-têtes de colonne. */
+.cmp-table--transposed th[scope="row"] {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--sheet);
+  white-space: nowrap;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: normal;
+  border-bottom: 1px solid var(--rule);
+}
+/* Spécificité (0,2,1), au-dessus de `.cmp-table--transposed thead th` (0,1,2) : sinon le
+   z-index:1 de la règle générique l'emporterait et le coin passerait sous les deux filets
+   figés au croisement du défilement horizontal et vertical. */
+.cmp-table--transposed th.cmp-corner { position: sticky; top: 0; left: 0; z-index: 2; background: var(--sheet); color: var(--ink-mid); }
 
 /* Colonne de la meilleure offre : vert doux sur le seul titre, pour la repérer d'un coup
    d'œil sans écraser le apricot des "meilleures valeurs" ligne par ligne. Le vert est
@@ -1018,8 +1056,9 @@ body.contract-open, body.recap-open { overflow: hidden; }
   text-transform: uppercase;
   color: #2f7d52;
 }
-/* Ligne de synthèse du coût du crédit : détachée du corps du tableau. */
-.cmp-total td { border-top: 2px solid var(--ink); font-weight: 700; padding-top: 10px; }
+/* Coût total du crédit : dernière colonne, détachée du reste par un filet vertical plutôt
+   que le filet horizontal d'une ligne de synthèse (devenue une colonne après transposition). */
+.cmp-total-col { border-left: 2px solid var(--ink); font-weight: 700; }
 .cmp-warn { border-left: 3px solid var(--amber); padding-left: 12px; }
 .c-sign { display: flex; gap: 40px; margin-top: 20px; }
 .c-sign > div { flex: 1; }
