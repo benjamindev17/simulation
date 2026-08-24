@@ -100,13 +100,6 @@
     const exAequo = couts.filter(v => v === minCout).length > 1;
     const gagnant = exAequo ? -1 : couts.indexOf(minCout);
 
-    // Le classement ne vaut que si les simulations portent sur le même emprunt : à montant
-    // ou durée différents, le moins cher est simplement celui qui emprunte moins ou moins
-    // longtemps, pas celui qui propose la meilleure offre. On le dit plutôt que de laisser
-    // croire à une comparaison d'offres bancaires.
-    const memeMontant = summaries.every(s => Math.round(s.montant) === Math.round(summaries[0].montant));
-    const memeDuree = entries.every(e => e.state.dureeChoisie === entries[0].state.dureeChoisie);
-
     // Si l'assurance habitation est externe ici et bancaire là, les totaux de possession ne
     // portent plus sur le même périmètre : désigner un « meilleur » reviendrait à récompenser
     // celui qui a simplement sorti une dépense du total. On retire alors le surlignage de ces
@@ -183,34 +176,6 @@
     });
 
     html += '</tbody></table></div>';
-
-    html += '<p class="c-annex-note"><b>Meilleure offre</b> = coût total du crédit le plus bas : ' +
-      'intérêts + frais de dossier + frais d’hypothèque + assurance solde restant dû + compte imposé, ' +
-      'sur toute la durée. ' +
-      'Le capital emprunté en est exclu (il se rembourse quelle que soit la banque), ainsi que les ' +
-      'charges du bien (précompte, copropriété, énergie, assurance habitation), qui ne dépendent pas ' +
-      'du prêteur. L’indemnité de remboursement anticipé n’y entre pas non plus : elle n’est due que ' +
-      'si tu rembourses par anticipation — à comparer à part, sur sa ligne.</p>';
-
-    if (summaries.some(s => s.incendieExterne)) {
-      html += '<p class="c-annex-note">Quand l’assurance habitation est <b>prise chez un assureur</b>, ' +
-        'sa prime sort du <b>coût annuel de possession</b> : ce total ne retient alors que ce qui passe ' +
-        'par l’offre bancaire. Le montant reste affiché sur sa ligne — il est ré-attribué, pas supprimé, ' +
-        'et tu continues bien sûr à le payer. L’outil et le récapitulatif, eux, affichent le coût réellement ' +
-        'déboursé, assurance comprise.' +
-        (memeSourceAssurance ? '' : ' Les simulations comparées ne souscrivant pas toutes au même endroit, ' +
-          'le repérage du montant le plus bas est désactivé sur les trois lignes de possession : ' +
-          'elles ne portent pas sur le même périmètre.') + '</p>';
-    }
-
-    if (!memeMontant || !memeDuree) {
-      const cause = !memeMontant && !memeDuree ? 'le montant emprunté et la durée diffèrent'
-        : (!memeMontant ? 'le montant emprunté diffère' : 'la durée diffère');
-      html += '<p class="c-annex-note cmp-warn"><b>Attention</b> — ' + cause +
-        ' d’une simulation à l’autre. Le classement reflète alors autant le scénario ' +
-        '(emprunter moins, ou moins longtemps, coûte mécaniquement moins cher) que la qualité de ' +
-        'l’offre bancaire. Pour comparer réellement des banques, garde le même montant et la même durée.</p>';
-    }
 
     doc.innerHTML = html;
   }

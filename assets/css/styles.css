@@ -1059,7 +1059,6 @@ body.contract-open, body.recap-open { overflow: hidden; }
 /* Coût total du crédit : dernière colonne, détachée du reste par un filet vertical plutôt
    que le filet horizontal d'une ligne de synthèse (devenue une colonne après transposition). */
 .cmp-total-col { border-left: 2px solid var(--ink); font-weight: 700; }
-.cmp-warn { border-left: 3px solid var(--amber); padding-left: 12px; }
 .c-sign { display: flex; gap: 40px; margin-top: 20px; }
 .c-sign > div { flex: 1; }
 .c-annex-note { font-size: var(--fs-sm); color: var(--ink-mid); margin-top: 10px; }
