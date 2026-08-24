@@ -124,60 +124,79 @@
     const eurosPerMois = (v) => (v == null ? '—' : fmt(Math.round(v)) + '/mois');
     const eurosPerAn = (v) => (v == null ? '—' : fmt(Math.round(v)) + '/an');
 
-    const cols = [
-      col('Mode', entries.map((e, i) => summaries[i].isSolo ? 'Seul(e)' : 'À deux')),
-      col('Emprunteur(s)', entries.map((e, i) => summaries[i].isSolo ? e.state.nomA : e.state.nomA + ' / ' + e.state.nomB)),
-      col('Prix de l’appartement', entries.map((e) => e.state.prixAppart), { formatter: euros }),
-      col('Aménagement', entries.map((e) => e.state.travaux || 0), { formatter: euros }),
-      col('Coût total du projet', summaries.map((s) => s.coutTotal), { formatter: euros }),
-      col('Frais bancaires (frais de dossier)', entries.map((e) => e.state.fraisBancaires || 0), { best: true, formatter: euros }),
-      col('Frais d’hypothèque', entries.map((e) => e.state.fraisHypo || 0), { best: true, formatter: euros }),
-      col('— garantie retenue', entries.map((e) => HYPO_LABELS[e.state.hypoType] || HYPO_LABELS.inscription)),
-      col('Apport total', entries.map((e) => e.state.apport), { formatter: euros }),
-      col('Montant emprunté', summaries.map((s) => s.montant), { formatter: euros }),
-      col('Taux annuel', entries.map((e) => e.state.tauxPct.toFixed(2) + ' %')),
-      col('Durée', entries.map((e) => e.state.dureeChoisie + ' ans')),
-      col('Mensualité', summaries.map((s) => s.mensualite), { best: true, formatter: eurosPerMois }),
-      col('Quotité empruntée', summaries.map((s) => s.quotiteEmpruntee), { formatter: (v) => v.toFixed(2) + ' %' }),
-      col('Coût total des intérêts', summaries.map((s) => s.totalInterest), { best: true, formatter: euros }),
-      col('Assurance solde restant dû (ADI)', entries.map((e) => (e.state.cout && e.state.cout.asrd) || 0), { best: true, formatter: eurosPerAn }),
-      col('Assurance habitation (incendie + RC)', entries.map((e) => (e.state.cout && e.state.cout.incendie) || 0), { best: true, formatter: eurosPerAn }),
-      col('— souscription', summaries.map((s) => s.incendieExterne
-        ? 'Chez un assureur (hors total)' : 'Proposée par la banque')),
-      col('Compte bancaire', entries.map((e) => (e.state.cout && e.state.cout.compte) || 0), { best: true, formatter: eurosPerAn }),
-      col('Coût annuel de possession', summaries.map((s) => s.totalAn), { best: bestPossession, formatter: eurosPerAn }),
-      col('Total prêt + charges', summaries.map((s) => s.totalMois), { best: bestPossession, formatter: eurosPerMois }),
-      col('Coût réel hors capital', summaries.map((s) => s.coutReelAn), { best: bestPossession, formatter: eurosPerAn }),
-      col('Indemnité de remboursement anticipé', entries.map((e) => e.state.iraMois != null ? e.state.iraMois : 3), {
-        best: true,
-        formatter: (v) => (v == null ? '—' : (v.toFixed(1).replace(/\.0$/, '') + ' mois'))
-      }),
-      col('Conditions particulières (remb. anticipé)', entries.map((e) => e.state.iraConditions || null)),
-      col('Coût total du crédit', summaries.map((s) => s.coutCredit), { best: true, formatter: euros, total: true })
+    // Regroupé en petites tables thématiques (5 critères max) plutôt qu'une seule table de
+    // 25 colonnes : même en A4 paysage, autant de colonnes forçait un défilement horizontal
+    // permanent. Chaque groupe tient seul dans la largeur de l'écran ; .cmp-scroll ne sert
+    // alors plus que de filet de sécurité sur les très petits écrans.
+    const groups = [
+      { titre: 'Bien & apport', cols: [
+        col('Mode', entries.map((e, i) => summaries[i].isSolo ? 'Seul(e)' : 'À deux')),
+        col('Emprunteur(s)', entries.map((e, i) => summaries[i].isSolo ? e.state.nomA : e.state.nomA + ' / ' + e.state.nomB)),
+        col('Prix de l’appartement', entries.map((e) => e.state.prixAppart), { formatter: euros }),
+        col('Aménagement', entries.map((e) => e.state.travaux || 0), { formatter: euros }),
+        col('Apport total', entries.map((e) => e.state.apport), { formatter: euros })
+      ]},
+      { titre: 'Financement', cols: [
+        col('Coût total du projet', summaries.map((s) => s.coutTotal), { formatter: euros }),
+        col('Montant emprunté', summaries.map((s) => s.montant), { formatter: euros }),
+        col('Quotité empruntée', summaries.map((s) => s.quotiteEmpruntee), { formatter: (v) => v.toFixed(2) + ' %' }),
+        col('Taux annuel', entries.map((e) => e.state.tauxPct.toFixed(2) + ' %')),
+        col('Durée', entries.map((e) => e.state.dureeChoisie + ' ans'))
+      ]},
+      { titre: 'Mensualité & frais du prêt', cols: [
+        col('Mensualité', summaries.map((s) => s.mensualite), { best: true, formatter: eurosPerMois }),
+        col('Coût total des intérêts', summaries.map((s) => s.totalInterest), { best: true, formatter: euros }),
+        col('Frais bancaires (frais de dossier)', entries.map((e) => e.state.fraisBancaires || 0), { best: true, formatter: euros }),
+        col('Frais d’hypothèque', entries.map((e) => e.state.fraisHypo || 0), { best: true, formatter: euros }),
+        col('— garantie retenue', entries.map((e) => HYPO_LABELS[e.state.hypoType] || HYPO_LABELS.inscription))
+      ]},
+      { titre: 'Assurances & charges', cols: [
+        col('Assurance solde restant dû (ADI)', entries.map((e) => (e.state.cout && e.state.cout.asrd) || 0), { best: true, formatter: eurosPerAn }),
+        col('Assurance habitation (incendie + RC)', entries.map((e) => (e.state.cout && e.state.cout.incendie) || 0), { best: true, formatter: eurosPerAn }),
+        col('— souscription', summaries.map((s) => s.incendieExterne
+          ? 'Chez un assureur (hors total)' : 'Proposée par la banque')),
+        col('Compte bancaire', entries.map((e) => (e.state.cout && e.state.cout.compte) || 0), { best: true, formatter: eurosPerAn })
+      ]},
+      { titre: 'Coût de possession', cols: [
+        col('Coût annuel de possession', summaries.map((s) => s.totalAn), { best: bestPossession, formatter: eurosPerAn }),
+        col('Total prêt + charges', summaries.map((s) => s.totalMois), { best: bestPossession, formatter: eurosPerMois }),
+        col('Coût réel hors capital', summaries.map((s) => s.coutReelAn), { best: bestPossession, formatter: eurosPerAn })
+      ]},
+      { titre: 'Remboursement anticipé & synthèse', cols: [
+        col('Indemnité de remboursement anticipé', entries.map((e) => e.state.iraMois != null ? e.state.iraMois : 3), {
+          best: true,
+          formatter: (v) => (v == null ? '—' : (v.toFixed(1).replace(/\.0$/, '') + ' mois'))
+        }),
+        col('Conditions particulières (remb. anticipé)', entries.map((e) => e.state.iraConditions || null)),
+        col('Coût total du crédit', summaries.map((s) => s.coutCredit), { best: true, formatter: euros, total: true })
+      ]}
     ];
 
     // Rendu transposé : banques en ordonnée (une ligne chacune, sticky à gauche pendant le
     // défilement horizontal), critères en abscisse (une colonne chacun, sticky en haut).
-    html += '<div class="cmp-scroll"><table class="c-table c-table--data cmp-table cmp-table--transposed"><thead><tr>' +
-      '<th class="cmp-corner">Simulation</th>' +
-      cols.map(c => '<th' + (c.total ? ' class="cmp-total-col"' : '') + '>' + c.label + '</th>').join('') +
-      '</tr></thead><tbody>';
+    groups.forEach((g) => {
+      html += '<h2>' + g.titre + '</h2>' +
+        '<div class="cmp-scroll"><table class="c-table c-table--data cmp-table cmp-table--transposed"><thead><tr>' +
+        '<th class="cmp-corner">Simulation</th>' +
+        g.cols.map(c => '<th' + (c.total ? ' class="cmp-total-col"' : '') + '>' + c.label + '</th>').join('') +
+        '</tr></thead><tbody>';
 
-    entries.forEach((e, i) => {
-      const isWinner = i === gagnant;
-      html += '<tr>' +
-        '<th scope="row"' + (isWinner ? ' class="cmp-winner"' : '') + '>' + (e.nom || 'Sans nom') +
-        (isWinner ? '<span class="cmp-winner__tag">Meilleure offre</span>' : '') + '</th>' +
-        cols.map(c => {
-          const classes = [];
-          if (c.bestSet.has(i)) classes.push('cmp-best');
-          if (c.total) classes.push('cmp-total-col');
-          return '<td' + (classes.length ? ' class="' + classes.join(' ') + '"' : '') + '>' + c.formatter(c.values[i]) + '</td>';
-        }).join('') +
-        '</tr>';
+      entries.forEach((e, i) => {
+        const isWinner = i === gagnant;
+        html += '<tr>' +
+          '<th scope="row"' + (isWinner ? ' class="cmp-winner"' : '') + '>' + (e.nom || 'Sans nom') +
+          (isWinner ? '<span class="cmp-winner__tag">Meilleure offre</span>' : '') + '</th>' +
+          g.cols.map(c => {
+            const classes = [];
+            if (c.bestSet.has(i)) classes.push('cmp-best');
+            if (c.total) classes.push('cmp-total-col');
+            return '<td' + (classes.length ? ' class="' + classes.join(' ') + '"' : '') + '>' + c.formatter(c.values[i]) + '</td>';
+          }).join('') +
+          '</tr>';
+      });
+
+      html += '</tbody></table></div>';
     });
-
-    html += '</tbody></table></div>';
 
     html += '<p class="c-annex-note"><b>Meilleure offre</b> = coût total du crédit le plus bas : ' +
       'intérêts + frais de dossier + frais d’hypothèque + assurance solde restant dû + compte imposé, ' +
