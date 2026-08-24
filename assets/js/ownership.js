@@ -50,7 +50,7 @@ function computePayments(loanData) {
 // Construit l'échéancier complet à partir du montant à emprunter LIVE (case "Montant à emprunter" de l'onglet Simulation taux) et du taux LIVE.
 function buildLoanSchedule() {
   const loanAmount = montantEmprunte(); // valeur en temps réel depuis l'onglet 3
-  const rMonthly = tauxPct / 100 / 12;  // taux en temps réel depuis l'onglet 3
+  const rMonthly = tauxMensuel(tauxPct); // taux en temps réel depuis l'onglet 3, équivalence actuarielle
   const nTotal = dureeChoisie * 12;
   const annuityFactor = rMonthly === 0 ? nTotal : (1 - Math.pow(1 + rMonthly, -nTotal)) / rMonthly;
   const mensualite = loanAmount > 0 ? loanAmount / annuityFactor : 0;

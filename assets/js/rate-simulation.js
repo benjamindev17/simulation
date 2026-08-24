@@ -224,7 +224,7 @@ function quotiteCalc() {
 // Mensualité pour une durée donnée (en années), à montant et taux fixés.
 function mensualitePour(years) {
   const L = montantEmprunte();
-  const r = tauxPct / 100 / 12;
+  const r = tauxMensuel(tauxPct);
   const n = years * 12;
   if (L <= 0) return 0;
   return r === 0 ? L / n : L * r / (1 - Math.pow(1 + r, -n));
@@ -510,7 +510,7 @@ elSeuilEndettement.addEventListener('change', () => {
 
   // Recalcule l'apport pour que la mensualité sur 20 ans corresponde exactement à ce nouveau seuil.
   const coutTotal = coutTotalCalc();
-  const r = tauxPct / 100 / 12;
+  const r = tauxMensuel(tauxPct);
   const n = 20 * 12;
   const mensualiteCible = salaireCombineCalc() * (SEUIL_ENDETTEMENT / 100);
   const annuityFactor = r === 0 ? n : (1 - Math.pow(1 + r, -n)) / r;

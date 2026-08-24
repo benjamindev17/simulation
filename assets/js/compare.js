@@ -21,7 +21,7 @@
     // puisse pas diverger de celle de l'onglet Simulation taux ni de celle du titre.
     const { coutTotal, montant } = coutsDeState(s);
 
-    const r = s.tauxPct / 100 / 12;
+    const r = tauxMensuel(s.tauxPct);
     const n = s.dureeChoisie * 12;
     const annuityFactor = r === 0 ? n : (1 - Math.pow(1 + r, -n)) / r;
     const mensualite = montant > 0 ? montant / annuityFactor : 0;

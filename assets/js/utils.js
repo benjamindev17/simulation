@@ -13,6 +13,15 @@ function fmtPct(n) {
   return n.toFixed(2) + '%';
 }
 
+/** Taux périodique mensuel équivalent à un taux annuel (en %), par équivalence actuarielle
+    — (1+i)^(1/12) − 1 — et non par simple division /12. C'est la convention qu'utilisent les
+    outils bancaires belges pour convertir un taux annuel en mensualité ; l'écart avec taux/12
+    est faible (quelques euros/mois) mais visible dès qu'on compare à la mensualité annoncée
+    par une banque. */
+function tauxMensuel(tauxAnnuelPct) {
+  return Math.pow(1 + tauxAnnuelPct / 100, 1 / 12) - 1;
+}
+
 const MOIS_FR = [
   'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
   'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
