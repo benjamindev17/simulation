@@ -969,7 +969,7 @@ body.contract-open, body.recap-open { overflow: hidden; }
    deux autres documents (récap, contrat) — avec plusieurs simulations en colonnes,
    la table déborderait sans arrêt d'un cadre pensé pour du texte en une colonne. */
 .contract-toolbar--wide { max-width: 297mm; }
-.contract--wide { max-width: 297mm; padding: 32px 40px; }
+.contract--wide { max-width: 297mm; padding: 40px 48px; }
 .contract .c-head { border-bottom: 2px solid var(--violet); padding-bottom: 16px; margin-bottom: 24px; }
 .contract h1 { font-size: var(--fs-4xl); font-weight: 700; letter-spacing: -0.02em; margin: 0; }
 .contract .c-sub {
@@ -1011,7 +1011,12 @@ body.contract-open, body.recap-open { overflow: hidden; }
    colonne "Simulation" a une largeur fixe (cf. th.cmp-corner) ; les colonnes de données se
    partagent le reste à parts égales. */
 .cmp-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.cmp-table--transposed { width: 100%; table-layout: fixed; }
+.cmp-table--transposed { width: 100%; table-layout: fixed; margin-top: 4px; }
+/* Plus aéré que le padding générique des tables (8px/10px) : les cases de données sont plus
+   hautes, la ligne du logo de banque respire, les chiffres ne collent plus au filet du dessus.
+   Les en-têtes gardent un padding latéral plus serré : dans une colonne resserrée, chaque
+   pixel compte pour éviter qu'un mot ne se coupe en plein milieu. */
+.cmp-table--transposed th, .cmp-table--transposed td { padding: 14px 14px; line-height: 1.45; }
 .cmp-table--transposed thead th {
   position: sticky;
   top: 0;
@@ -1020,6 +1025,8 @@ body.contract-open, body.recap-open { overflow: hidden; }
   white-space: normal;
   overflow-wrap: break-word;
   vertical-align: bottom;
+  padding-left: 6px;
+  padding-right: 6px;
   /* Le style générique `th` (majuscules + lettres espacées) prend trop de place une fois les
      colonnes resserrées : il force des coupures en plein mot. Casse normale, plus dense. */
   text-transform: none;
@@ -1032,12 +1039,17 @@ body.contract-open, body.recap-open { overflow: hidden; }
   overflow-wrap: break-word;
 }
 /* Sélecteur (0,2,1) : l'emporte sur `.c-table--data th` (0,1,1), qui donnerait au nom de
-   banque le filet violet et la casse micro/majuscule réservés aux vrais en-têtes de colonne. */
+   banque le filet violet et la casse micro/majuscule réservés aux vrais en-têtes de colonne.
+   Le style générique `th` (white-space: nowrap + ellipsis, cf. règle de base des tableaux)
+   coupait le nom de banque au milieu — il faut explicitement l'autoriser à passer à la ligne. */
 .cmp-table--transposed th[scope="row"] {
   position: sticky;
   left: 0;
   z-index: 1;
   background: var(--sheet);
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
   overflow-wrap: break-word;
   font-size: var(--fs-md);
   font-weight: 700;
@@ -1047,8 +1059,12 @@ body.contract-open, body.recap-open { overflow: hidden; }
 }
 /* Spécificité (0,2,1), au-dessus de `.cmp-table--transposed thead th` (0,1,2) : sinon le
    z-index:1 de la règle générique l'emporterait et le coin passerait sous les deux filets
-   figés au croisement du défilement horizontal et vertical. */
-.cmp-table--transposed th.cmp-corner { position: sticky; top: 0; left: 0; z-index: 2; background: var(--sheet); color: var(--ink-mid); width: 130px; }
+   figés au croisement du défilement horizontal et vertical. Largeur portée à 170px pour
+   loger logo + nom de banque côte à côte sans les compresser. */
+.cmp-table--transposed th.cmp-corner { position: sticky; top: 0; left: 0; z-index: 2; background: var(--sheet); color: var(--ink-mid); width: 170px; }
+.cmp-bank-cell { display: flex; align-items: center; gap: 8px; }
+.cmp-bank-cell .bank-badge { flex-shrink: 0; }
+.cmp-bank-name { min-width: 0; }
 .cmp-cell-sub { display: block; font-size: var(--fs-micro); color: var(--ink-faint); font-weight: 400; margin-top: 2px; }
 
 /* Colonne de la meilleure offre : vert doux sur le seul titre, pour la repérer d'un coup

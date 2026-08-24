@@ -12,6 +12,7 @@
   const overlay = document.getElementById('compare-overlay');
   const doc = document.getElementById('compare-doc');
   const btnClose = document.getElementById('btn-close-compare');
+  const btnPrint = document.getElementById('btn-print-compare');
   if (!overlay || !doc) return;
 
   // Recalcule les grandeurs d'une simulation à partir de son état sauvegardé (captureState()).
@@ -87,7 +88,7 @@
     if (opts.best && !allTied) {
       nums.forEach((v, i) => { if (v !== null && v === min) bestSet.add(i); });
     }
-    return { label, values, formatter, bestSet, total: !!opts.total };
+    return { label, values, formatter, bestSet, total: !!opts.total, titre: opts.titre || null };
   }
 
   function build(entries) {
@@ -132,14 +133,16 @@
       col('Mensualité', summaries.map((s) => s.mensualite), { best: true, formatter: eurosPerMois }),
       col('Coût total des intérêts', summaries.map((s) => s.totalInterest), { best: true, formatter: euros }),
       col('Frais bancaires', entries.map((e) => e.state.fraisBancaires || 0), { best: true, formatter: euros }),
-      // <wbr> : point de coupure propre pour l'en-tête dans une colonne resserrée, sans rien
-      // changer au texte (textContent reste "Frais d’hypothèque", les tests par regex passent toujours).
-      col('Frais d’<wbr>hypothèque', entries.map((e) => e.state.fraisHypo || 0), { best: true, formatter: euros }),
-      col('Assurance solde restant dû', entries.map((e) => (e.state.cout && e.state.cout.asrd) || 0), { best: true, formatter: eurosPerAn }),
+      // Libellés courts + title=" " (infobulle) : dans une colonne aussi resserrée, un mot
+      // plus long que la colonne se coupait en plein milieu même avec un point de coupure —
+      // plus fiable de raccourcir que de multiplier les <wbr>.
+      col('Hypothèque', entries.map((e) => e.state.fraisHypo || 0), { best: true, formatter: euros, titre: 'Frais d’hypothèque' }),
+      col('ADI', entries.map((e) => (e.state.cout && e.state.cout.asrd) || 0), { best: true, formatter: eurosPerAn, titre: 'Assurance solde restant dû (ADI)' }),
       // Reste "apparent" comme demandé : le montant ET l'endroit de souscription, sur une seule
       // colonne (2ème ligne en note), pour ne pas rouvrir une colonne dédiée à la souscription.
-      col('Assurance habitation', entries.map((e) => (e.state.cout && e.state.cout.incendie) || 0), {
+      col('Habitation', entries.map((e) => (e.state.cout && e.state.cout.incendie) || 0), {
         best: true,
+        titre: 'Assurance habitation (incendie + RC)',
         formatter: (v, i) => eurosPerAn(v) + '<br><span class="cmp-cell-sub">' +
           (summaries[i].incendieExterne ? 'Externe, hors total' : 'Via la banque') + '</span>'
       }),
@@ -152,13 +155,19 @@
     // le nombre de colonnes réduit), critères en abscisse (une colonne chacun, sticky en haut).
     html += '<div class="cmp-scroll"><table class="c-table c-table--data cmp-table cmp-table--transposed"><thead><tr>' +
       '<th class="cmp-corner">Simulation</th>' +
-      cols.map(c => '<th' + (c.total ? ' class="cmp-total-col"' : '') + '>' + c.label + '</th>').join('') +
+      cols.map(c => '<th' + (c.total ? ' class="cmp-total-col"' : '') + (c.titre ? ' title="' + c.titre + '"' : '') + '>' + c.label + '</th>').join('') +
       '</tr></thead><tbody>';
 
     entries.forEach((e, i) => {
       const isWinner = i === gagnant;
+      // Le logo + nom de la banque remplacent le titre complet de la simulation (qui répète
+      // montant et taux, déjà présents en colonne) — plus lisible, et demandé tel quel.
+      const banque = (typeof banqueParId === 'function') ? banqueParId(e.state.banqueId) : null;
+      const nomAffiche = banque ? banque.nom : (e.nom || 'Sans nom');
+      const badge = (typeof banqueBadge === 'function') ? banqueBadge(e.state.banqueId, 'sm') : '';
       html += '<tr>' +
-        '<th scope="row"' + (isWinner ? ' class="cmp-winner"' : '') + '>' + (e.nom || 'Sans nom') +
+        '<th scope="row"' + (isWinner ? ' class="cmp-winner"' : '') + '>' +
+          '<span class="cmp-bank-cell">' + badge + '<span class="cmp-bank-name">' + nomAffiche + '</span></span>' +
         (isWinner ? '<span class="cmp-winner__tag">Meilleure offre</span>' : '') + '</th>' +
         cols.map(c => {
           const classes = [];
@@ -180,6 +189,19 @@
     document.body.classList.remove('recap-open');
   }
 
+  // Impression / export PDF : le document est déjà large (format A4 paysage à l'écran) —
+  // on force l'orientation "paysage" de la page imprimée elle-même, via une règle @page
+  // injectée juste pour cette impression puis retirée (pas d'impact sur le contrat/récap,
+  // qui restent en portrait par défaut du navigateur).
+  function print() {
+    const style = document.createElement('style');
+    style.textContent = '@page { size: A4 landscape; margin: 12mm; }';
+    document.head.appendChild(style);
+    const cleanup = () => style.remove();
+    window.addEventListener('afterprint', cleanup, { once: true });
+    window.print();
+  }
+
   window.openCompare = function (entries) {
     if (!entries || entries.length < 2) return;
     build(entries);
@@ -190,6 +212,7 @@
   };
 
   if (btnClose) btnClose.addEventListener('click', close);
+  if (btnPrint) btnPrint.addEventListener('click', print);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('open')) close(); });
 })();
