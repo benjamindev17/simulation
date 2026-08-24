@@ -19,7 +19,19 @@ let travaux = 0; // enveloppe travaux — financée, mais non soumise aux droits
 // l'affichage la reprend (#out-taux-enreg), tout comme le récapitulatif.
 const TAUX_ENREGISTREMENT = 3;
 let fraisNotaire = 0;
+// Garantie hypothécaire retenue pour le crédit — certaines banques exigent une inscription
+// hypothécaire complète, d'autres acceptent un mandat (moins cher, garantie plus faible).
+// Le coût varie fortement selon le choix et le notaire : saisi à la main, comme fraisNotaire.
+let hypoType = 'inscription';
+let fraisHypo = 0;
 let fraisBancaires = 0; // frais de crédit éventuellement imposés par la banque (saisis à la main)
+// Libellés affichés pour hypoType — seule source, reprise par recap.js et compare.js pour
+// qu'un intitulé ne puisse pas diverger d'un endroit à l'autre.
+const HYPO_LABELS = {
+  inscription: 'Inscription hypothécaire',
+  mandat: 'Mandat hypothécaire',
+  mixte: 'Inscription partielle + mandat'
+};
 const APPORT_BUDGET = 71000; // enveloppe cash de départ si la case « frais hors emprunt » est (re)cochée manuellement
 const FRAIS_STANDARD_HORS_EMPRUNT = 15000; // enreg + notaire retranchés du budget dans ce cas
 let apport = 0;
@@ -137,6 +149,8 @@ const elFraisEnreg = document.getElementById('out-frais-enreg');
 const elTauxEnreg = document.getElementById('out-taux-enreg');
 if (elTauxEnreg) elTauxEnreg.textContent = TAUX_ENREGISTREMENT;
 const elFraisNotaire = document.getElementById('in-frais-notaire');
+const elHypoType = document.getElementById('in-hypo-type');
+const elHypoFrais = document.getElementById('in-hypo-frais');
 const elFraisBancaires = document.getElementById('in-frais-bancaires');
 const elFraisTotal = document.getElementById('out-frais-total');
 const elOutCout = document.getElementById('out-cout');
@@ -175,9 +189,9 @@ const elThPartMarie = document.getElementById('th-col-9');
 function fraisEnregCalc() {
   return prixAppart * (TAUX_ENREGISTREMENT / 100);
 }
-// Somme de tous les frais d'acquisition : enregistrement + notaire + frais bancaires éventuels.
+// Somme de tous les frais d'acquisition : enregistrement + notaire + hypothèque + frais bancaires.
 function fraisTotalCalc() {
-  return fraisEnregCalc() + fraisNotaire + fraisBancaires;
+  return fraisEnregCalc() + fraisNotaire + fraisHypo + fraisBancaires;
 }
 function coutTotalCalc() {
   // Les travaux sont financés dans les deux cas, sans droits d'enregistrement ni notaire (calculés sur le prix seul).
@@ -187,9 +201,9 @@ function coutTotalCalc() {
   return prixAppart + travaux + fraisTotalCalc();
 }
 // Apport quand les frais sont payés à part : enveloppe de 100K moins les frais standards déjà retranchés,
-// moins les frais bancaires ajoutés à la main (eux aussi prélevés cash sur cette enveloppe).
+// moins les frais bancaires et d'hypothèque ajoutés à la main (eux aussi prélevés cash sur cette enveloppe).
 function apportHorsEmprunt() {
-  return Math.max(0, APPORT_BUDGET - FRAIS_STANDARD_HORS_EMPRUNT - fraisBancaires);
+  return Math.max(0, APPORT_BUDGET - FRAIS_STANDARD_HORS_EMPRUNT - fraisBancaires - fraisHypo);
 }
 function montantEmprunte() {
   return Math.max(0, coutTotalCalc() - apport);
@@ -261,6 +275,8 @@ function renderCalc() {
   if (elTravaux) elTravaux.value = Math.round(travaux);
   elFraisEnreg.textContent = fmt(Math.round(fraisEnreg));
   elFraisNotaire.value = fraisNotaire.toFixed(2);
+  if (elHypoType) elHypoType.value = hypoType;
+  if (elHypoFrais) elHypoFrais.value = Math.round(fraisHypo);
   elFraisBancaires.value = Math.round(fraisBancaires);
   elFraisTotal.textContent = fmt(Math.round(fraisTotal));
   elOutCout.textContent = fmt(Math.round(coutTotal));
@@ -433,6 +449,25 @@ elFraisNotaire.addEventListener('change', () => {
   fraisNotaire = Math.max(0, parseFloat(elFraisNotaire.value) || 0);
   renderCalc();
 });
+
+if (elHypoType) {
+  elHypoType.addEventListener('change', () => {
+    hypoType = elHypoType.value;
+    renderCalc();
+  });
+}
+
+if (elHypoFrais) {
+  elHypoFrais.addEventListener('change', () => {
+    fraisHypo = Math.max(0, parseFloat(elHypoFrais.value) || 0);
+    // Même logique que pour les frais bancaires : payés à part (case cochée), ils sont
+    // prélevés cash sur l'enveloppe hors emprunt, donc déduits de l'apport.
+    if (elChkFraisHorsEmprunt.checked) {
+      apport = apportHorsEmprunt();
+    }
+    renderCalc();
+  });
+}
 
 elFraisBancaires.addEventListener('change', () => {
   fraisBancaires = Math.max(0, parseFloat(elFraisBancaires.value) || 0);

@@ -62,6 +62,7 @@
     const dureeAns = s.dureeChoisie || 0;
     const coutCredit = totalInterest
       + (s.fraisBancaires || 0)
+      + (s.fraisHypo || 0)
       + (c.asrd || 0) * dureeAns
       + (c.compte || 0) * dureeAns;
 
@@ -133,6 +134,8 @@
     html += row('Aménagement', entries.map((e) => e.state.travaux || 0), { formatter: euros });
     html += row('Coût total du projet', summaries.map((s) => s.coutTotal), { formatter: euros });
     html += row('Frais bancaires (frais de dossier)', entries.map((e) => e.state.fraisBancaires || 0), { best: true, formatter: euros });
+    html += row('Frais d’hypothèque', entries.map((e) => e.state.fraisHypo || 0), { best: true, formatter: euros });
+    html += row('— garantie retenue', entries.map((e) => HYPO_LABELS[e.state.hypoType] || HYPO_LABELS.inscription));
     html += row('Apport total', entries.map((e) => e.state.apport), { formatter: euros });
     html += row('Montant emprunté', summaries.map((s) => s.montant), { formatter: euros });
     html += row('Taux annuel', entries.map((e) => e.state.tauxPct.toFixed(2) + ' %'));
@@ -158,7 +161,8 @@
     html += '</tbody></table>';
 
     html += '<p class="c-annex-note"><b>Meilleure offre</b> = coût total du crédit le plus bas : ' +
-      'intérêts + frais de dossier + assurance solde restant dû + compte imposé, sur toute la durée. ' +
+      'intérêts + frais de dossier + frais d’hypothèque + assurance solde restant dû + compte imposé, ' +
+      'sur toute la durée. ' +
       'Le capital emprunté en est exclu (il se rembourse quelle que soit la banque), ainsi que les ' +
       'charges du bien (précompte, copropriété, énergie, assurance habitation), qui ne dépendent pas ' +
       'du prêteur. L’indemnité de remboursement anticipé n’y entre pas non plus : elle n’est due que ' +

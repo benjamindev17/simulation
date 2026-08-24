@@ -33,7 +33,7 @@ function coutsDeState(s) {
   const prix = s.prixAppart || 0;
   const travauxS = s.travaux || 0;
   const fraisEnreg = prix * (TAUX_ENREGISTREMENT / 100);
-  const fraisTotal = fraisEnreg + (s.fraisNotaire || 0) + (s.fraisBancaires || 0);
+  const fraisTotal = fraisEnreg + (s.fraisNotaire || 0) + (s.fraisHypo || 0) + (s.fraisBancaires || 0);
   const coutTotal = s.fraisHorsEmprunt ? prix + travauxS : prix + travauxS + fraisTotal;
   return { coutTotal, montant: Math.max(0, coutTotal - (s.apport || 0)) };
 }
@@ -45,6 +45,8 @@ function captureState() {
     prixAppart,
     travaux,
     fraisNotaire,
+    hypoType,
+    fraisHypo,
     fraisBancaires,
     fraisHorsEmprunt: elChkFraisHorsEmprunt.checked,
     apport,
@@ -93,6 +95,10 @@ function applyState(s) {
   prixAppart = s.prixAppart;
   travaux = s.travaux;
   fraisNotaire = s.fraisNotaire;
+  // Simulations enregistrées avant l'ajout de ce choix : inscription hypothécaire par défaut
+  // (l'option la plus courante), aucun frais présumé.
+  hypoType = s.hypoType || 'inscription';
+  fraisHypo = s.fraisHypo != null ? s.fraisHypo : 0;
   fraisBancaires = s.fraisBancaires;
   elChkFraisHorsEmprunt.checked = s.fraisHorsEmprunt;
   apport = s.apport;

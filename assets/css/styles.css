@@ -562,6 +562,25 @@ input[type="range"] { flex: 1; width: 100%; accent-color: var(--violet); }
 .frais-row__value { font-size: var(--fs-md); font-weight: 700; font-variant-numeric: tabular-nums; }
 .frais-row .value-input { justify-content: flex-end; }
 .frais-row input[type="number"] { text-align: right; font-size: var(--fs-md); font-weight: 700; }
+/* Ligne "Hypothèque" : label + (select type + montant), sur sa propre ligne plutôt que
+   calée dans .frais-row (deux contrôles ne tiennent pas sur la largeur d'une valeur seule). */
+.frais-hypo { padding: 7px 0; border-bottom: 1px solid var(--rule); }
+.frais-hypo__controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.frais-hypo__controls select {
+  flex: 1 1 180px;
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  padding: 7px 8px;
+  border: 1px solid var(--rule-strong);
+  background: var(--sheet);
+  color: var(--ink);
+  cursor: pointer;
+}
+.frais-hypo__controls .value-input { flex: 0 0 auto; width: 110px; justify-content: flex-end; }
+.frais-hypo__controls input[type="number"] { text-align: right; font-size: var(--fs-md); font-weight: 700; }
+.frais-hypo__note { margin: 6px 0 0; font-size: var(--fs-micro); line-height: 1.5; color: var(--ink-faint); }
+
 .frais-total {
   display: flex;
   justify-content: space-between;

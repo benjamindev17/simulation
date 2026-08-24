@@ -77,6 +77,9 @@
       (travaux > 0 ? '<tr><td>Aménagement</td><td>' + fmt(Math.round(travaux)) + '</td></tr>' : '') +
       '<tr><td>Frais d’enregistrement (' + TAUX_ENREGISTREMENT + ' %)</td><td>' + fmt(Math.round(fraisEnregCalc())) + '</td></tr>' +
       '<tr><td>Frais de notaire</td><td>' + fmt(Math.round(fraisNotaire)) + '</td></tr>' +
+      (fraisHypo > 0
+        ? '<tr><td>Hypothèque (' + (HYPO_LABELS[hypoType] || hypoType) + ')</td><td>' + fmt(Math.round(fraisHypo)) + '</td></tr>'
+        : '') +
       '<tr><td>Frais bancaires</td><td>' + fmt(Math.round(fraisBancaires)) + '</td></tr>' +
       '<tr class="c-total"><td>Coût total du projet</td><td>' + fmt(Math.round(coutTotalCalc())) + '</td></tr>' +
       '</table>';
