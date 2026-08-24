@@ -114,12 +114,14 @@
         '<p class="c-sub">' + entries.length + ' simulations</p>' +
       '</div>';
 
-    const euros = (v) => (v == null ? '—' : fmt(Math.round(v)));
-    // Espace normale (pas insécable) avant "/mois" et "/an" : dans des colonnes aussi
-    // resserrées, c'est le seul point de coupure propre — sans elle, le retour à la ligne
-    // forcé tombe en plein milieu de l'unité ("€/m" / "ois").
-    const eurosPerMois = (v) => (v == null ? '—' : fmt(Math.round(v)) + ' /mois');
-    const eurosPerAn = (v) => (v == null ? '—' : fmt(Math.round(v)) + ' /an');
+    // fmt() sépare les milliers par une espace insécable (voulu partout ailleurs, pour ne
+    // jamais couper juste avant "€"). Dans des colonnes aussi resserrées, ça empêche TOUT
+    // retour à la ligne propre : le nombre entier devient un seul "mot" qui, s'il ne tient
+    // pas, se coupe n'importe où en plein milieu d'un chiffre. On la remplace par une espace
+    // normale ici, pour que le pire cas soit "310" / "000 €" plutôt que "310 00" / "0 €".
+    const euros = (v) => (v == null ? '—' : fmt(Math.round(v)).replace(/ /g, ' '));
+    const eurosPerMois = (v) => (v == null ? '—' : euros(v) + ' /mois');
+    const eurosPerAn = (v) => (v == null ? '—' : euros(v) + ' /an');
 
     // Une seule table, une ligne par banque : ne garde que l'essentiel pour tenir sur une
     // page A4 paysage sans défilement horizontal. Les critères secondaires (mode, emprunteurs,
@@ -145,6 +147,13 @@
         titre: 'Assurance habitation (incendie + RC)',
         formatter: (v, i) => eurosPerAn(v) + '<br><span class="cmp-cell-sub">' +
           (summaries[i].incendieExterne ? 'Externe, hors total' : 'Via la banque') + '</span>'
+      }),
+      // Coût imposé/facturé en €/an dans l'outil (cf. cost.js), affiché ici en €/mois comme
+      // demandé — plus parlant à mettre en regard de la mensualité du prêt.
+      col('Compte', entries.map((e) => (e.state.cout && e.state.cout.compte) || 0), {
+        best: true,
+        titre: 'Compte bancaire (imposé par la banque)',
+        formatter: (v) => (v == null ? '—' : fmt(Math.round(v / 12)) + ' /mois')
       }),
       col('Coût annuel de possession', summaries.map((s) => s.totalAn), { best: bestPossession, formatter: eurosPerAn }),
       col('Coût total du crédit', summaries.map((s) => s.coutCredit), { best: true, formatter: euros, total: true })

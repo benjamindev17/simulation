@@ -1016,7 +1016,7 @@ body.contract-open, body.recap-open { overflow: hidden; }
    hautes, la ligne du logo de banque respire, les chiffres ne collent plus au filet du dessus.
    Les en-têtes gardent un padding latéral plus serré : dans une colonne resserrée, chaque
    pixel compte pour éviter qu'un mot ne se coupe en plein milieu. */
-.cmp-table--transposed th, .cmp-table--transposed td { padding: 14px 14px; line-height: 1.45; }
+.cmp-table--transposed th, .cmp-table--transposed td { padding: 14px 8px; line-height: 1.45; }
 .cmp-table--transposed thead th {
   position: sticky;
   top: 0;
@@ -1025,8 +1025,8 @@ body.contract-open, body.recap-open { overflow: hidden; }
   white-space: normal;
   overflow-wrap: break-word;
   vertical-align: bottom;
-  padding-left: 6px;
-  padding-right: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
   /* Le style générique `th` (majuscules + lettres espacées) prend trop de place une fois les
      colonnes resserrées : il force des coupures en plein mot. Casse normale, plus dense. */
   text-transform: none;
@@ -1037,6 +1037,7 @@ body.contract-open, body.recap-open { overflow: hidden; }
   overflow: visible;
   text-overflow: clip;
   overflow-wrap: break-word;
+  font-size: var(--fs-sm);
 }
 /* Sélecteur (0,2,1) : l'emporte sur `.c-table--data th` (0,1,1), qui donnerait au nom de
    banque le filet violet et la casse micro/majuscule réservés aux vrais en-têtes de colonne.
@@ -1061,7 +1062,7 @@ body.contract-open, body.recap-open { overflow: hidden; }
    z-index:1 de la règle générique l'emporterait et le coin passerait sous les deux filets
    figés au croisement du défilement horizontal et vertical. Largeur portée à 170px pour
    loger logo + nom de banque côte à côte sans les compresser. */
-.cmp-table--transposed th.cmp-corner { position: sticky; top: 0; left: 0; z-index: 2; background: var(--sheet); color: var(--ink-mid); width: 170px; }
+.cmp-table--transposed th.cmp-corner { position: sticky; top: 0; left: 0; z-index: 2; background: var(--sheet); color: var(--ink-mid); width: 150px; }
 .cmp-bank-cell { display: flex; align-items: center; gap: 8px; }
 .cmp-bank-cell .bank-badge { flex-shrink: 0; }
 .cmp-bank-name { min-width: 0; }
