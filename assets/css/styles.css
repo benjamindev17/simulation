@@ -1004,18 +1004,32 @@ body.contract-open, body.recap-open { overflow: hidden; }
 
 /* Tableau transposé : une ligne par simulation (banques en ordonnée, à gauche), une colonne
    par critère (en abscisse, en haut) — plus lisible avec 3+ simulations qu'une colonne par
-   simulation, qui débordait sans fin. Défilement horizontal en filet de sécurité si le
-   nombre de critères dépasse quand même la largeur de l'écran. */
+   simulation, qui débordait sans fin. `table-layout: fixed` + largeur 100% forcent les
+   colonnes à se répartir dans la largeur du document (pas de défilement horizontal en usage
+   normal, une fois la liste des critères réduite à l'essentiel) ; `.cmp-scroll` ne reste que
+   comme filet de sécurité si un texte ne peut vraiment pas être coupé plus finement. La
+   colonne "Simulation" a une largeur fixe (cf. th.cmp-corner) ; les colonnes de données se
+   partagent le reste à parts égales. */
 .cmp-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.cmp-table--transposed { width: max-content; min-width: 100%; }
+.cmp-table--transposed { width: 100%; table-layout: fixed; }
 .cmp-table--transposed thead th {
   position: sticky;
   top: 0;
   z-index: 1;
   background: var(--sheet);
   white-space: normal;
-  max-width: 140px;
+  overflow-wrap: break-word;
   vertical-align: bottom;
+  /* Le style générique `th` (majuscules + lettres espacées) prend trop de place une fois les
+     colonnes resserrées : il force des coupures en plein mot. Casse normale, plus dense. */
+  text-transform: none;
+  letter-spacing: normal;
+}
+.cmp-table--transposed tbody td {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: break-word;
 }
 /* Sélecteur (0,2,1) : l'emporte sur `.c-table--data th` (0,1,1), qui donnerait au nom de
    banque le filet violet et la casse micro/majuscule réservés aux vrais en-têtes de colonne. */
@@ -1024,7 +1038,7 @@ body.contract-open, body.recap-open { overflow: hidden; }
   left: 0;
   z-index: 1;
   background: var(--sheet);
-  white-space: nowrap;
+  overflow-wrap: break-word;
   font-size: var(--fs-md);
   font-weight: 700;
   text-transform: none;
@@ -1034,7 +1048,8 @@ body.contract-open, body.recap-open { overflow: hidden; }
 /* Spécificité (0,2,1), au-dessus de `.cmp-table--transposed thead th` (0,1,2) : sinon le
    z-index:1 de la règle générique l'emporterait et le coin passerait sous les deux filets
    figés au croisement du défilement horizontal et vertical. */
-.cmp-table--transposed th.cmp-corner { position: sticky; top: 0; left: 0; z-index: 2; background: var(--sheet); color: var(--ink-mid); }
+.cmp-table--transposed th.cmp-corner { position: sticky; top: 0; left: 0; z-index: 2; background: var(--sheet); color: var(--ink-mid); width: 130px; }
+.cmp-cell-sub { display: block; font-size: var(--fs-micro); color: var(--ink-faint); font-weight: 400; margin-top: 2px; }
 
 /* Colonne de la meilleure offre : vert doux sur le seul titre, pour la repérer d'un coup
    d'œil sans écraser le apricot des "meilleures valeurs" ligne par ligne. Le vert est

@@ -114,48 +114,42 @@
       '</div>';
 
     const euros = (v) => (v == null ? '—' : fmt(Math.round(v)));
-    const eurosPerMois = (v) => (v == null ? '—' : fmt(Math.round(v)) + '/mois');
-    const eurosPerAn = (v) => (v == null ? '—' : fmt(Math.round(v)) + '/an');
+    // Espace normale (pas insécable) avant "/mois" et "/an" : dans des colonnes aussi
+    // resserrées, c'est le seul point de coupure propre — sans elle, le retour à la ligne
+    // forcé tombe en plein milieu de l'unité ("€/m" / "ois").
+    const eurosPerMois = (v) => (v == null ? '—' : fmt(Math.round(v)) + ' /mois');
+    const eurosPerAn = (v) => (v == null ? '—' : fmt(Math.round(v)) + ' /an');
 
-    // Une seule table : chaque banque tient sur UNE ligne, avec tous les critères en colonne.
-    // Les groupes thématiques par petites tables séparaient chaque banque sur plusieurs lignes
-    // (une par groupe) — on revient à une ligne unique par banque, quitte à défiler
-    // horizontalement (.cmp-scroll, avec la 1ère colonne et l'en-tête figés) sur les écrans
-    // trop étroits pour les ~25 critères.
+    // Une seule table, une ligne par banque : ne garde que l'essentiel pour tenir sur une
+    // page A4 paysage sans défilement horizontal. Les critères secondaires (mode, emprunteurs,
+    // aménagement, apport, quotité, garantie retenue, compte bancaire, indemnité de
+    // remboursement anticipé...) restent dans le récapitulatif de chaque simulation ; ils
+    // n'ont plus leur place ici une fois qu'on vise le coup d'œil sur une seule ligne/banque.
     const cols = [
-      col('Mode', entries.map((e, i) => summaries[i].isSolo ? 'Seul(e)' : 'À deux')),
-      col('Emprunteur(s)', entries.map((e, i) => summaries[i].isSolo ? e.state.nomA : e.state.nomA + ' / ' + e.state.nomB)),
-      col('Prix de l’appartement', entries.map((e) => e.state.prixAppart), { formatter: euros }),
-      col('Aménagement', entries.map((e) => e.state.travaux || 0), { formatter: euros }),
-      col('Apport total', entries.map((e) => e.state.apport), { formatter: euros }),
-      col('Coût total du projet', summaries.map((s) => s.coutTotal), { formatter: euros }),
       col('Montant emprunté', summaries.map((s) => s.montant), { formatter: euros }),
-      col('Quotité empruntée', summaries.map((s) => s.quotiteEmpruntee), { formatter: (v) => v.toFixed(2) + ' %' }),
       col('Taux annuel', entries.map((e) => e.state.tauxPct.toFixed(2) + ' %')),
       col('Durée', entries.map((e) => e.state.dureeChoisie + ' ans')),
       col('Mensualité', summaries.map((s) => s.mensualite), { best: true, formatter: eurosPerMois }),
       col('Coût total des intérêts', summaries.map((s) => s.totalInterest), { best: true, formatter: euros }),
-      col('Frais bancaires (frais de dossier)', entries.map((e) => e.state.fraisBancaires || 0), { best: true, formatter: euros }),
-      col('Frais d’hypothèque', entries.map((e) => e.state.fraisHypo || 0), { best: true, formatter: euros }),
-      col('— garantie retenue', entries.map((e) => HYPO_LABELS[e.state.hypoType] || HYPO_LABELS.inscription)),
-      col('Assurance solde restant dû (ADI)', entries.map((e) => (e.state.cout && e.state.cout.asrd) || 0), { best: true, formatter: eurosPerAn }),
-      col('Assurance habitation (incendie + RC)', entries.map((e) => (e.state.cout && e.state.cout.incendie) || 0), { best: true, formatter: eurosPerAn }),
-      col('— souscription', summaries.map((s) => s.incendieExterne
-        ? 'Chez un assureur (hors total)' : 'Proposée par la banque')),
-      col('Compte bancaire', entries.map((e) => (e.state.cout && e.state.cout.compte) || 0), { best: true, formatter: eurosPerAn }),
-      col('Coût annuel de possession', summaries.map((s) => s.totalAn), { best: bestPossession, formatter: eurosPerAn }),
-      col('Total prêt + charges', summaries.map((s) => s.totalMois), { best: bestPossession, formatter: eurosPerMois }),
-      col('Coût réel hors capital', summaries.map((s) => s.coutReelAn), { best: bestPossession, formatter: eurosPerAn }),
-      col('Indemnité de remboursement anticipé', entries.map((e) => e.state.iraMois != null ? e.state.iraMois : 3), {
+      col('Frais bancaires', entries.map((e) => e.state.fraisBancaires || 0), { best: true, formatter: euros }),
+      // <wbr> : point de coupure propre pour l'en-tête dans une colonne resserrée, sans rien
+      // changer au texte (textContent reste "Frais d’hypothèque", les tests par regex passent toujours).
+      col('Frais d’<wbr>hypothèque', entries.map((e) => e.state.fraisHypo || 0), { best: true, formatter: euros }),
+      col('Assurance solde restant dû', entries.map((e) => (e.state.cout && e.state.cout.asrd) || 0), { best: true, formatter: eurosPerAn }),
+      // Reste "apparent" comme demandé : le montant ET l'endroit de souscription, sur une seule
+      // colonne (2ème ligne en note), pour ne pas rouvrir une colonne dédiée à la souscription.
+      col('Assurance habitation', entries.map((e) => (e.state.cout && e.state.cout.incendie) || 0), {
         best: true,
-        formatter: (v) => (v == null ? '—' : (v.toFixed(1).replace(/\.0$/, '') + ' mois'))
+        formatter: (v, i) => eurosPerAn(v) + '<br><span class="cmp-cell-sub">' +
+          (summaries[i].incendieExterne ? 'Externe, hors total' : 'Via la banque') + '</span>'
       }),
-      col('Conditions particulières (remb. anticipé)', entries.map((e) => e.state.iraConditions || null)),
+      col('Coût annuel de possession', summaries.map((s) => s.totalAn), { best: bestPossession, formatter: eurosPerAn }),
       col('Coût total du crédit', summaries.map((s) => s.coutCredit), { best: true, formatter: euros, total: true })
     ];
 
     // Rendu transposé : banques en ordonnée (une ligne chacune, sticky à gauche pendant le
-    // défilement horizontal), critères en abscisse (une colonne chacun, sticky en haut).
+    // défilement horizontal — filet de sécurité, plus nécessaire qu'aux petits écrans une fois
+    // le nombre de colonnes réduit), critères en abscisse (une colonne chacun, sticky en haut).
     html += '<div class="cmp-scroll"><table class="c-table c-table--data cmp-table cmp-table--transposed"><thead><tr>' +
       '<th class="cmp-corner">Simulation</th>' +
       cols.map(c => '<th' + (c.total ? ' class="cmp-total-col"' : '') + '>' + c.label + '</th>').join('') +
@@ -170,7 +164,7 @@
           const classes = [];
           if (c.bestSet.has(i)) classes.push('cmp-best');
           if (c.total) classes.push('cmp-total-col');
-          return '<td' + (classes.length ? ' class="' + classes.join(' ') + '"' : '') + '>' + c.formatter(c.values[i]) + '</td>';
+          return '<td' + (classes.length ? ' class="' + classes.join(' ') + '"' : '') + '>' + c.formatter(c.values[i], i) + '</td>';
         }).join('') +
         '</tr>';
     });
