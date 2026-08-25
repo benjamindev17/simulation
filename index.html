@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Simule ton prêt</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=92">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=93">
 
 <!-- Icône et nom pour l'ajout à l'écran d'accueil (iPhone/Safari + Android/Chrome) -->
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=92">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=93">
 <meta name="apple-mobile-web-app-title" content="Simulation prêt">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -26,7 +26,7 @@
 
 <!-- Aucune webfont : la typographie s'appuie sur Helvetica/Arial, présentes sur tous
      les systèmes. Une requête réseau de moins et aucun texte invisible au chargement. -->
-<link rel="stylesheet" href="assets/css/styles.css?v=92">
+<link rel="stylesheet" href="assets/css/styles.css?v=93">
 </head>
 <body>
 
@@ -881,7 +881,7 @@
       <div class="dash-list-head">
         <h2 class="dash-list-head__title">Simulations enregistrées</h2>
         <div class="dash-list-head__actions">
-          <button type="button" id="btn-compare-sims" class="btn-secondary" disabled title="Sélectionne 2 à 4 simulations à comparer">Comparer</button>
+          <button type="button" id="btn-compare-sims" class="btn-secondary" disabled title="Sélectionne 2 à 5 simulations à comparer">Comparer</button>
           <button type="button" id="btn-new-simulation" class="btn-moss">+ Nouvelle simulation</button>
         </div>
       </div>
@@ -891,7 +891,7 @@
       </div>
 
       <div class="dash-compare-toolbar" id="dash-compare-toolbar" hidden>
-        <p class="note note--flush" id="dash-compare-hint">Coche 2 à 4 simulations pour les comparer côte à côte.</p>
+        <p class="note note--flush" id="dash-compare-hint">Coche 2 à 5 simulations pour les comparer côte à côte.</p>
         <button type="button" id="btn-select-all-compare" class="btn-secondary">Tout sélectionner</button>
       </div>
 
@@ -901,7 +901,7 @@
     <!-- Numéro de version affiché : permet de vérifier d'un coup d'œil quelle version est
          réellement servie, plutôt que de confondre "le correctif ne marche pas" avec
          "le navigateur sert encore l'ancienne page". Doit être tenu à jour avec les ?v=N. -->
-    <p class="dash-build">Version 92</p>
+    <p class="dash-build">Version 93</p>
 
   </section>
 
@@ -930,7 +930,7 @@
   <div id="recap-doc" class="contract"></div>
 </div>
 
-<!-- Comparaison de simulations — accessible uniquement depuis "Mes simulations" (2 à 4 sélectionnées
+<!-- Comparaison de simulations — accessible uniquement depuis "Mes simulations" (2 à 5 sélectionnées
      via les cases à cocher de la liste). Recalcule chaque simulation sans jamais charger/modifier
      celle actuellement affichée. -->
 <div id="compare-overlay" class="contract-overlay" aria-hidden="true">
@@ -957,30 +957,30 @@
   </div>
 </div>
 
-<script src="assets/js/utils.js?v=92" defer></script>
+<script src="assets/js/utils.js?v=93" defer></script>
 <!-- Avant rate-simulation.js, qui construit le sélecteur à partir du registre. -->
-<script src="assets/js/banques.js?v=92" defer></script>
-<script src="assets/js/ownership.js?v=92" defer></script>
-<script src="assets/js/rate-simulation.js?v=92" defer></script>
-<script src="assets/js/app.js?v=92" defer></script>
-<script src="assets/js/contract.js?v=92" defer></script>
-<script src="assets/js/etf.js?v=92" defer></script>
-<script src="assets/js/cost.js?v=92" defer></script>
+<script src="assets/js/banques.js?v=93" defer></script>
+<script src="assets/js/ownership.js?v=93" defer></script>
+<script src="assets/js/rate-simulation.js?v=93" defer></script>
+<script src="assets/js/app.js?v=93" defer></script>
+<script src="assets/js/contract.js?v=93" defer></script>
+<script src="assets/js/etf.js?v=93" defer></script>
+<script src="assets/js/cost.js?v=93" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=92" defer></script>
-<script src="assets/js/state.js?v=92" defer></script>
-<script src="assets/js/sankey.js?v=92" defer></script>
-<script src="assets/js/budget.js?v=92" defer></script>
-<script src="assets/js/modal.js?v=92" defer></script>
-<script src="assets/js/recap.js?v=92" defer></script>
+<script src="assets/js/firebase-config.js?v=93" defer></script>
+<script src="assets/js/state.js?v=93" defer></script>
+<script src="assets/js/sankey.js?v=93" defer></script>
+<script src="assets/js/budget.js?v=93" defer></script>
+<script src="assets/js/modal.js?v=93" defer></script>
+<script src="assets/js/recap.js?v=93" defer></script>
 <!-- html2canvas : capture le comparateur en image, pour pouvoir clic droit → « Copier l'image ». -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
-<script src="assets/js/compare.js?v=92" defer></script>
-<script src="assets/js/dashboard.js?v=92" defer></script>
+<script src="assets/js/compare.js?v=93" defer></script>
+<script src="assets/js/dashboard.js?v=93" defer></script>
 
 </body>
 </html>

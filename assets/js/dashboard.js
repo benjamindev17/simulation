@@ -158,10 +158,10 @@
   document.addEventListener('click', onInteraction);
 
   // Comparaison de simulations (accessible uniquement ici, depuis "Mes simulations") : chaque
-  // ligne a une case à cocher, le bouton "Comparer" ouvre compare.js pour 2 à 4 sélectionnées.
+  // ligne a une case à cocher, le bouton "Comparer" ouvre compare.js pour 2 à 5 sélectionnées.
   // La sélection est conservée dans un Set indépendant du rendu, pour survivre aux rafraîchissements
   // temps réel de la liste (onSnapshot) tant que les simulations cochées existent toujours.
-  const MAX_COMPARE = 4;
+  const MAX_COMPARE = 5;
   const selectedCompareIds = new Set();
   let latestDocsById = new Map();
 
