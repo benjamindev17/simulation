@@ -75,31 +75,42 @@
   // on définit d'abord chaque colonne (un critère), puis on la rend une fois par ligne. Les
   // "values" sont des valeurs BRUTES (nombre ou null/chaîne), formatées via opts.formatter.
   // Avec opts.best, la (ou les) plus petite(s) valeur(s) numérique(s) de la colonne sont mises
-  // en évidence — utile pour les postes de coût, où moins cher = mieux. Pas de mise en
-  // évidence si toutes les valeurs numériques sont à égalité (rien à distinguer).
+  // en évidence en vert/apricot, et la (ou les) plus grande(s) en rouge — toutes ces colonnes
+  // sont des postes de coût, où moins cher = mieux et plus cher = pire. Pas de mise en évidence
+  // si toutes les valeurs numériques sont à égalité (rien à distinguer).
   function col(label, values, opts) {
     opts = opts || {};
     const formatter = opts.formatter || ((v) => (v == null ? '—' : String(v)));
     const nums = values.map(v => (typeof v === 'number' ? v : null));
     const validNums = nums.filter(v => v !== null);
     const min = opts.best && validNums.length ? Math.min(...validNums) : null;
+    const max = opts.best && validNums.length ? Math.max(...validNums) : null;
     const allTied = opts.best && validNums.length === values.length && validNums.every(v => v === min);
     const bestSet = new Set();
+    const worstSet = new Set();
     if (opts.best && !allTied) {
-      nums.forEach((v, i) => { if (v !== null && v === min) bestSet.add(i); });
+      nums.forEach((v, i) => {
+        if (v === null) return;
+        if (v === min) bestSet.add(i);
+        if (v === max) worstSet.add(i);
+      });
     }
-    return { label, values, formatter, bestSet, total: !!opts.total, titre: opts.titre || null };
+    return { label, values, formatter, bestSet, worstSet, total: !!opts.total, titre: opts.titre || null };
   }
 
   function build(entries) {
     const summaries = entries.map(e => computeSummary(e.state));
 
-    // Meilleure offre = coût du crédit le plus faible. En cas d'égalité parfaite, on ne
-    // désigne personne : mettre l'une des deux en avant serait arbitraire.
+    // Meilleure offre = coût du crédit le plus faible ; pire offre = le plus élevé. En cas
+    // d'égalité parfaite (sur le min comme sur le max), on ne désigne personne : mettre l'une
+    // des deux en avant serait arbitraire.
     const couts = summaries.map(s => s.coutCredit);
     const minCout = Math.min(...couts);
+    const maxCout = Math.max(...couts);
     const exAequo = couts.filter(v => v === minCout).length > 1;
+    const exAequoPire = couts.filter(v => v === maxCout).length > 1;
     const gagnant = exAequo ? -1 : couts.indexOf(minCout);
+    const pire = exAequoPire ? -1 : couts.indexOf(maxCout);
 
     // Si l'assurance habitation est externe ici et bancaire là, les totaux de possession ne
     // portent plus sur le même périmètre : désigner un « meilleur » reviendrait à récompenser
@@ -169,18 +180,24 @@
 
     entries.forEach((e, i) => {
       const isWinner = i === gagnant;
+      const isLoser = i === pire;
       // Le logo + nom de la banque remplacent le titre complet de la simulation (qui répète
       // montant et taux, déjà présents en colonne) — plus lisible, et demandé tel quel.
       const banque = (typeof banqueParId === 'function') ? banqueParId(e.state.banqueId) : null;
       const nomAffiche = banque ? banque.nom : (e.nom || 'Sans nom');
       const badge = (typeof banqueBadge === 'function') ? banqueBadge(e.state.banqueId, 'sm') : '';
+      const rowClasses = [];
+      if (isWinner) rowClasses.push('cmp-winner');
+      if (isLoser) rowClasses.push('cmp-loser');
       html += '<tr>' +
-        '<th scope="row"' + (isWinner ? ' class="cmp-winner"' : '') + '>' +
+        '<th scope="row"' + (rowClasses.length ? ' class="' + rowClasses.join(' ') + '"' : '') + '>' +
           '<span class="cmp-bank-cell">' + badge + '<span class="cmp-bank-name">' + nomAffiche + '</span></span>' +
-        (isWinner ? '<span class="cmp-winner__tag">Meilleure offre</span>' : '') + '</th>' +
+        (isWinner ? '<span class="cmp-winner__tag">Meilleure offre</span>' : '') +
+        (isLoser ? '<span class="cmp-loser__tag">Pire offre</span>' : '') + '</th>' +
         cols.map(c => {
           const classes = [];
           if (c.bestSet.has(i)) classes.push('cmp-best');
+          if (c.worstSet.has(i)) classes.push('cmp-worst');
           if (c.total) classes.push('cmp-total-col');
           return '<td' + (classes.length ? ' class="' + classes.join(' ') + '"' : '') + '>' + c.formatter(c.values[i], i) + '</td>';
         }).join('') +

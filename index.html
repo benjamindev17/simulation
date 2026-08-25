@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Simule ton prêt</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=88">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=89">
 
 <!-- Icône et nom pour l'ajout à l'écran d'accueil (iPhone/Safari + Android/Chrome) -->
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=88">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=89">
 <meta name="apple-mobile-web-app-title" content="Simulation prêt">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -26,7 +26,7 @@
 
 <!-- Aucune webfont : la typographie s'appuie sur Helvetica/Arial, présentes sur tous
      les systèmes. Une requête réseau de moins et aucun texte invisible au chargement. -->
-<link rel="stylesheet" href="assets/css/styles.css?v=88">
+<link rel="stylesheet" href="assets/css/styles.css?v=89">
 </head>
 <body>
 
@@ -881,7 +881,10 @@
         Aucune simulation enregistrée pour l'instant. Clique sur « + Nouvelle simulation » pour créer et sauvegarder ta première simulation.
       </div>
 
-      <p class="note note--flush" id="dash-compare-hint" hidden>Coche 2 à 4 simulations pour les comparer côte à côte.</p>
+      <div class="dash-compare-toolbar" id="dash-compare-toolbar" hidden>
+        <p class="note note--flush" id="dash-compare-hint">Coche 2 à 4 simulations pour les comparer côte à côte.</p>
+        <button type="button" id="btn-select-all-compare" class="btn-secondary">Tout sélectionner</button>
+      </div>
 
       <div id="dash-sim-list" class="dash-sim-list"></div>
     </div>
@@ -889,7 +892,7 @@
     <!-- Numéro de version affiché : permet de vérifier d'un coup d'œil quelle version est
          réellement servie, plutôt que de confondre "le correctif ne marche pas" avec
          "le navigateur sert encore l'ancienne page". Doit être tenu à jour avec les ?v=N. -->
-    <p class="dash-build">Version 88</p>
+    <p class="dash-build">Version 89</p>
 
   </section>
 
@@ -944,28 +947,28 @@
   </div>
 </div>
 
-<script src="assets/js/utils.js?v=88" defer></script>
+<script src="assets/js/utils.js?v=89" defer></script>
 <!-- Avant rate-simulation.js, qui construit le sélecteur à partir du registre. -->
-<script src="assets/js/banques.js?v=88" defer></script>
-<script src="assets/js/ownership.js?v=88" defer></script>
-<script src="assets/js/rate-simulation.js?v=88" defer></script>
-<script src="assets/js/app.js?v=88" defer></script>
-<script src="assets/js/contract.js?v=88" defer></script>
-<script src="assets/js/etf.js?v=88" defer></script>
-<script src="assets/js/cost.js?v=88" defer></script>
+<script src="assets/js/banques.js?v=89" defer></script>
+<script src="assets/js/ownership.js?v=89" defer></script>
+<script src="assets/js/rate-simulation.js?v=89" defer></script>
+<script src="assets/js/app.js?v=89" defer></script>
+<script src="assets/js/contract.js?v=89" defer></script>
+<script src="assets/js/etf.js?v=89" defer></script>
+<script src="assets/js/cost.js?v=89" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=88" defer></script>
-<script src="assets/js/state.js?v=88" defer></script>
-<script src="assets/js/sankey.js?v=88" defer></script>
-<script src="assets/js/budget.js?v=88" defer></script>
-<script src="assets/js/modal.js?v=88" defer></script>
-<script src="assets/js/recap.js?v=88" defer></script>
-<script src="assets/js/compare.js?v=88" defer></script>
-<script src="assets/js/dashboard.js?v=88" defer></script>
+<script src="assets/js/firebase-config.js?v=89" defer></script>
+<script src="assets/js/state.js?v=89" defer></script>
+<script src="assets/js/sankey.js?v=89" defer></script>
+<script src="assets/js/budget.js?v=89" defer></script>
+<script src="assets/js/modal.js?v=89" defer></script>
+<script src="assets/js/recap.js?v=89" defer></script>
+<script src="assets/js/compare.js?v=89" defer></script>
+<script src="assets/js/dashboard.js?v=89" defer></script>
 
 </body>
 </html>

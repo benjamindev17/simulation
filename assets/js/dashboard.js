@@ -13,9 +13,10 @@
   const elName = document.getElementById('dash-name');
   const elEmail = document.getElementById('dash-email');
   const elEmpty = document.getElementById('dash-empty');
-  const elCompareHint = document.getElementById('dash-compare-hint');
+  const elCompareToolbar = document.getElementById('dash-compare-toolbar');
   const elSimList = document.getElementById('dash-sim-list');
   const btnCompare = document.getElementById('btn-compare-sims');
+  const btnSelectAllCompare = document.getElementById('btn-select-all-compare');
   const btnSignIn = document.getElementById('btn-google-signin');
   const btnSignOut = document.getElementById('btn-signout');
   const btnNewSim = document.getElementById('btn-new-simulation');
@@ -170,9 +171,22 @@
     btnCompare.disabled = n < 2;
   }
 
+  // Les 4 premières simulations de la liste (ordre d'affichage = le plus récent en tête) :
+  // "Tout sélectionner" coche celles-ci d'un coup au lieu de les cocher une par une, dans la
+  // limite de MAX_COMPARE. Un second clic les décoche toutes (bascule).
+  function idsSelectionnablesParDefaut() {
+    return Array.from(latestDocsById.keys()).slice(0, MAX_COMPARE);
+  }
+  function updateSelectAllButton() {
+    if (!btnSelectAllCompare) return;
+    const ids = idsSelectionnablesParDefaut();
+    const toutCoche = ids.length > 0 && ids.every(id => selectedCompareIds.has(id));
+    btnSelectAllCompare.textContent = toutCoche ? 'Tout désélectionner' : 'Tout sélectionner';
+  }
+
   function renderSimList(docs) {
     elEmpty.hidden = docs.length > 0;
-    if (elCompareHint) elCompareHint.hidden = docs.length < 2;
+    if (elCompareToolbar) elCompareToolbar.hidden = docs.length < 2;
     elSimList.innerHTML = '';
     latestDocsById = new Map();
     // Une simulation supprimée/absente du nouvel instantané ne doit plus rester sélectionnée.
@@ -184,6 +198,7 @@
       latestDocsById.set(doc.id, data);
       const row = document.createElement('div');
       row.className = 'dash-sim-row';
+      row.dataset.simId = doc.id;
       row.innerHTML =
         '<label class="dash-sim-row__check" title="Sélectionner pour comparer">' +
           '<input type="checkbox" class="chk-compare">' +
@@ -216,6 +231,7 @@
         if (chkCompare.checked) selectedCompareIds.add(doc.id);
         else selectedCompareIds.delete(doc.id);
         updateCompareButton();
+        updateSelectAllButton();
       });
 
       row.querySelector('[data-action="load"]').addEventListener('click', () => {
@@ -273,6 +289,22 @@
       elSimList.appendChild(row);
     });
     updateCompareButton();
+    updateSelectAllButton();
+  }
+
+  if (btnSelectAllCompare) {
+    btnSelectAllCompare.addEventListener('click', () => {
+      const ids = idsSelectionnablesParDefaut();
+      const toutCoche = ids.length > 0 && ids.every(id => selectedCompareIds.has(id));
+      selectedCompareIds.clear();
+      if (!toutCoche) ids.forEach(id => selectedCompareIds.add(id));
+      elSimList.querySelectorAll('.dash-sim-row').forEach((row) => {
+        const chk = row.querySelector('.chk-compare');
+        if (chk) chk.checked = selectedCompareIds.has(row.dataset.simId);
+      });
+      updateCompareButton();
+      updateSelectAllButton();
+    });
   }
 
   btnCompare.addEventListener('click', () => {

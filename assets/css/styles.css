@@ -1001,6 +1001,7 @@ body.contract-open, body.recap-open { overflow: hidden; }
 .c-table--data th:first-child, .c-table--data td:first-child { text-align: left; }
 .c-table--data th { background: none; border-bottom: 2px solid var(--violet); font-size: var(--fs-micro); }
 .cmp-best { background: var(--apricot-wash); color: var(--amber); font-weight: 700; }
+.cmp-worst { background: var(--brick-soft); color: var(--brick); font-weight: 700; }
 
 /* Tableau transposé : une ligne par simulation (banques en ordonnée, à gauche), une colonne
    par critère (en abscisse, en haut) — plus lisible avec 3+ simulations qu'une colonne par
@@ -1088,6 +1089,21 @@ body.contract-open, body.recap-open { overflow: hidden; }
   text-transform: uppercase;
   color: #2f7d52;
 }
+/* Même principe que .cmp-winner, en rouge, pour repérer la pire offre d'un coup d'œil. */
+.c-table--data th.cmp-loser {
+  background: var(--brick-soft);
+  border-bottom-color: var(--brick);
+  color: var(--ink);
+}
+.cmp-loser__tag {
+  display: block;
+  margin-top: 3px;
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--brick);
+}
 /* Coût total du crédit : dernière colonne, détachée du reste par un filet vertical plutôt
    que le filet horizontal d'une ligne de synthèse (devenue une colonne après transposition). */
 .cmp-total-col { border-left: 2px solid var(--ink); font-weight: 700; }
@@ -1116,6 +1132,8 @@ body.contract-open, body.recap-open { overflow: hidden; }
 .dash-list-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 1rem; }
 .dash-list-head__title { margin: 0; }
 .dash-list-head__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.dash-compare-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.dash-compare-toolbar #btn-select-all-compare { flex-shrink: 0; }
 .dash-empty {
   background: var(--sheet);
   border: 1px solid var(--rule);
