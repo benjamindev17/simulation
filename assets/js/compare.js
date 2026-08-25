@@ -14,9 +14,6 @@
   const btnClose = document.getElementById('btn-close-compare');
   const btnPrint = document.getElementById('btn-print-compare');
   const btnImage = document.getElementById('btn-image-compare');
-  const imageOverlay = document.getElementById('compare-image-overlay');
-  const imageEl = document.getElementById('compare-image');
-  const btnCloseImage = document.getElementById('btn-close-compare-image');
   if (!overlay || !doc) return;
 
   // Recalcule les grandeurs d'une simulation à partir de son état sauvegardé (captureState()).
@@ -232,34 +229,28 @@
     window.print();
   }
 
-  // Image (pour clic droit → « Copier l'image ») : un <table> ne propose jamais cette entrée
-  // de menu contextuel, seule une vraie image le peut. html2canvas capture le document affiché
-  // tel quel (mêmes surlignages, mêmes logos) dans une image qu'on montre dans un petit visualiseur
-  // superposé au comparateur, avec l'instruction pour la copier.
-  function closeImage() {
-    if (!imageOverlay) return;
-    imageOverlay.classList.remove('open');
-    imageOverlay.setAttribute('aria-hidden', 'true');
-  }
-  async function toImage() {
-    if (!imageOverlay || !imageEl) return;
+  // Copie directement l'image dans le presse-papier (Clipboard API) — un simple clic, sans
+  // étape intermédiaire à regarder ou sur laquelle faire un clic droit.
+  async function copyImage() {
     if (typeof html2canvas !== 'function') {
-      alert('Capture indisponible : la bibliothèque de génération d’image n’a pas pu se charger (vérifie ta connexion internet), réessaie dans quelques secondes.');
+      alert('Copie indisponible : la bibliothèque de génération d’image n’a pas pu se charger (vérifie ta connexion internet), réessaie dans quelques secondes.');
       return;
     }
     const texteOriginal = btnImage.textContent;
     btnImage.disabled = true;
-    btnImage.textContent = 'Génération…';
+    btnImage.textContent = 'Copie…';
     try {
       const canvas = await html2canvas(doc, { backgroundColor: '#ffffff', scale: 2 });
-      imageEl.src = canvas.toDataURL('image/png');
-      imageOverlay.classList.add('open');
-      imageOverlay.setAttribute('aria-hidden', 'false');
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+      if (!blob) throw new Error('image vide');
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      btnImage.textContent = 'Copié ✓';
+      setTimeout(() => { btnImage.textContent = texteOriginal; }, 1800);
     } catch (err) {
-      alert('Impossible de générer l’image : ' + err.message);
+      alert('Impossible de copier l’image : ' + err.message);
+      btnImage.textContent = texteOriginal;
     } finally {
       btnImage.disabled = false;
-      btnImage.textContent = texteOriginal;
     }
   }
 
@@ -274,14 +265,7 @@
 
   if (btnClose) btnClose.addEventListener('click', close);
   if (btnPrint) btnPrint.addEventListener('click', print);
-  if (btnImage) btnImage.addEventListener('click', toImage);
-  if (btnCloseImage) btnCloseImage.addEventListener('click', closeImage);
+  if (btnImage) btnImage.addEventListener('click', copyImage);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
-  if (imageOverlay) imageOverlay.addEventListener('click', (e) => { if (e.target === imageOverlay) closeImage(); });
-  document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
-    // Le visualiseur d'image est au-dessus du comparateur : Échap ferme d'abord celui-ci.
-    if (imageOverlay && imageOverlay.classList.contains('open')) { closeImage(); return; }
-    if (overlay.classList.contains('open')) close();
-  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('open')) close(); });
 })();

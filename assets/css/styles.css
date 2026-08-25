@@ -1069,20 +1069,6 @@ body.contract-open, body.recap-open { overflow: hidden; }
 .cmp-bank-name { min-width: 0; }
 .cmp-cell-sub { display: block; font-size: var(--fs-micro); color: var(--ink-faint); font-weight: 400; margin-top: 2px; }
 
-/* Fond opaque plutôt que le fond violet semi-transparent hérité de .contract-overlay :
-   ce visualiseur se superpose au comparateur (les deux sont ouverts en même temps, l'un
-   sur l'autre) — un fond translucide laisserait deviner en transparence la barre d'outils
-   du comparateur en dessous, qui n'a elle-même pas de fond opaque. */
-#compare-image-overlay { background: var(--sheet); }
-.compare-image-doc {
-  max-width: 297mm;
-  margin: 0 auto;
-  background: var(--sheet);
-  padding: 24px;
-  box-shadow: var(--shadow-pop);
-}
-.compare-image-doc img { display: block; width: 100%; height: auto; margin-top: 12px; border: 1px solid var(--rule); }
-
 /* Colonne de la meilleure offre : vert doux sur le seul titre, pour la repérer d'un coup
    d'œil sans écraser le apricot des "meilleures valeurs" ligne par ligne. Le vert est
    assez désaturé pour rester lisible en noir dessus (contraste > 12:1). */
