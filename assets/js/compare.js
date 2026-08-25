@@ -13,6 +13,10 @@
   const doc = document.getElementById('compare-doc');
   const btnClose = document.getElementById('btn-close-compare');
   const btnPrint = document.getElementById('btn-print-compare');
+  const btnImage = document.getElementById('btn-image-compare');
+  const imageOverlay = document.getElementById('compare-image-overlay');
+  const imageEl = document.getElementById('compare-image');
+  const btnCloseImage = document.getElementById('btn-close-compare-image');
   if (!overlay || !doc) return;
 
   // Recalcule les grandeurs d'une simulation à partir de son état sauvegardé (captureState()).
@@ -228,6 +232,37 @@
     window.print();
   }
 
+  // Image (pour clic droit → « Copier l'image ») : un <table> ne propose jamais cette entrée
+  // de menu contextuel, seule une vraie image le peut. html2canvas capture le document affiché
+  // tel quel (mêmes surlignages, mêmes logos) dans une image qu'on montre dans un petit visualiseur
+  // superposé au comparateur, avec l'instruction pour la copier.
+  function closeImage() {
+    if (!imageOverlay) return;
+    imageOverlay.classList.remove('open');
+    imageOverlay.setAttribute('aria-hidden', 'true');
+  }
+  async function toImage() {
+    if (!imageOverlay || !imageEl) return;
+    if (typeof html2canvas !== 'function') {
+      alert('Capture indisponible : la bibliothèque de génération d’image n’a pas pu se charger (vérifie ta connexion internet), réessaie dans quelques secondes.');
+      return;
+    }
+    const texteOriginal = btnImage.textContent;
+    btnImage.disabled = true;
+    btnImage.textContent = 'Génération…';
+    try {
+      const canvas = await html2canvas(doc, { backgroundColor: '#ffffff', scale: 2 });
+      imageEl.src = canvas.toDataURL('image/png');
+      imageOverlay.classList.add('open');
+      imageOverlay.setAttribute('aria-hidden', 'false');
+    } catch (err) {
+      alert('Impossible de générer l’image : ' + err.message);
+    } finally {
+      btnImage.disabled = false;
+      btnImage.textContent = texteOriginal;
+    }
+  }
+
   window.openCompare = function (entries) {
     if (!entries || entries.length < 2) return;
     build(entries);
@@ -239,6 +274,14 @@
 
   if (btnClose) btnClose.addEventListener('click', close);
   if (btnPrint) btnPrint.addEventListener('click', print);
+  if (btnImage) btnImage.addEventListener('click', toImage);
+  if (btnCloseImage) btnCloseImage.addEventListener('click', closeImage);
   overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.classList.contains('open')) close(); });
+  if (imageOverlay) imageOverlay.addEventListener('click', (e) => { if (e.target === imageOverlay) closeImage(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    // Le visualiseur d'image est au-dessus du comparateur : Échap ferme d'abord celui-ci.
+    if (imageOverlay && imageOverlay.classList.contains('open')) { closeImage(); return; }
+    if (overlay.classList.contains('open')) close();
+  });
 })();
