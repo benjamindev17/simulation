@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Simule ton prêt</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=91">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=92">
 
 <!-- Icône et nom pour l'ajout à l'écran d'accueil (iPhone/Safari + Android/Chrome) -->
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=91">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=92">
 <meta name="apple-mobile-web-app-title" content="Simulation prêt">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -26,7 +26,7 @@
 
 <!-- Aucune webfont : la typographie s'appuie sur Helvetica/Arial, présentes sur tous
      les systèmes. Une requête réseau de moins et aucun texte invisible au chargement. -->
-<link rel="stylesheet" href="assets/css/styles.css?v=91">
+<link rel="stylesheet" href="assets/css/styles.css?v=92">
 </head>
 <body>
 
@@ -408,6 +408,31 @@
         <p class="note note--flush">Taux wallon de l'<b>habitation propre et unique</b> (3 % depuis 2025). Un second bien ou un achat locatif relève du taux plein de 12,5 %.</p>
       </div>
 
+      <!-- Postes cotés par la banque, comme les frais de dossier/hypothèque juste au-dessus —
+           pilotés par cost.js (mêmes id que dans l'onglet Coût total annuel, qui continue de
+           les inclure dans son total). -->
+      <div class="span-full calc-row-3" id="field-assurances-banque">
+        <div class="calc-field">
+          <label>Assurance solde restant dû (ADI)</label>
+          <div class="value-input"><input type="number" id="in-cout-asrd" step="10" /><span class="unit">€/an</span></div>
+        </div>
+        <div class="calc-field">
+          <label>Assurance habitation (incendie + RC)</label>
+          <div class="value-input"><input type="number" id="in-cout-incendie" step="10" /><span class="unit">€/an</span></div>
+          <!-- Toutes les banques ne proposent pas cette assurance : celles qui ne la
+               proposent pas obligent à la souscrire ailleurs. L'information est reprise
+               dans la comparaison et le récapitulatif. -->
+          <label class="frais-checkbox">
+            <input type="checkbox" id="chk-incendie-externe">
+            À prendre chez un assureur (non proposée par la banque)
+          </label>
+        </div>
+        <div class="calc-field">
+          <label>Compte bancaire (souvent imposé par la banque)</label>
+          <div class="value-input"><input type="number" id="in-cout-compte" step="5" min="0" /><span class="unit">€/an</span></div>
+        </div>
+      </div>
+
       <div class="calc-field span-full" id="field-ira">
         <label>Remboursement anticipé (indemnité prévue au contrat)</label>
         <div class="price-extra">
@@ -551,25 +576,9 @@
         <label>Mensualité du prêt (reprise de la simu)</label>
         <div class="value-input"><span id="cout-mensualite" class="detail-value">-</span><span class="unit">€/mois</span></div>
       </div>
-      <div class="calc-field">
-        <label>Assurance solde restant dû (ADI)</label>
-        <div class="value-input"><input type="number" id="in-cout-asrd" step="10" /><span class="unit">€/an</span></div>
-      </div>
-      <div class="calc-field">
-        <label>Assurance habitation (incendie + RC)</label>
-        <div class="value-input"><input type="number" id="in-cout-incendie" step="10" /><span class="unit">€/an</span></div>
-        <!-- Toutes les banques ne proposent pas cette assurance : celles qui ne la
-             proposent pas obligent à la souscrire ailleurs. L'information est reprise
-             dans la comparaison et le récapitulatif. -->
-        <label class="frais-checkbox">
-          <input type="checkbox" id="chk-incendie-externe">
-          À prendre chez un assureur (non proposée par la banque)
-        </label>
-      </div>
-      <div class="calc-field">
-        <label>Compte bancaire (souvent imposé par la banque)</label>
-        <div class="value-input"><input type="number" id="in-cout-compte" step="5" min="0" /><span class="unit">€/an</span></div>
-      </div>
+      <!-- ADI, assurance habitation et compte bancaire : déplacés dans l'onglet Simulation
+           taux (juste sous prix + frais), ce sont des postes cotés par la banque au même titre
+           que les frais de dossier ou d'hypothèque. Toujours pilotés par cost.js (mêmes id). -->
       <div class="calc-field">
         <label>Charges de copropriété</label>
         <div class="value-input"><input type="number" id="in-cout-copro" step="5" /><span class="unit">€/mois</span></div>
@@ -892,7 +901,7 @@
     <!-- Numéro de version affiché : permet de vérifier d'un coup d'œil quelle version est
          réellement servie, plutôt que de confondre "le correctif ne marche pas" avec
          "le navigateur sert encore l'ancienne page". Doit être tenu à jour avec les ?v=N. -->
-    <p class="dash-build">Version 91</p>
+    <p class="dash-build">Version 92</p>
 
   </section>
 
@@ -948,30 +957,30 @@
   </div>
 </div>
 
-<script src="assets/js/utils.js?v=91" defer></script>
+<script src="assets/js/utils.js?v=92" defer></script>
 <!-- Avant rate-simulation.js, qui construit le sélecteur à partir du registre. -->
-<script src="assets/js/banques.js?v=91" defer></script>
-<script src="assets/js/ownership.js?v=91" defer></script>
-<script src="assets/js/rate-simulation.js?v=91" defer></script>
-<script src="assets/js/app.js?v=91" defer></script>
-<script src="assets/js/contract.js?v=91" defer></script>
-<script src="assets/js/etf.js?v=91" defer></script>
-<script src="assets/js/cost.js?v=91" defer></script>
+<script src="assets/js/banques.js?v=92" defer></script>
+<script src="assets/js/ownership.js?v=92" defer></script>
+<script src="assets/js/rate-simulation.js?v=92" defer></script>
+<script src="assets/js/app.js?v=92" defer></script>
+<script src="assets/js/contract.js?v=92" defer></script>
+<script src="assets/js/etf.js?v=92" defer></script>
+<script src="assets/js/cost.js?v=92" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=91" defer></script>
-<script src="assets/js/state.js?v=91" defer></script>
-<script src="assets/js/sankey.js?v=91" defer></script>
-<script src="assets/js/budget.js?v=91" defer></script>
-<script src="assets/js/modal.js?v=91" defer></script>
-<script src="assets/js/recap.js?v=91" defer></script>
+<script src="assets/js/firebase-config.js?v=92" defer></script>
+<script src="assets/js/state.js?v=92" defer></script>
+<script src="assets/js/sankey.js?v=92" defer></script>
+<script src="assets/js/budget.js?v=92" defer></script>
+<script src="assets/js/modal.js?v=92" defer></script>
+<script src="assets/js/recap.js?v=92" defer></script>
 <!-- html2canvas : capture le comparateur en image, pour pouvoir clic droit → « Copier l'image ». -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
-<script src="assets/js/compare.js?v=91" defer></script>
-<script src="assets/js/dashboard.js?v=91" defer></script>
+<script src="assets/js/compare.js?v=92" defer></script>
+<script src="assets/js/dashboard.js?v=92" defer></script>
 
 </body>
 </html>

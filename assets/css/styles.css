@@ -435,6 +435,9 @@ input[type="range"] { flex: 1; width: 100%; accent-color: var(--violet); }
 
 /* 7. Grille de calcul ------------------------------------------------------- */
 .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1.75rem; }
+/* Sous-grille à 3 colonnes (ADI, assurance habitation, compte bancaire) sur une seule ligne,
+   imbriquée dans une cellule .span-full de .calc-grid — indépendante de son grid-template-columns:1fr 1fr. */
+.calc-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .calc-field { background: var(--sheet); border: 1px solid var(--rule); padding: 17px 20px; }
 .calc-field label {
   display: block;
@@ -1283,6 +1286,7 @@ body.contract-open, body.recap-open { overflow: hidden; }
   h1 { font-size: var(--fs-2xl); margin: 1.4rem 0 0.9rem; }
 
   .calc-grid { grid-template-columns: 1fr; gap: 12px; }
+  .calc-row-3 { grid-template-columns: 1fr; gap: 12px; }
   .stats-row { flex-direction: column; gap: 12px; }
   .stat-card { min-width: 0; }
   .split-two { flex-direction: column; gap: 14px; }
