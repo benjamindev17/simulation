@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Simule ton prêt</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=95">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=96">
 
 <!-- Icône et nom pour l'ajout à l'écran d'accueil (iPhone/Safari + Android/Chrome) -->
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=95">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=96">
 <meta name="apple-mobile-web-app-title" content="Simulation prêt">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -26,7 +26,7 @@
 
 <!-- Aucune webfont : la typographie s'appuie sur Helvetica/Arial, présentes sur tous
      les systèmes. Une requête réseau de moins et aucun texte invisible au chargement. -->
-<link rel="stylesheet" href="assets/css/styles.css?v=95">
+<link rel="stylesheet" href="assets/css/styles.css?v=96">
 </head>
 <body>
 
@@ -812,18 +812,24 @@
       </div>
     </div>
 
-    <h2 class="mt-2">Évolution année par année</h2>
-    <div class="table-scroll">
-      <table id="etf-table">
-        <thead>
-          <tr><th>Année</th><th>Total investi</th><th>Valeur du portefeuille</th><th>Plus-value</th></tr>
-        </thead>
-        <tbody id="etf-tbody"></tbody>
-      </table>
-    </div>
-    <p class="note">
-      Rendement composé mensuellement, <b>hors fiscalité et frais de courtage</b>. Chiffres indicatifs destinés à comparer « investir » et « acheter » sur le même horizon.
-    </p>
+    <!-- Repliée par défaut (pas d'attribut "open") : 25 lignes, pas utile au premier coup d'œil. -->
+    <details class="disclosure mt-2">
+      <summary class="disclosure__summary">
+        Évolution année par année
+        <svg class="disclosure__chevron" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+      </summary>
+      <div class="table-scroll">
+        <table id="etf-table">
+          <thead>
+            <tr><th>Année</th><th>Total investi</th><th>Valeur du portefeuille</th><th>Plus-value</th></tr>
+          </thead>
+          <tbody id="etf-tbody"></tbody>
+        </table>
+      </div>
+      <p class="note">
+        Rendement composé mensuellement, <b>hors fiscalité et frais de courtage</b>. Chiffres indicatifs destinés à comparer « investir » et « acheter » sur le même horizon.
+      </p>
+    </details>
 
     <!-- ===== Où en est votre machine ? — phase de capitalisation (machine.js) ===== -->
     <h2 class="mt-2">Où en est votre machine ?</h2>
@@ -939,7 +945,7 @@
     <!-- Numéro de version affiché : permet de vérifier d'un coup d'œil quelle version est
          réellement servie, plutôt que de confondre "le correctif ne marche pas" avec
          "le navigateur sert encore l'ancienne page". Doit être tenu à jour avec les ?v=N. -->
-    <p class="dash-build">Version 95</p>
+    <p class="dash-build">Version 96</p>
 
   </section>
 
@@ -995,31 +1001,31 @@
   </div>
 </div>
 
-<script src="assets/js/utils.js?v=95" defer></script>
+<script src="assets/js/utils.js?v=96" defer></script>
 <!-- Avant rate-simulation.js, qui construit le sélecteur à partir du registre. -->
-<script src="assets/js/banques.js?v=95" defer></script>
-<script src="assets/js/ownership.js?v=95" defer></script>
-<script src="assets/js/rate-simulation.js?v=95" defer></script>
-<script src="assets/js/app.js?v=95" defer></script>
-<script src="assets/js/contract.js?v=95" defer></script>
-<script src="assets/js/etf.js?v=95" defer></script>
-<script src="assets/js/machine.js?v=95" defer></script>
-<script src="assets/js/cost.js?v=95" defer></script>
+<script src="assets/js/banques.js?v=96" defer></script>
+<script src="assets/js/ownership.js?v=96" defer></script>
+<script src="assets/js/rate-simulation.js?v=96" defer></script>
+<script src="assets/js/app.js?v=96" defer></script>
+<script src="assets/js/contract.js?v=96" defer></script>
+<script src="assets/js/etf.js?v=96" defer></script>
+<script src="assets/js/machine.js?v=96" defer></script>
+<script src="assets/js/cost.js?v=96" defer></script>
 
 <!-- Firebase (compat SDK — cohérent avec le style scripts globaux du reste du site, pas de bundler) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
-<script src="assets/js/firebase-config.js?v=95" defer></script>
-<script src="assets/js/state.js?v=95" defer></script>
-<script src="assets/js/sankey.js?v=95" defer></script>
-<script src="assets/js/budget.js?v=95" defer></script>
-<script src="assets/js/modal.js?v=95" defer></script>
-<script src="assets/js/recap.js?v=95" defer></script>
+<script src="assets/js/firebase-config.js?v=96" defer></script>
+<script src="assets/js/state.js?v=96" defer></script>
+<script src="assets/js/sankey.js?v=96" defer></script>
+<script src="assets/js/budget.js?v=96" defer></script>
+<script src="assets/js/modal.js?v=96" defer></script>
+<script src="assets/js/recap.js?v=96" defer></script>
 <!-- html2canvas : capture le comparateur en image, pour pouvoir clic droit → « Copier l'image ». -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
-<script src="assets/js/compare.js?v=95" defer></script>
-<script src="assets/js/dashboard.js?v=95" defer></script>
+<script src="assets/js/compare.js?v=96" defer></script>
+<script src="assets/js/dashboard.js?v=96" defer></script>
 
 </body>
 </html>

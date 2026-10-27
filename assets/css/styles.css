@@ -120,6 +120,25 @@ h2 {
   margin: 0 0 0.9rem;
 }
 
+/* Section repliable (h2 cliquable + chevron) — <details>/<summary> natifs : pas de JS,
+   fermé par défaut tant que l'attribut "open" n'est pas posé dans le HTML. */
+.disclosure > summary.disclosure__summary {
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--ink-mid);
+  margin: 0 0 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  list-style: none;
+}
+.disclosure > summary.disclosure__summary::-webkit-details-marker { display: none; }
+.disclosure__chevron { flex-shrink: 0; transition: transform var(--transition); }
+.disclosure[open] .disclosure__chevron { transform: rotate(180deg); }
+
 /* 3. Mise en page ---------------------------------------------------------- */
 .page-header {
   display: flex;
