@@ -1,7 +1,7 @@
 /* ==========================================================================
-   Sérialisation de l'état d'une simulation — capture/restaure les 3 onglets
-   concernés (Simulation taux, Répartition appartement, Coût total annuel).
-   L'onglet Placement ETF est un outil indépendant, volontairement exclu.
+   Sérialisation de l'état d'une simulation — capture/restaure les onglets
+   Simulation taux, Répartition appartement, Coût total annuel, Coût de la
+   vie et Placement ETF (calculateur + outil "Où en est votre machine ?").
    Utilisé par dashboard.js pour sauvegarder/charger dans Firestore.
    ========================================================================== */
 
@@ -85,7 +85,19 @@ function captureState() {
       incendieExterne: chkVal('chk-incendie-externe')
     },
     // --- Coût de la vie (dépenses libres par personne, encapsulées dans budget.js) ---
-    budget: (typeof window.getBudgetState === 'function') ? window.getBudgetState() : null
+    budget: (typeof window.getBudgetState === 'function') ? window.getBudgetState() : null,
+    // --- Placement ETF (etf.js encapsule ses variables ; on lit le DOM, qu'il tient à jour) ---
+    etf: {
+      montant: numVal('in-etf-montant'),
+      versement: numVal('in-etf-versement'),
+      rendement: numVal('in-etf-rendement')
+    },
+    // --- « Où en est votre machine ? » (machine.js, même onglet, même principe) ---
+    machine: {
+      capital: numVal('in-machine-capital'),
+      epargne: numVal('in-machine-epargne'),
+      rendement: numVal('in-machine-rendement')
+    }
   };
 }
 
@@ -150,4 +162,17 @@ function applyState(s) {
   // Restaure les dépenses de l'onglet Coût de la vie après applyMode (setBudgetState
   // relit le mode courant pour son propre rendu) — absent des simulations plus anciennes.
   if (typeof window.setBudgetState === 'function') window.setBudgetState(s.budget);
+
+  // Placement ETF — absent des simulations enregistrées avant l'ajout de cette
+  // persistance : les deux outils gardent alors simplement leurs valeurs par défaut.
+  if (s.etf) {
+    setValAndFire('in-etf-montant', s.etf.montant);
+    setValAndFire('in-etf-versement', s.etf.versement);
+    setValAndFire('in-etf-rendement', s.etf.rendement);
+  }
+  if (s.machine) {
+    setValAndFire('in-machine-capital', s.machine.capital);
+    setValAndFire('in-machine-epargne', s.machine.epargne);
+    setValAndFire('in-machine-rendement', s.machine.rendement);
+  }
 }
