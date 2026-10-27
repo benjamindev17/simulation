@@ -391,6 +391,70 @@ input[type="range"] { flex: 1; width: 100%; accent-color: var(--violet); }
   border: 1px solid var(--rule);
   padding: 1rem;
 }
+.chart-wrap--machine { height: auto; padding: 1.25rem 1rem 0.75rem; }
+.chart-wrap--machine svg { display: block; width: 100%; height: auto; }
+
+/* « Où en est votre machine ? » (machine.js) — phase de capitalisation ----- */
+.machine-status {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--violet);
+  padding: 1.1rem 1.25rem;
+  margin: 0.25rem 0 1.75rem;
+}
+.machine-status__lead { font-size: var(--fs-xl); margin: 0; line-height: 1.5; }
+.machine-status__pct { font-size: var(--fs-3xl); font-weight: 700; color: var(--violet); font-variant-numeric: tabular-nums; }
+.machine-status__badge {
+  display: inline-block;
+  margin: 10px 0 0;
+  padding: 4px 10px;
+  background: var(--violet-wash);
+  color: var(--violet);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.machine-status .note { margin-top: 10px; }
+
+.machine-bar { margin-top: 1.1rem; }
+.machine-bar__track { position: relative; display: flex; height: 10px; background: var(--rule); }
+.machine-bar__seg--1 { width: 50%; background: var(--rule-strong); }
+.machine-bar__seg--2 { width: 25%; background: var(--violet-line); }
+.machine-bar__seg--3 { width: 15%; background: var(--apricot-line); }
+.machine-bar__seg--4 { width: 10%; background: var(--violet); }
+.machine-bar__marker {
+  position: absolute;
+  top: -4px;
+  width: 3px;
+  height: 18px;
+  background: var(--ink);
+  transform: translateX(-50%);
+}
+.machine-bar__ticks { position: relative; height: 16px; margin-top: 4px; font-size: var(--fs-xs); color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+.machine-bar__ticks span { position: absolute; transform: translateX(-50%); }
+.machine-bar__ticks span:first-child { transform: translateX(0); }
+.machine-bar__ticks span:last-child { transform: translateX(-100%); }
+
+.phase-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 1.75rem; }
+.phase-card { background: var(--sheet); border: 1px solid var(--rule); padding: 15px 17px; }
+.phase-card--current { border-color: var(--violet); box-shadow: inset 0 0 0 1px var(--violet); }
+.phase-card__title { font-size: var(--fs-md); font-weight: 700; margin: 0 0 4px; }
+.phase-card__pill {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 2px 7px;
+  background: var(--violet);
+  color: #fff;
+  font-size: var(--fs-micro);
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+.phase-card__desc { font-size: var(--fs-sm); color: var(--ink-mid); margin: 0 0 12px; line-height: 1.5; }
+.phase-card__range { font-size: var(--fs-lg); font-weight: 700; margin: 0; font-variant-numeric: tabular-nums; }
+.phase-card__date { font-size: var(--fs-sm); color: var(--ink-mid); margin: 4px 0 0; }
+.phase-card__status { font-size: var(--fs-sm); font-weight: 700; color: var(--violet); margin: 4px 0 0; }
+.phase-card__status--passe { color: var(--ink-faint); font-weight: 400; }
 
 /* 6. Notes & encarts -------------------------------------------------------- */
 .note { font-size: var(--fs-md); color: var(--ink-mid); margin-top: 1.5rem; line-height: 1.65; }
@@ -1287,6 +1351,7 @@ body.contract-open, body.recap-open { overflow: hidden; }
 
   .calc-grid { grid-template-columns: 1fr; gap: 12px; }
   .calc-row-3 { grid-template-columns: 1fr; gap: 12px; }
+  .phase-row { grid-template-columns: 1fr; gap: 12px; }
   .stats-row { flex-direction: column; gap: 12px; }
   .stat-card { min-width: 0; }
   .split-two { flex-direction: column; gap: 14px; }
